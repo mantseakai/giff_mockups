@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIFF Admin Portal — Management Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #070C18;
+  --surface:  #0D1525;
+  --surface2: #111D35;
+  --surface3: #16253E;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+  --text:     #E2E8F0;
+  --muted:    #64748B;
+  --faint:    #334155;
+
+  --cyan:    #00D4FF;
+  --cyan2:   #0891B2;
+  --blue:    #3B82F6;
+  --indigo:  #6366F1;
+  --green:   #10B981;
+  --emerald: #059669;
+  --orange:  #F97316;
+  --red:     #EF4444;
+  --yellow:  #F59E0B;
+  --pink:    #EC4899;
+  --purple:  #8B5CF6;
+  --teal:    #14B8A6;
+  --white:   #FFFFFF;
+
+  --sidebar: 220px;
+  --topbar:  56px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+/* ──────────────── SIDEBAR ──────────────── */
+.sidebar {
+  width: var(--sidebar);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 20;
+}
+
+.sidebar-brand {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.brand-mark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 13px; color: var(--bg);
+  flex-shrink: 0; letter-spacing: -0.5px;
+}
+.brand-text strong {
+  display: block; font-size: 13px; font-weight: 800;
+  color: var(--white); letter-spacing: 0.3px;
+}
+.brand-text span { font-size: 10px; color: var(--muted); }
+
+.sb-section { padding: 10px 10px 2px; }
+.sb-label {
+  font-size: 9.5px; font-weight: 700; color: var(--faint);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 4px 6px 6px;
+}
+
+.sb-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 8px;
+  cursor: pointer; color: var(--muted);
+  font-size: 13px; font-weight: 500;
+  transition: all 0.18s; position: relative;
+  margin-bottom: 1px;
+}
+.sb-item:hover { color: var(--text); background: var(--surface2); }
+.sb-item.active {
+  color: var(--white); background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.18);
+}
+.sb-item.active::before {
+  content: ''; position: absolute; left: -1px; top: 20%; bottom: 20%;
+  width: 3px; border-radius: 0 2px 2px 0;
+  background: var(--cyan);
+}
+.sb-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.sb-badge {
+  margin-left: auto; padding: 1px 6px; border-radius: 10px;
+  font-size: 10px; font-weight: 700;
+}
+.sb-badge.red  { background: rgba(239,68,68,0.2); color: #FCA5A5; }
+.sb-badge.cyan { background: rgba(0,212,255,0.15); color: var(--cyan); }
+.sb-badge.grn  { background: rgba(16,185,129,0.15); color: #6EE7B7; }
+
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding: 12px 10px;
+}
+.user-pill {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 8px;
+  cursor: pointer; transition: background 0.18s;
+}
+.user-pill:hover { background: var(--surface2); }
+.ua { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,var(--indigo),var(--blue)); display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0; }
+.user-pill strong { display:block;font-size:12px;color:var(--white);font-weight:600; }
+.user-pill span   { font-size:10.5px;color:var(--muted); }
+
+/* ──────────────── MAIN ──────────────── */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+
+/* TOPBAR */
+.topbar {
+  height: var(--topbar);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 24px; gap: 14px;
+  flex-shrink: 0;
+}
+.topbar-title {
+  font-size: 16px; font-weight: 700; color: var(--white);
+  margin-right: auto;
+}
+.topbar-title span { font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 8px; }
+
+.search-wrap {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 7px 12px; width: 200px;
+}
+.search-wrap input {
+  background:none;border:none;outline:none;font-size:12.5px;
+  color:var(--text);width:100%;font-family:'Outfit',sans-serif;
+}
+.search-wrap input::placeholder { color:var(--muted); }
+
+.tb-btn {
+  width:32px;height:32px;border-radius:7px;
+  border:1px solid var(--border2);background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;color:var(--muted);
+  transition:all 0.18s;position:relative;
+}
+.tb-btn:hover { border-color:var(--border2);background:var(--surface3);color:var(--text); }
+.tb-dot { position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--orange);border:1.5px solid var(--surface); }
+
+.live-pill {
+  display:flex;align-items:center;gap:6px;
+  padding:5px 11px;border-radius:20px;
+  background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);
+  font-size:11px;font-weight:700;color:#34D399;
+}
+.live-dot { width:6px;height:6px;border-radius:50%;background:#34D399;animation:blink 2s infinite; }
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+/* CONTENT */
+.content { flex:1;overflow-y:auto;padding:22px 24px;background:var(--bg); }
+
+/* VIEWS */
+.view { display:none;animation:fadeUp 0.25s ease; }
+.view.active { display:block; }
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ──────────────── COMPONENTS ──────────────── */
+
+.page-head { margin-bottom:20px; display:flex;align-items:flex-start;justify-content:space-between;gap:16px; }
+.page-head h2 { font-size:20px;font-weight:800;color:var(--white); }
+.page-head p  { font-size:12.5px;color:var(--muted);margin-top:3px; }
+.page-actions { display:flex;gap:8px;align-items:center;flex-shrink:0; }
+
+.btn {
+  padding:7px 14px;border-radius:7px;font-size:12.5px;font-weight:700;
+  cursor:pointer;border:none;font-family:'Outfit',sans-serif;
+  display:flex;align-items:center;gap:6px;transition:all 0.18s;
+}
+.btn.primary { background:linear-gradient(135deg,var(--cyan2),var(--blue));color:white; }
+.btn.primary:hover { opacity:0.9;transform:translateY(-1px); }
+.btn.ghost { background:var(--surface2);color:var(--text);border:1px solid var(--border2); }
+.btn.ghost:hover { background:var(--surface3); }
+.btn.danger { background:rgba(239,68,68,0.15);color:#FCA5A5;border:1px solid rgba(239,68,68,0.2); }
+
+/* STAT CARDS */
+.stats-row { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px; }
+.stats-row-5 { grid-template-columns:repeat(5,1fr); }
+
+.stat {
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:16px 18px;
+  position:relative;overflow:hidden;
+  transition:border-color 0.2s;cursor:pointer;
+}
+.stat:hover { border-color:var(--border2); }
+.stat::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.stat.c1::before { background:var(--cyan); }
+.stat.c2::before { background:var(--green); }
+.stat.c3::before { background:var(--orange); }
+.stat.c4::before { background:var(--purple); }
+.stat.c5::before { background:var(--pink); }
+
+.stat-label { font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px; }
+.stat-value { font-size:26px;font-weight:800;color:var(--white);line-height:1;font-family:'Outfit',sans-serif; }
+.stat-delta { font-size:11.5px;margin-top:5px;display:flex;align-items:center;gap:4px; }
+.stat-delta.up   { color:var(--green); }
+.stat-delta.down { color:var(--red); }
+.stat-delta.flat { color:var(--muted); }
+.stat-icon { position:absolute;right:14px;top:14px;font-size:20px;opacity:0.15; }
+
+/* PANEL */
+.panel {
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+}
+.panel-head {
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.panel-title { font-size:14px;font-weight:700;color:var(--white); }
+.panel-sub   { font-size:11.5px;color:var(--muted);margin-top:1px; }
+.panel-action { font-size:12px;color:var(--cyan);cursor:pointer;padding:4px 8px;border-radius:6px;transition:background 0.15s; }
+.panel-action:hover { background:rgba(0,212,255,0.08); }
+.panel-body { padding:16px 18px; }
+
+/* GRID LAYOUTS */
+.grid-2  { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
+.grid-3  { display:grid;grid-template-columns:repeat(3,1fr);gap:14px; }
+.grid-13 { display:grid;grid-template-columns:1.5fr 1fr;gap:14px; }
+.grid-31 { display:grid;grid-template-columns:1fr 1.5fr;gap:14px; }
+
+/* TABLE */
+.tbl { width:100%;border-collapse:collapse; }
+.tbl th { font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface2); }
+.tbl td { padding:11px 14px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text);vertical-align:middle; }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:rgba(255,255,255,0.02); }
+.tbl-name { font-weight:600;color:var(--white); }
+.tbl-sub  { font-size:11px;color:var(--muted);margin-top:1px; }
+
+/* BADGE */
+.badge {
+  display:inline-flex;align-items:center;gap:3px;
+  padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;
+}
+.badge.green  { background:rgba(16,185,129,0.12);color:#4ADE80; }
+.badge.orange { background:rgba(249,115,22,0.12);color:#FB923C; }
+.badge.blue   { background:rgba(59,130,246,0.12);color:#93C5FD; }
+.badge.red    { background:rgba(239,68,68,0.12);color:#FCA5A5; }
+.badge.purple { background:rgba(139,92,246,0.12);color:#C4B5FD; }
+.badge.cyan   { background:rgba(0,212,255,0.1);color:var(--cyan); }
+.badge.gray   { background:rgba(100,116,139,0.15);color:#94A3B8; }
+
+/* AVATAR */
+.av { width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0; }
+
+/* METRIC ROW */
+.metric-row { display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border); }
+.metric-row:last-child { border-bottom:none; }
+.metric-label { font-size:12.5px;color:var(--muted); }
+.metric-value { font-size:13px;font-weight:700;color:var(--white); }
+
+/* MINI CHART BARS */
+.bar-chart { display:flex;align-items:flex-end;gap:4px;height:60px; }
+.bar { flex:1;border-radius:4px 4px 0 0;transition:height 0.4s ease;cursor:pointer;min-width:6px; }
+.bar:hover { opacity:0.8; }
+
+/* DONUT placeholder */
+.donut-wrap { display:flex;align-items:center;gap:20px; }
+.donut {
+  width:100px;height:100px;border-radius:50%;flex-shrink:0;
+  background:conic-gradient(
+    var(--green) 0deg 170deg,
+    var(--orange) 170deg 225deg,
+    var(--red) 225deg 255deg,
+    var(--blue) 255deg 290deg,
+    var(--surface3) 290deg 360deg
+  );
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.donut::after {
+  content:'';position:absolute;width:60px;height:60px;
+  border-radius:50%;background:var(--surface);
+}
+.donut-label { position:relative;z-index:1;font-size:18px;font-weight:800;color:var(--white);font-family:'Outfit',sans-serif; }
+.legend-item { display:flex;align-items:center;gap:7px;margin-bottom:7px; }
+.legend-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+.legend-label { font-size:12px;color:var(--muted); }
+.legend-val   { margin-left:auto;font-size:12px;font-weight:700;color:var(--white); }
+
+/* ACTIVITY FEED */
+.feed-item { display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border); }
+.feed-item:last-child { border-bottom:none; }
+.feed-icon { width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0; }
+.feed-title { font-size:13px;color:var(--text);font-weight:500;line-height:1.35; }
+.feed-time  { font-size:11px;color:var(--muted);margin-top:2px; }
+.feed-right { margin-left:auto;text-align:right; }
+
+/* INTEGRATION CARDS */
+.int-card {
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:14px;
+  display:flex;align-items:flex-start;gap:12px;
+  transition:border-color 0.2s;cursor:pointer;
+}
+.int-card:hover { border-color:var(--border2); }
+.int-icon { width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0; }
+.int-name { font-size:13px;font-weight:700;color:var(--white);margin-bottom:2px; }
+.int-desc { font-size:11px;color:var(--muted);line-height:1.4; }
+.int-status { margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:5px; }
+.int-uptime { font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green); }
+
+/* TOGGLE */
+.toggle { position:relative;width:36px;height:20px;cursor:pointer; }
+.toggle input { opacity:0;width:0;height:0; }
+.toggle-track {
+  position:absolute;inset:0;background:var(--faint);
+  border-radius:20px;transition:background 0.2s;
+}
+.toggle input:checked + .toggle-track { background:var(--cyan2); }
+.toggle-thumb {
+  position:absolute;top:3px;left:3px;width:14px;height:14px;
+  background:white;border-radius:50%;transition:transform 0.2s;
+}
+.toggle input:checked ~ .toggle-thumb { transform:translateX(16px); }
+
+/* ALARM ROWS */
+.alarm-row { display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border); }
+.alarm-row:last-child { border-bottom:none; }
+.alarm-severity { width:4px;border-radius:2px;flex-shrink:0; }
+
+/* PROGRESS BAR */
+.progress { height:6px;background:var(--surface3);border-radius:3px;overflow:hidden; }
+.progress-fill { height:100%;border-radius:3px;transition:width 0.6s ease; }
+
+/* MEMBER AVATAR GROUP */
+.av-group { display:flex; }
+.av-group .av { margin-left:-8px;border:2px solid var(--surface); }
+.av-group .av:first-child { margin-left:0; }
+
+/* MONO TEXT */
+.mono { font-family:'JetBrains Mono',monospace;font-size:11.5px; }
+
+/* INPUT */
+.inp {
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:8px;padding:8px 12px;font-size:13px;color:var(--text);
+  font-family:'Outfit',sans-serif;outline:none;width:100%;
+  transition:border-color 0.2s;
+}
+.inp:focus { border-color:var(--cyan2); }
+.inp-group { margin-bottom:14px; }
+.inp-label { font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:5px;display:block; }
+
+/* TABS */
+.tabs { display:flex;gap:2px;background:var(--surface2);border-radius:8px;padding:3px;width:fit-content;margin-bottom:16px; }
+.tab { padding:6px 14px;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted);transition:all 0.18s; }
+.tab.active { background:var(--surface);color:var(--white);box-shadow:0 1px 4px rgba(0,0,0,0.3); }
+.tab:hover:not(.active) { color:var(--text); }
+
+/* ALERT BANNER */
+.alert {
+  border-radius:10px;padding:12px 14px;
+  display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;
+}
+.alert.warning { background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2); }
+.alert.info    { background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2); }
+.alert.success { background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2); }
+.alert-icon { font-size:16px;flex-shrink:0;margin-top:1px; }
+.alert-title { font-size:13px;font-weight:700;color:var(--white); }
+.alert-body  { font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5; }
+
+/* KPI SPARKLINE */
+.sparkline { display:flex;align-items:flex-end;gap:2px;height:32px;margin-top:8px; }
+.spark { width:6px;border-radius:2px 2px 0 0; }
+
+/* ─── REVENUE CHART ─── */
+.rev-chart { display:flex;align-items:flex-end;gap:6px;height:80px;padding:0 0 4px; }
+.rev-bar { flex:1;border-radius:4px 4px 0 0;transition:all 0.4s;cursor:pointer;min-width:8px;position:relative; }
+.rev-bar:hover { opacity:0.8; }
+.rev-label { font-size:9px;color:var(--muted);text-align:center;margin-top:4px; }
+
+/* SYSTEM HEALTH */
+.health-row { display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border); }
+.health-row:last-child { border-bottom:none; }
+.health-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+.health-name { font-size:13px;color:var(--text);font-weight:500; }
+.health-val  { margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11.5px; }
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">GF</div>
+    <div class="brand-text">
+      <strong>GIFF Admin</strong>
+      <span>Management Portal</span>
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-label">Overview</div>
+    <div class="sb-item active" onclick="nav('dashboard',this)"><span class="sb-icon">▦</span>Dashboard</div>
+    <div class="sb-item" onclick="nav('analytics',this)"><span class="sb-icon">📈</span>Analytics</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-label">Members</div>
+    <div class="sb-item" onclick="nav('members',this)"><span class="sb-icon">👥</span>All Members<span class="sb-badge cyan">1,284</span></div>
+    <div class="sb-item" onclick="nav('members',this)"><span class="sb-icon">📋</span>Applications<span class="sb-badge red">7</span></div>
+    <div class="sb-item" onclick="nav('members',this)"><span class="sb-icon">⚠️</span>Arrears<span class="sb-badge red">23</span></div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-label">Finance</div>
+    <div class="sb-item" onclick="nav('finance',this)"><span class="sb-icon">💰</span>Revenue</div>
+    <div class="sb-item" onclick="nav('finance',this)"><span class="sb-icon">🏦</span>GRA Levy Flow</div>
+    <div class="sb-item" onclick="nav('finance',this)"><span class="sb-icon">📄</span>Invoices</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-label">Industry Hub</div>
+    <div class="sb-item" onclick="nav('integrations',this)"><span class="sb-icon">🔗</span>Integrations<span class="sb-badge grn">Live</span></div>
+    <div class="sb-item" onclick="nav('integrations',this)"><span class="sb-icon">⚓</span>Port & Shipping</div>
+    <div class="sb-item" onclick="nav('integrations',this)"><span class="sb-icon">🛃</span>Customs Portal</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-label">Operations</div>
+    <div class="sb-item" onclick="nav('hr',this)"><span class="sb-icon">🪪</span>Human Resources</div>
+    <div class="sb-item" onclick="nav('system',this)"><span class="sb-icon">🖥️</span>System Health</div>
+    <div class="sb-item" onclick="nav('system',this)"><span class="sb-icon">⚙️</span>Settings</div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="ua">SO</div>
+      <div>
+        <strong>Solomon Addai</strong>
+        <span>General Secretary</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="tb-title">Dashboard <span>Overview · Monday, 13 Apr 2026</span></div>
+    <div class="search-wrap">
+      <span style="color:var(--muted);font-size:13px">🔍</span>
+      <input type="text" placeholder="Search members, transactions...">
+    </div>
+    <div class="tb-btn">🔔<div class="tb-dot"></div></div>
+    <div class="tb-btn">❓</div>
+    <div class="live-pill"><div class="live-dot"></div>All Systems Live</div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ══════ DASHBOARD ══════ -->
+    <div class="view active" id="view-dashboard">
+
+      <!-- Alerts -->
+      <div class="alert warning">
+        <div class="alert-icon">⚠️</div>
+        <div>
+          <div class="alert-title">23 members with outstanding arrears — GHS 6,820 overdue</div>
+          <div class="alert-body">Automated reminders dispatched. 3 members have not responded to 3 consecutive notices and may require escalation to suspension.</div>
+        </div>
+        <button class="btn ghost" style="margin-left:auto;flex-shrink:0;font-size:11.5px">Review →</button>
+      </div>
+
+      <!-- KPI Stats -->
+      <div class="stats-row stats-row-5">
+        <div class="stat c1" onclick="nav('members',null)">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">Total Members</div>
+          <div class="stat-value">1,284</div>
+          <div class="stat-delta up">↑ +34 this month</div>
+          <div class="sparkline">
+            <div class="spark" style="height:40%;background:rgba(0,212,255,0.3)"></div>
+            <div class="spark" style="height:55%;background:rgba(0,212,255,0.3)"></div>
+            <div class="spark" style="height:45%;background:rgba(0,212,255,0.3)"></div>
+            <div class="spark" style="height:70%;background:rgba(0,212,255,0.3)"></div>
+            <div class="spark" style="height:60%;background:rgba(0,212,255,0.3)"></div>
+            <div class="spark" style="height:85%;background:rgba(0,212,255,0.5)"></div>
+            <div class="spark" style="height:100%;background:var(--cyan)"></div>
+          </div>
+        </div>
+        <div class="stat c2" onclick="nav('finance',null)">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">Dues Collected Apr</div>
+          <div class="stat-value">GHS 48.2K</div>
+          <div class="stat-delta up">↑ +12% vs last month</div>
+          <div class="sparkline">
+            <div class="spark" style="height:50%;background:rgba(16,185,129,0.3)"></div>
+            <div class="spark" style="height:65%;background:rgba(16,185,129,0.3)"></div>
+            <div class="spark" style="height:55%;background:rgba(16,185,129,0.3)"></div>
+            <div class="spark" style="height:80%;background:rgba(16,185,129,0.3)"></div>
+            <div class="spark" style="height:75%;background:rgba(16,185,129,0.4)"></div>
+            <div class="spark" style="height:90%;background:rgba(16,185,129,0.5)"></div>
+            <div class="spark" style="height:100%;background:var(--green)"></div>
+          </div>
+        </div>
+        <div class="stat c3">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-label">Arrears Outstanding</div>
+          <div class="stat-value">GHS 6.8K</div>
+          <div class="stat-delta down">↓ 23 members</div>
+        </div>
+        <div class="stat c4" onclick="nav('integrations',null)">
+          <div class="stat-icon">📦</div>
+          <div class="stat-label">Active Clearances</div>
+          <div class="stat-value">87</div>
+          <div class="stat-delta up">↑ 5 completed today</div>
+        </div>
+        <div class="stat c5" onclick="nav('finance',null)">
+          <div class="stat-icon">🏦</div>
+          <div class="stat-label">Platform Revenue YTD</div>
+          <div class="stat-value">GHS 18.4K</div>
+          <div class="stat-delta up">↑ wallet & tx fees</div>
+        </div>
+      </div>
+
+      <!-- Main panels row 1 -->
+      <div class="grid-13" style="margin-bottom:14px">
+        <!-- Revenue Chart -->
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Revenue Overview — 2026</div>
+              <div class="panel-sub">Dues collected vs platform revenue</div>
+            </div>
+            <div class="tabs" style="margin:0">
+              <div class="tab active">Monthly</div>
+              <div class="tab">Quarterly</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div style="display:flex;gap:16px;margin-bottom:14px">
+              <div>
+                <div style="font-size:11px;color:var(--muted)">Total 2026 YTD</div>
+                <div style="font-size:22px;font-weight:800;color:var(--white)">GHS 142,600</div>
+              </div>
+              <div style="margin-left:auto;text-align:right">
+                <div style="font-size:11px;color:var(--muted)">vs 2025</div>
+                <div style="font-size:18px;font-weight:800;color:var(--green)">+18%</div>
+              </div>
+            </div>
+            <!-- Bars -->
+            <div style="display:flex;gap:6px;align-items:flex-end;height:90px">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end;gap:2px">
+                  <div style="flex:1;height:55%;background:rgba(16,185,129,0.6);border-radius:3px 3px 0 0"></div>
+                  <div style="flex:1;height:15%;background:rgba(0,212,255,0.5);border-radius:3px 3px 0 0"></div>
+                </div>
+                <div style="font-size:9px;color:var(--muted)">Jan</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end;gap:2px">
+                  <div style="flex:1;height:60%;background:rgba(16,185,129,0.6);border-radius:3px 3px 0 0"></div>
+                  <div style="flex:1;height:18%;background:rgba(0,212,255,0.5);border-radius:3px 3px 0 0"></div>
+                </div>
+                <div style="font-size:9px;color:var(--muted)">Feb</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end;gap:2px">
+                  <div style="flex:1;height:70%;background:rgba(16,185,129,0.6);border-radius:3px 3px 0 0"></div>
+                  <div style="flex:1;height:20%;background:rgba(0,212,255,0.5);border-radius:3px 3px 0 0"></div>
+                </div>
+                <div style="font-size:9px;color:var(--muted)">Mar</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end;gap:2px">
+                  <div style="flex:1;height:80%;background:var(--green);border-radius:3px 3px 0 0"></div>
+                  <div style="flex:1;height:25%;background:var(--cyan);border-radius:3px 3px 0 0"></div>
+                </div>
+                <div style="font-size:9px;color:var(--cyan)">Apr ←</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end;gap:2px">
+                  <div style="flex:1;height:40%;background:rgba(16,185,129,0.3);border-radius:3px 3px 0 0;border:1px dashed rgba(16,185,129,0.4)"></div>
+                  <div style="flex:1;height:12%;background:rgba(0,212,255,0.2);border-radius:3px 3px 0 0;border:1px dashed rgba(0,212,255,0.3)"></div>
+                </div>
+                <div style="font-size:9px;color:var(--muted)">May</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end;gap:2px">
+                  <div style="flex:1;height:35%;background:rgba(16,185,129,0.25);border-radius:3px 3px 0 0;border:1px dashed rgba(16,185,129,0.3)"></div>
+                  <div style="flex:1;height:10%;background:rgba(0,212,255,0.15);border-radius:3px 3px 0 0;border:1px dashed rgba(0,212,255,0.25)"></div>
+                </div>
+                <div style="font-size:9px;color:var(--muted)">Jun</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:14px;margin-top:10px">
+              <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><div style="width:10px;height:8px;background:var(--green);border-radius:2px"></div>Dues</div>
+              <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><div style="width:10px;height:8px;background:var(--cyan);border-radius:2px"></div>Platform Revenue</div>
+              <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><div style="width:10px;height:8px;background:rgba(255,255,255,0.1);border-radius:2px;border:1px dashed rgba(255,255,255,0.3)"></div>Forecast</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Membership Breakdown -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Membership Status</div>
+          </div>
+          <div class="panel-body">
+            <div class="donut-wrap">
+              <div class="donut"><div class="donut-label">1,284</div></div>
+              <div style="flex:1">
+                <div class="legend-item">
+                  <div class="legend-dot" style="background:var(--green)"></div>
+                  <div class="legend-label">Active</div>
+                  <div class="legend-val">1,201</div>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-dot" style="background:var(--orange)"></div>
+                  <div class="legend-label">At Risk</div>
+                  <div class="legend-val">46</div>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-dot" style="background:var(--red)"></div>
+                  <div class="legend-label">Suspended</div>
+                  <div class="legend-val">22</div>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-dot" style="background:var(--blue)"></div>
+                  <div class="legend-label">Pending</div>
+                  <div class="legend-val">15</div>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-dot" style="background:var(--surface3)"></div>
+                  <div class="legend-label">Lapsed</div>
+                  <div class="legend-val" style="color:var(--muted)">0</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:14px">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:5px">Collection Rate — April 2026</div>
+              <div class="progress"><div class="progress-fill" style="width:87%;background:linear-gradient(90deg,var(--green),var(--teal))"></div></div>
+              <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px">
+                <span style="color:var(--green)">87% collected</span>
+                <span style="color:var(--muted)">GHS 48.2K / 55.4K</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="grid-2" style="margin-bottom:14px">
+
+        <!-- Recent Activity -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title">Live Activity Feed</div>
+            <div class="panel-action">View all →</div>
+          </div>
+          <div class="panel-body" style="padding:10px 18px">
+            <div class="feed-item">
+              <div class="feed-icon" style="background:rgba(16,185,129,0.1)">💳</div>
+              <div>
+                <div class="feed-title">Dues received — <strong style="color:var(--white)">Ama Boateng</strong> · GFF-003102</div>
+                <div class="feed-time">Today 09:14 · MTN MoMo</div>
+              </div>
+              <div class="feed-right"><div style="font-weight:700;color:var(--green);font-size:13px">+GHS 350</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background:rgba(99,102,241,0.1)">🛃</div>
+              <div>
+                <div class="feed-title">Customs levy paid — <strong style="color:var(--white)">Kwame Asante</strong> · Entry 44821</div>
+                <div class="feed-time">Today 08:33 · GIFF Wallet → GRA Fund</div>
+              </div>
+              <div class="feed-right"><div style="font-weight:700;color:var(--cyan);font-size:13px">GHS 1,240</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background:rgba(249,115,22,0.1)">👤</div>
+              <div>
+                <div class="feed-title">New application — <strong style="color:var(--white)">Priscilla Adu</strong> · Tema Port Logistics</div>
+                <div class="feed-time">Yesterday 15:48 · Pending review</div>
+              </div>
+              <div class="feed-right"><span class="badge orange">Pending</span></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background:rgba(239,68,68,0.1)">⚠️</div>
+              <div>
+                <div class="feed-title">3rd reminder sent — <strong style="color:var(--white)">Ben Nkrumah</strong> · 2 yrs overdue</div>
+                <div class="feed-time">Yesterday 11:02 · Escalation flagged</div>
+              </div>
+              <div class="feed-right"><span class="badge red">Action needed</span></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background:rgba(20,184,166,0.1)">🏦</div>
+              <div>
+                <div class="feed-title">GRA levy allocation received — Q1 2026</div>
+                <div class="feed-time">10 Apr 2026 · GRA Consolidated Fund</div>
+              </div>
+              <div class="feed-right"><div style="font-weight:700;color:var(--green);font-size:13px">+GHS 12,450</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column: System + Port -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Integration Status</div>
+              <span class="badge green">All Live</span>
+            </div>
+            <div class="panel-body" style="padding:10px 18px">
+              <div class="health-row">
+                <div class="health-dot" style="background:var(--green)"></div>
+                <div class="health-name">GPHA Port API</div>
+                <div class="health-val" style="color:var(--green)">99.8% ↑</div>
+              </div>
+              <div class="health-row">
+                <div class="health-dot" style="background:var(--green)"></div>
+                <div class="health-name">MPS Terminal Feed</div>
+                <div class="health-val" style="color:var(--green)">99.6% ↑</div>
+              </div>
+              <div class="health-row">
+                <div class="health-dot" style="background:var(--green)"></div>
+                <div class="health-name">GRA Customs Portal</div>
+                <div class="health-val" style="color:var(--green)">100% ↑</div>
+              </div>
+              <div class="health-row">
+                <div class="health-dot" style="background:var(--yellow)"></div>
+                <div class="health-name">Shipping Line APIs</div>
+                <div class="health-val" style="color:var(--yellow)">97.2% ↑</div>
+              </div>
+              <div class="health-row">
+                <div class="health-dot" style="background:var(--green)"></div>
+                <div class="health-name">Hubtel / Paystack</div>
+                <div class="health-val" style="color:var(--green)">99.9% ↑</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Quick Actions</div>
+            </div>
+            <div class="panel-body" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <button class="btn primary" style="justify-content:center;font-size:12px">+ Add Member</button>
+              <button class="btn ghost" style="justify-content:center;font-size:12px" onclick="nav('finance',null)">Generate Invoice</button>
+              <button class="btn ghost" style="justify-content:center;font-size:12px">Export Report</button>
+              <button class="btn ghost" style="justify-content:center;font-size:12px" onclick="nav('members',null)">Review Applications</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRA Levy Flow -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">GRA Levy Flow — 2026 YTD</div>
+            <div class="panel-sub">Member payments → GRA Consolidated Fund → GIFF allocation</div>
+          </div>
+          <button class="btn ghost" style="font-size:11.5px">View Full Report</button>
+        </div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:center">
+            <div style="background:var(--surface2);border-radius:12px;padding:16px;border:1px solid var(--border)">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Members Paid Levy</div>
+              <div style="font-size:22px;font-weight:800;color:var(--white)">1,114</div>
+              <div style="font-size:11px;color:var(--green);margin-top:3px">of 1,201 active</div>
+            </div>
+            <div style="text-align:center;font-size:24px;color:var(--cyan)">→</div>
+            <div style="background:var(--surface2);border-radius:12px;padding:16px;border:1px solid rgba(239,68,68,0.2)">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Submitted to GRA Fund</div>
+              <div style="font-size:22px;font-weight:800;color:var(--white)">GHS 38,400</div>
+              <div style="font-size:11px;color:var(--blue);margin-top:3px">Consolidated Fund ✓</div>
+            </div>
+            <div style="background:var(--surface2);border-radius:12px;padding:16px;border:1px solid rgba(16,185,129,0.2)">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Allocated Back to GIFF</div>
+              <div style="font-size:22px;font-weight:800;color:var(--green)">GHS 12,450</div>
+              <div style="font-size:11px;color:var(--green);margin-top:3px">Q1 received 10 Apr ✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ MEMBERS ══════ -->
+    <div class="view" id="view-members">
+      <div class="page-head">
+        <div><h2>Member Registry</h2><p>1,284 members · 1,201 active · 23 in arrears · 7 pending applications</p></div>
+        <div class="page-actions">
+          <button class="btn ghost">⬇ Export CSV</button>
+          <button class="btn ghost">📨 Send Bulk Reminder</button>
+          <button class="btn primary">+ Add Member</button>
+        </div>
+      </div>
+
+      <div class="stats-row" style="margin-bottom:16px">
+        <div class="stat c1"><div class="stat-label">Active Members</div><div class="stat-value">1,201</div><div class="stat-delta up">↑ +34 this month</div></div>
+        <div class="stat c3"><div class="stat-label">Arrears</div><div class="stat-value">23</div><div class="stat-delta down">GHS 6,820 overdue</div></div>
+        <div class="stat c4"><div class="stat-label">Pending Applications</div><div class="stat-value">7</div><div class="stat-delta flat">Awaiting review</div></div>
+        <div class="stat c2"><div class="stat-label">Renewals Due (30d)</div><div class="stat-value">142</div><div class="stat-delta flat">Reminders sent</div></div>
+      </div>
+
+      <!-- Filters -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+        <div class="search-wrap" style="width:240px">
+          <span style="color:var(--muted);font-size:13px">🔍</span>
+          <input type="text" placeholder="Search name, ID, company...">
+        </div>
+        <div class="tabs" style="margin:0">
+          <div class="tab active">All</div>
+          <div class="tab">Active</div>
+          <div class="tab">Arrears</div>
+          <div class="tab">Pending</div>
+          <div class="tab">Suspended</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn ghost">🔽 Filter</button>
+          <button class="btn ghost">⊞ Columns</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Member</th><th>Company</th><th>Category</th>
+              <th>Joined</th><th>Dues Status</th><th>Status</th>
+              <th>Wallet</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:linear-gradient(135deg,#0EA5E9,#6366F1)">KA</div><div><div class="tbl-name">Kwame Asante</div><div class="tbl-sub">GFF-002841</div></div></div></td>
+              <td><div class="tbl-name" style="font-size:12.5px">Asante Freight Ltd</div></td>
+              <td><span class="badge blue">Corporate</span></td>
+              <td><span class="mono" style="color:var(--muted)">2019</span></td>
+              <td><span class="badge green">Paid 2026</span></td>
+              <td><span class="badge green">Active</span></td>
+              <td><span style="font-size:12.5px;font-weight:700;color:var(--white)">GHS 4,250</span></td>
+              <td><div style="display:flex;gap:5px"><button class="btn ghost" style="padding:4px 9px;font-size:11px">View</button><button class="btn ghost" style="padding:4px 9px;font-size:11px">Edit</button></div></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:linear-gradient(135deg,var(--teal),var(--green))">AB</div><div><div class="tbl-name">Ama Boateng</div><div class="tbl-sub">GFF-003102</div></div></div></td>
+              <td><div class="tbl-name" style="font-size:12.5px">Tema Clearing Agency</div></td>
+              <td><span class="badge blue">Corporate</span></td>
+              <td><span class="mono" style="color:var(--muted)">2021</span></td>
+              <td><span class="badge green">Paid 2026</span></td>
+              <td><span class="badge green">Active</span></td>
+              <td><span style="font-size:12.5px;font-weight:700;color:var(--white)">GHS 1,800</span></td>
+              <td><div style="display:flex;gap:5px"><button class="btn ghost" style="padding:4px 9px;font-size:11px">View</button><button class="btn ghost" style="padding:4px 9px;font-size:11px">Edit</button></div></td>
+            </tr>
+            <tr style="background:rgba(249,115,22,0.04)">
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:linear-gradient(135deg,var(--orange),var(--yellow))">KM</div><div><div class="tbl-name">Kofi Mensah</div><div class="tbl-sub">GFF-001987</div></div></div></td>
+              <td><div class="tbl-name" style="font-size:12.5px">KM Logistics GH</div></td>
+              <td><span class="badge purple">Individual</span></td>
+              <td><span class="mono" style="color:var(--muted)">2018</span></td>
+              <td><span class="badge orange">Overdue</span></td>
+              <td><span class="badge orange">At Risk</span></td>
+              <td><span style="font-size:12.5px;font-weight:700;color:var(--muted)">GHS 0</span></td>
+              <td><div style="display:flex;gap:5px"><button class="btn ghost" style="padding:4px 9px;font-size:11px">View</button><button class="btn danger" style="padding:4px 9px;font-size:11px">Remind</button></div></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:linear-gradient(135deg,var(--green),var(--teal))">EA</div><div><div class="tbl-name">Efua Appiah</div><div class="tbl-sub">GFF-003540</div></div></div></td>
+              <td><div class="tbl-name" style="font-size:12.5px">Gold Coast Forwarding</div></td>
+              <td><span class="badge blue">Corporate</span></td>
+              <td><span class="mono" style="color:var(--muted)">2022</span></td>
+              <td><span class="badge green">Paid 2026</span></td>
+              <td><span class="badge green">Active</span></td>
+              <td><span style="font-size:12.5px;font-weight:700;color:var(--white)">GHS 920</span></td>
+              <td><div style="display:flex;gap:5px"><button class="btn ghost" style="padding:4px 9px;font-size:11px">View</button><button class="btn ghost" style="padding:4px 9px;font-size:11px">Edit</button></div></td>
+            </tr>
+            <tr style="background:rgba(239,68,68,0.04)">
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:linear-gradient(135deg,var(--red),#DC2626)">BN</div><div><div class="tbl-name">Ben Nkrumah</div><div class="tbl-sub">GFF-002234</div></div></div></td>
+              <td><div class="tbl-name" style="font-size:12.5px">BN Trade Solutions</div></td>
+              <td><span class="badge purple">Individual</span></td>
+              <td><span class="mono" style="color:var(--muted)">2016</span></td>
+              <td><span class="badge red">2 yrs overdue</span></td>
+              <td><span class="badge red">Suspended</span></td>
+              <td><span style="font-size:12.5px;font-weight:700;color:var(--muted)">GHS 0</span></td>
+              <td><div style="display:flex;gap:5px"><button class="btn ghost" style="padding:4px 9px;font-size:11px">View</button><button class="btn danger" style="padding:4px 9px;font-size:11px">Escalate</button></div></td>
+            </tr>
+            <tr style="background:rgba(59,130,246,0.04)">
+              <td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:linear-gradient(135deg,var(--cyan2),var(--blue))">PA</div><div><div class="tbl-name">Priscilla Adu</div><div class="tbl-sub">GFF-003621</div></div></div></td>
+              <td><div class="tbl-name" style="font-size:12.5px">Tema Port Logistics</div></td>
+              <td><span class="badge blue">Corporate</span></td>
+              <td><span class="mono" style="color:var(--muted)">2026</span></td>
+              <td><span class="badge cyan">—</span></td>
+              <td><span class="badge cyan">Pending</span></td>
+              <td><span style="font-size:12.5px;font-weight:700;color:var(--muted)">—</span></td>
+              <td><div style="display:flex;gap:5px"><button class="btn primary" style="padding:4px 9px;font-size:11px">Approve</button><button class="btn danger" style="padding:4px 9px;font-size:11px">Reject</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+        <span style="font-size:12px;color:var(--muted)">Showing 6 of 1,284 members</span>
+        <div style="display:flex;gap:6px">
+          <button class="btn ghost" style="padding:5px 12px;font-size:12px">← Prev</button>
+          <button class="btn primary" style="padding:5px 12px;font-size:12px">1</button>
+          <button class="btn ghost" style="padding:5px 12px;font-size:12px">2</button>
+          <button class="btn ghost" style="padding:5px 12px;font-size:12px">3</button>
+          <button class="btn ghost" style="padding:5px 12px;font-size:12px">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ FINANCE ══════ -->
+    <div class="view" id="view-finance">
+      <div class="page-head">
+        <div><h2>Finance & Revenue</h2><p>Real-time financial management, levy reconciliation, and GRA reporting</p></div>
+        <div class="page-actions">
+          <button class="btn ghost">⬇ Export</button>
+          <button class="btn primary">+ Generate Invoice</button>
+        </div>
+      </div>
+
+      <div class="stats-row stats-row-5">
+        <div class="stat c2"><div class="stat-label">Total Income 2026</div><div class="stat-value">GHS 142K</div><div class="stat-delta up">↑ +18% vs 2025</div></div>
+        <div class="stat c3"><div class="stat-label">Expenditure YTD</div><div class="stat-value">GHS 84K</div><div class="stat-delta down">↓ 6% under budget</div></div>
+        <div class="stat c4"><div class="stat-label">Net Surplus</div><div class="stat-value">GHS 58K</div><div class="stat-delta up">↑ Strong position</div></div>
+        <div class="stat c1"><div class="stat-label">Levies Collected</div><div class="stat-value">GHS 38.4K</div><div class="stat-delta up">↑ Submitted to GRA</div></div>
+        <div class="stat c5"><div class="stat-label">Platform Revenue</div><div class="stat-value">GHS 18.4K</div><div class="stat-delta up">↑ Self-sustaining</div></div>
+      </div>
+
+      <div class="grid-13" style="margin-bottom:14px">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Platform Revenue Streams — YTD</div></div>
+          <div class="panel-body" style="padding:12px 18px">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-size:12.5px;color:var(--text)">Wallet Transaction Fees</span>
+                  <span style="font-size:12.5px;font-weight:700;color:var(--white)">GHS 7,200</span>
+                </div>
+                <div class="progress"><div class="progress-fill" style="width:49%;background:var(--pink)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-size:12.5px;color:var(--text)">Float / Interest Income</span>
+                  <span style="font-size:12.5px;font-weight:700;color:var(--white)">GHS 3,100</span>
+                </div>
+                <div class="progress"><div class="progress-fill" style="width:21%;background:var(--cyan)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-size:12.5px;color:var(--text)">SMS Notification Fees</span>
+                  <span style="font-size:12.5px;font-weight:700;color:var(--white)">GHS 1,600</span>
+                </div>
+                <div class="progress"><div class="progress-fill" style="width:11%;background:var(--green)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-size:12.5px;color:var(--text)">Premium Analytics</span>
+                  <span style="font-size:12.5px;font-weight:700;color:var(--white)">GHS 2,400</span>
+                </div>
+                <div class="progress"><div class="progress-fill" style="width:16%;background:var(--orange)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-size:12.5px;color:var(--text)">Loan & HP Fees</span>
+                  <span style="font-size:12.5px;font-weight:700;color:var(--white)">GHS 4,100</span>
+                </div>
+                <div class="progress"><div class="progress-fill" style="width:28%;background:var(--purple)"></div></div>
+              </div>
+            </div>
+            <div style="margin-top:14px;padding:12px;background:rgba(16,185,129,0.07);border-radius:8px;border:1px solid rgba(16,185,129,0.2)">
+              <div style="font-size:11.5px;color:var(--muted)">YTD Platform Revenue vs Annual Target</div>
+              <div style="font-size:18px;font-weight:800;color:var(--green);margin-top:3px">GHS 18,400 / GHS 63,000 <span style="font-size:13px;color:var(--muted)">· 29%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">GRA Levy Reconciliation</div></div>
+            <div class="panel-body" style="padding:10px 18px">
+              <div class="metric-row"><div class="metric-label">Total Levies Collected</div><div class="metric-value" style="color:var(--white)">GHS 38,400</div></div>
+              <div class="metric-row"><div class="metric-label">Submitted to GRA Fund</div><div class="metric-value" style="color:var(--blue)">GHS 38,400 ✓</div></div>
+              <div class="metric-row"><div class="metric-label">Q1 Allocation Received</div><div class="metric-value" style="color:var(--green)">GHS 12,450 ✓</div></div>
+              <div class="metric-row"><div class="metric-label">Q2 Allocation Expected</div><div class="metric-value" style="color:var(--muted)">Jul 2026</div></div>
+              <div class="metric-row"><div class="metric-label">Customs Payments Routed</div><div class="metric-value" style="color:var(--cyan)">GHS 92,600</div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Collection Rate</div></div>
+            <div class="panel-body">
+              <div style="font-size:28px;font-weight:900;color:var(--white)">87%<span style="font-size:14px;color:var(--muted);font-weight:400"> of target</span></div>
+              <div class="progress" style="margin-top:8px"><div class="progress-fill" style="width:87%;background:linear-gradient(90deg,var(--green),var(--teal))"></div></div>
+              <div style="font-size:11.5px;color:var(--muted);margin-top:6px">GHS 48,240 collected · GHS 7,160 remaining</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent invoices -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Recent Invoices</div>
+          <div class="panel-action">View all →</div>
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Invoice #</th><th>Member</th><th>Type</th><th>Channel</th><th>Date</th><th>Amount</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="mono" style="color:var(--cyan)">INV-2026-0341</span></td><td>Ama Boateng</td><td>Annual Dues</td><td>MTN MoMo</td><td class="mono" style="color:var(--muted)">13 Apr 2026</td><td style="font-weight:700;color:var(--white)">GHS 350</td><td><span class="badge green">Paid</span></td></tr>
+            <tr><td><span class="mono" style="color:var(--cyan)">INV-2026-0340</span></td><td>Kwame Asante</td><td>Port Levy</td><td>Bank Transfer</td><td class="mono" style="color:var(--muted)">13 Apr 2026</td><td style="font-weight:700;color:var(--white)">GHS 1,240</td><td><span class="badge green">Paid</span></td></tr>
+            <tr><td><span class="mono" style="color:var(--orange)">INV-2026-0335</span></td><td>Kofi Mensah</td><td>Annual Dues</td><td>—</td><td class="mono" style="color:var(--muted)">01 Apr 2026</td><td style="font-weight:700;color:var(--white)">GHS 350</td><td><span class="badge orange">Overdue</span></td></tr>
+            <tr><td><span class="mono" style="color:var(--cyan)">INV-2026-0338</span></td><td>Efua Appiah</td><td>Annual Dues</td><td>Vodafone Cash</td><td class="mono" style="color:var(--muted)">10 Apr 2026</td><td style="font-weight:700;color:var(--white)">GHS 350</td><td><span class="badge green">Paid</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════ INTEGRATIONS ══════ -->
+    <div class="view" id="view-integrations">
+      <div class="page-head">
+        <div><h2>Industry Integrations</h2><p>Live API connections to Ghana's port, customs, and trade ecosystem</p></div>
+        <div class="page-actions">
+          <button class="btn ghost">🔄 Refresh All</button>
+          <button class="btn primary">+ Add Integration</button>
+        </div>
+      </div>
+
+      <div class="alert success">
+        <div class="alert-icon">✅</div>
+        <div>
+          <div class="alert-title">All 6 integration endpoints operational</div>
+          <div class="alert-body">Last full health check: 2 minutes ago · Average uptime this month: 99.4%</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:14px">
+        <div class="int-card">
+          <div class="int-icon" style="background:rgba(14,165,233,0.1)">⚓</div>
+          <div style="flex:1">
+            <div class="int-name">GPHA Port Integration API</div>
+            <div class="int-desc">Ghana Ports & Harbours Authority · Port dues, cargo tracking, gate management, vessel schedule</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <span class="badge green">Live</span>
+              <span class="badge gray">REST + WebSocket</span>
+            </div>
+          </div>
+          <div class="int-status">
+            <div class="int-uptime">99.8%</div>
+            <span class="badge green">↑ Healthy</span>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:3px">2 min ago</div>
+          </div>
+        </div>
+        <div class="int-card">
+          <div class="int-icon" style="background:rgba(16,185,129,0.1)">📦</div>
+          <div style="flex:1">
+            <div class="int-name">MPS Terminal Feed</div>
+            <div class="int-desc">Meridian Port Services · Container status, yard occupancy, gate appointments, vessel berth data</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <span class="badge green">Live</span>
+              <span class="badge gray">REST API</span>
+            </div>
+          </div>
+          <div class="int-status">
+            <div class="int-uptime">99.6%</div>
+            <span class="badge green">↑ Healthy</span>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:3px">2 min ago</div>
+          </div>
+        </div>
+        <div class="int-card">
+          <div class="int-icon" style="background:rgba(99,102,241,0.1)">🛃</div>
+          <div style="flex:1">
+            <div class="int-name">GRA Customs Portal</div>
+            <div class="int-desc">Ghana Revenue Authority · Customs declaration, duty payment, levy routing to Consolidated Fund, compliance checking</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <span class="badge green">Live</span>
+              <span class="badge gray">SOAP + REST</span>
+            </div>
+          </div>
+          <div class="int-status">
+            <div class="int-uptime">100%</div>
+            <span class="badge green">↑ Healthy</span>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:3px">1 min ago</div>
+          </div>
+        </div>
+        <div class="int-card">
+          <div class="int-icon" style="background:rgba(249,115,22,0.1)">🚢</div>
+          <div style="flex:1">
+            <div class="int-name">Shipping Line APIs</div>
+            <div class="int-desc">MSC, Maersk, OOCL, CMA CGM · Vessel tracking, B/L status, freight booking, container events</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <span class="badge orange">Partial</span>
+              <span class="badge gray">REST API</span>
+            </div>
+          </div>
+          <div class="int-status">
+            <div class="int-uptime" style="color:var(--yellow)">97.2%</div>
+            <span class="badge orange">↑ Degraded</span>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:3px">Maersk API slow</div>
+          </div>
+        </div>
+        <div class="int-card">
+          <div class="int-icon" style="background:rgba(20,184,166,0.1)">💳</div>
+          <div style="flex:1">
+            <div class="int-name">Hubtel / Paystack Payments</div>
+            <div class="int-desc">Card, bank transfer, mobile money · MTN MoMo, Vodafone Cash, AirtelTigo · Instant reconciliation</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <span class="badge green">Live</span>
+              <span class="badge gray">REST API</span>
+            </div>
+          </div>
+          <div class="int-status">
+            <div class="int-uptime">99.9%</div>
+            <span class="badge green">↑ Healthy</span>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:3px">Just now</div>
+          </div>
+        </div>
+        <div class="int-card">
+          <div class="int-icon" style="background:rgba(139,92,246,0.1)">📱</div>
+          <div style="flex:1">
+            <div class="int-name">Twilio SMS + SendGrid Email</div>
+            <div class="int-desc">Member notifications · Due date reminders · Payment receipts · Port alert broadcasts · AI escalations</div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <span class="badge green">Live</span>
+              <span class="badge gray">REST API</span>
+            </div>
+          </div>
+          <div class="int-status">
+            <div class="int-uptime">99.7%</div>
+            <span class="badge green">↑ Healthy</span>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:3px">2 min ago</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API call log -->
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Recent API Calls</div><div class="panel-action">View logs →</div></div>
+        <table class="tbl">
+          <thead><tr><th>Endpoint</th><th>Method</th><th>Status</th><th>Latency</th><th>Triggered by</th><th>Time</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mono">GRA/customs/duty-payment</span></td><td><span class="badge blue">POST</span></td><td><span class="badge green">200 OK</span></td><td><span class="mono" style="color:var(--green)">142ms</span></td><td>Kwame Asante</td><td class="mono" style="color:var(--muted)">09:14:22</td></tr>
+            <tr><td><span class="mono">MPS/container/MSCU8821455</span></td><td><span class="badge cyan">GET</span></td><td><span class="badge green">200 OK</span></td><td><span class="mono" style="color:var(--green)">88ms</span></td><td>System sync</td><td class="mono" style="color:var(--muted)">09:12:07</td></tr>
+            <tr><td><span class="mono">Hubtel/payment/confirm</span></td><td><span class="badge blue">POST</span></td><td><span class="badge green">200 OK</span></td><td><span class="mono" style="color:var(--green)">204ms</span></td><td>Ama Boateng</td><td class="mono" style="color:var(--muted)">09:14:01</td></tr>
+            <tr><td><span class="mono">GPHA/vessel/schedule</span></td><td><span class="badge cyan">GET</span></td><td><span class="badge green">200 OK</span></td><td><span class="mono" style="color:var(--green)">312ms</span></td><td>Dashboard refresh</td><td class="mono" style="color:var(--muted)">09:10:00</td></tr>
+            <tr><td><span class="mono">Maersk/vessel/MAERSK-TEMA</span></td><td><span class="badge cyan">GET</span></td><td><span class="badge orange">504 Timeout</span></td><td><span class="mono" style="color:var(--orange)">8,412ms</span></td><td>System sync</td><td class="mono" style="color:var(--muted)">09:08:14</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════ HR ══════ -->
+    <div class="view" id="view-hr">
+      <div class="page-head">
+        <div><h2>Human Resources</h2><p>GIFF Secretariat staff management, leave, payroll, and performance</p></div>
+        <div class="page-actions">
+          <button class="btn ghost">+ Add Staff</button>
+          <button class="btn primary">📄 Run Payroll</button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat c1"><div class="stat-label">Total Staff</div><div class="stat-value">24</div><div class="stat-delta up">Full complement</div></div>
+        <div class="stat c2"><div class="stat-label">On Leave Today</div><div class="stat-value">2</div><div class="stat-delta flat">Approved</div></div>
+        <div class="stat c3"><div class="stat-label">Leave Requests</div><div class="stat-value">3</div><div class="stat-delta flat">Pending approval</div></div>
+        <div class="stat c4"><div class="stat-label">Next Payroll</div><div class="stat-value">Apr 28</div><div class="stat-delta flat">15 days away</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Staff Directory</div><div class="panel-action">View all →</div></div>
+          <table class="tbl">
+            <thead><tr><th>Staff Member</th><th>Role</th><th>Department</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:var(--blue)">SA</div><div><div class="tbl-name">Solomon Addai</div><div class="tbl-sub">General Secretary</div></div></div></td><td>Management</td><td>Executive</td><td><span class="badge green">Active</span></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:var(--purple)">MA</div><div><div class="tbl-name">Mary Asiedu</div><div class="tbl-sub">Finance Officer</div></div></div></td><td>Finance</td><td>Accounts</td><td><span class="badge green">Active</span></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:var(--teal)">KO</div><div><div class="tbl-name">Kwesi Owusu</div><div class="tbl-sub">IT Administrator</div></div></div></td><td>Technical</td><td>IT</td><td><span class="badge green">Active</span></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:var(--orange)">AK</div><div><div class="tbl-name">Abena Kusi</div><div class="tbl-sub">Member Services</div></div></div></td><td>Operations</td><td>Member Svcs</td><td><span class="badge orange">On Leave</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Leave Requests</div></div>
+            <div class="panel-body" style="padding:10px 18px">
+              <div class="feed-item">
+                <div class="feed-icon" style="background:rgba(249,115,22,0.1)">🏖️</div>
+                <div><div class="feed-title"><strong style="color:var(--white)">Abena Kusi</strong> — Annual Leave</div><div class="feed-time">14–18 Apr 2026 · 5 days</div></div>
+                <div style="display:flex;gap:5px;margin-left:auto">
+                  <button class="btn primary" style="padding:4px 9px;font-size:11px">✓ Approve</button>
+                  <button class="btn danger" style="padding:4px 9px;font-size:11px">✗ Deny</button>
+                </div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-icon" style="background:rgba(239,68,68,0.1)">🏥</div>
+                <div><div class="feed-title"><strong style="color:var(--white)">James Tetteh</strong> — Sick Leave</div><div class="feed-time">13 Apr 2026 · 1 day</div></div>
+                <div style="display:flex;gap:5px;margin-left:auto">
+                  <button class="btn primary" style="padding:4px 9px;font-size:11px">✓ Approve</button>
+                  <button class="btn danger" style="padding:4px 9px;font-size:11px">✗ Deny</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Payroll Summary — April 2026</div></div>
+            <div class="panel-body" style="padding:10px 18px">
+              <div class="metric-row"><div class="metric-label">Total Staff</div><div class="metric-value">24</div></div>
+              <div class="metric-row"><div class="metric-label">Gross Payroll</div><div class="metric-value">GHS 48,200</div></div>
+              <div class="metric-row"><div class="metric-label">SSNIT Deductions</div><div class="metric-value" style="color:var(--orange)">GHS 5,784</div></div>
+              <div class="metric-row"><div class="metric-label">Income Tax (PAYE)</div><div class="metric-value" style="color:var(--orange)">GHS 7,230</div></div>
+              <div class="metric-row"><div class="metric-label">Net Pay</div><div class="metric-value" style="color:var(--green)">GHS 35,186</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ SYSTEM ══════ -->
+    <div class="view" id="view-system">
+      <div class="page-head">
+        <div><h2>System Health & Settings</h2><p>Platform infrastructure, API status, and configuration</p></div>
+        <div class="page-actions">
+          <button class="btn ghost">🔄 Run Healthcheck</button>
+          <button class="btn primary">⚙️ Settings</button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat c2"><div class="stat-label">System Uptime</div><div class="stat-value">99.94%</div><div class="stat-delta up">↑ Last 30 days</div></div>
+        <div class="stat c1"><div class="stat-label">Avg API Latency</div><div class="stat-value">187ms</div><div class="stat-delta up">↑ Below threshold</div></div>
+        <div class="stat c3"><div class="stat-label">Active Sessions</div><div class="stat-value">342</div><div class="stat-delta flat">Members online now</div></div>
+        <div class="stat c4"><div class="stat-label">DB Size</div><div class="stat-value">14.2 GB</div><div class="stat-delta flat">Last backup: 02:00</div></div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:14px">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Service Status</div></div>
+          <div class="panel-body" style="padding:10px 18px">
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">API Gateway</div><div class="health-val" style="color:var(--green)">Healthy</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Membership Service</div><div class="health-val" style="color:var(--green)">Healthy</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Dues Service</div><div class="health-val" style="color:var(--green)">Healthy</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Payment Wallet</div><div class="health-val" style="color:var(--green)">Healthy</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">AI Agent (Claude)</div><div class="health-val" style="color:var(--green)">Healthy</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">PostgreSQL DB</div><div class="health-val" style="color:var(--green)">14.2 GB</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Redis Cache</div><div class="health-val" style="color:var(--green)">124 MB</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Blob Storage</div><div class="health-val" style="color:var(--green)">4.8 GB used</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">CI/CD Pipeline</div><div class="health-val" style="color:var(--green)">Last: 2h ago</div></div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Platform Settings</div></div>
+            <div class="panel-body" style="padding:10px 18px">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+                <div><div style="font-size:13px;color:var(--text);font-weight:500">AI Assistant</div><div style="font-size:11px;color:var(--muted)">Member chatbot active</div></div>
+                <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+                <div><div style="font-size:13px;color:var(--text);font-weight:500">SMS Notifications</div><div style="font-size:11px;color:var(--muted)">Reminders & alerts</div></div>
+                <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+                <div><div style="font-size:13px;color:var(--text);font-weight:500">Auto-Renewal Reminders</div><div style="font-size:11px;color:var(--muted)">30, 14, 7 days before</div></div>
+                <label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+                <div><div style="font-size:13px;color:var(--text);font-weight:500">Marketplace Module</div><div style="font-size:11px;color:var(--muted)">Equipment trading</div></div>
+                <label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+                <div><div style="font-size:13px;color:var(--text);font-weight:500">Maintenance Mode</div><div style="font-size:11px;color:var(--muted)">Disable member access</div></div>
+                <label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Infrastructure</div></div>
+            <div class="panel-body" style="padding:10px 18px">
+              <div class="metric-row"><div class="metric-label">Cloud Provider</div><div class="metric-value"><span class="badge cyan">AWS Africa</span></div></div>
+              <div class="metric-row"><div class="metric-label">Region</div><div class="metric-value">af-south-1 (Cape Town)</div></div>
+              <div class="metric-row"><div class="metric-label">Last Backup</div><div class="metric-value" style="color:var(--green)">02:00 AM ✓</div></div>
+              <div class="metric-row"><div class="metric-label">SSL Certificate</div><div class="metric-value" style="color:var(--green)">Valid · 284 days</div></div>
+              <div class="metric-row"><div class="metric-label">Platform Version</div><div class="metric-value"><span class="mono">v2.1.4</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ ANALYTICS ══════ -->
+    <div class="view" id="view-analytics">
+      <div class="page-head">
+        <div><h2>Analytics & Insights</h2><p>Member growth, revenue trends, platform usage, and predictive indicators</p></div>
+        <div class="page-actions">
+          <button class="btn ghost">📅 Date Range</button>
+          <button class="btn primary">⬇ Export Report</button>
+        </div>
+      </div>
+
+      <div class="stats-row stats-row-5">
+        <div class="stat c1"><div class="stat-label">New Members (Apr)</div><div class="stat-value">34</div><div class="stat-delta up">↑ +12% vs Mar</div></div>
+        <div class="stat c2"><div class="stat-label">Renewals (Apr)</div><div class="stat-value">218</div><div class="stat-delta up">↑ 96% renewal rate</div></div>
+        <div class="stat c3"><div class="stat-label">Wallet Transactions</div><div class="stat-value">1,847</div><div class="stat-delta up">↑ +31% this month</div></div>
+        <div class="stat c4"><div class="stat-label">AI Queries (Apr)</div><div class="stat-value">4,210</div><div class="stat-delta up">↑ 78% resolved by AI</div></div>
+        <div class="stat c5"><div class="stat-label">Customs Entries</div><div class="stat-value">342</div><div class="stat-delta up">↑ via platform</div></div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:14px">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Member Growth — 2026</div></div>
+          <div class="panel-body">
+            <div style="display:flex;align-items:flex-end;gap:8px;height:100px;margin-bottom:8px">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:70%;background:rgba(0,212,255,0.4);border-radius:4px 4px 0 0"></div></div>
+                <div style="font-size:9px;color:var(--muted)">Jan</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:75%;background:rgba(0,212,255,0.45);border-radius:4px 4px 0 0"></div></div>
+                <div style="font-size:9px;color:var(--muted)">Feb</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:80%;background:rgba(0,212,255,0.5);border-radius:4px 4px 0 0"></div></div>
+                <div style="font-size:9px;color:var(--muted)">Mar</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:100%;background:var(--cyan);border-radius:4px 4px 0 0"></div></div>
+                <div style="font-size:9px;color:var(--cyan)">Apr</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:40%;background:rgba(0,212,255,0.2);border-radius:4px 4px 0 0;border:1px dashed rgba(0,212,255,0.3)"></div></div>
+                <div style="font-size:9px;color:var(--muted)">May</div>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <div style="flex:1;width:100%;display:flex;align-items:flex-end"><div style="width:100%;height:35%;background:rgba(0,212,255,0.15);border-radius:4px 4px 0 0;border:1px dashed rgba(0,212,255,0.25)"></div></div>
+                <div style="font-size:9px;color:var(--muted)">Jun</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:14px">
+              <div><div style="font-size:10.5px;color:var(--muted)">YTD New Members</div><div style="font-size:18px;font-weight:800;color:var(--white)">112</div></div>
+              <div><div style="font-size:10.5px;color:var(--muted)">Renewal Rate</div><div style="font-size:18px;font-weight:800;color:var(--green)">96%</div></div>
+              <div><div style="font-size:10.5px;color:var(--muted)">Churn Rate</div><div style="font-size:18px;font-weight:800;color:var(--orange)">4%</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Platform Usage by Module</div></div>
+          <div class="panel-body" style="padding:12px 18px">
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--text)">Dues & Payments</span><span style="font-size:12px;font-weight:700;color:var(--white)">94%</span></div>
+                <div class="progress"><div class="progress-fill" style="width:94%;background:var(--green)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--text)">AI Assistant</span><span style="font-size:12px;font-weight:700;color:var(--white)">82%</span></div>
+                <div class="progress"><div class="progress-fill" style="width:82%;background:var(--indigo)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--text)">Port & Shipping</span><span style="font-size:12px;font-weight:700;color:var(--white)">76%</span></div>
+                <div class="progress"><div class="progress-fill" style="width:76%;background:var(--cyan2)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--text)">Customs Portal</span><span style="font-size:12px;font-weight:700;color:var(--white)">68%</span></div>
+                <div class="progress"><div class="progress-fill" style="width:68%;background:var(--purple)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--text)">Wallet & Loans</span><span style="font-size:12px;font-weight:700;color:var(--white)">54%</span></div>
+                <div class="progress"><div class="progress-fill" style="width:54%;background:var(--orange)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--text)">Marketplace</span><span style="font-size:12px;font-weight:700;color:var(--muted)">Coming Q3</span></div>
+                <div class="progress"><div class="progress-fill" style="width:5%;background:var(--faint)"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue projection -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">3-Year Revenue Projection — Platform Self-Sustainability</div>
+            <div class="panel-sub">Platform-generated revenue vs annual operating cost</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+            <div style="background:var(--surface2);border-radius:12px;padding:18px;border:1px solid var(--border)">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Year 1 — 2026</div>
+              <div style="font-size:26px;font-weight:900;color:var(--white)">GHS 63K+</div>
+              <div style="font-size:12px;color:var(--green);margin-top:4px">✓ Covers 100% operating cost</div>
+              <div style="margin-top:12px"><div class="progress"><div class="progress-fill" style="width:100%;background:var(--green)"></div></div></div>
+            </div>
+            <div style="background:var(--surface2);border-radius:12px;padding:18px;border:1px solid rgba(0,212,255,0.2)">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Year 2 — 2027</div>
+              <div style="font-size:26px;font-weight:900;color:var(--cyan)">GHS 120K+</div>
+              <div style="font-size:12px;color:var(--cyan);margin-top:4px">Marketplace commissions live</div>
+              <div style="margin-top:12px"><div class="progress"><div class="progress-fill" style="width:100%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div></div></div>
+            </div>
+            <div style="background:var(--surface2);border-radius:12px;padding:18px;border:1px solid rgba(139,92,246,0.2)">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">Year 3 — 2028</div>
+              <div style="font-size:26px;font-weight:900;color:var(--purple)">GHS 200K+</div>
+              <div style="font-size:12px;color:var(--purple);margin-top:4px">Full loan book + marketplace</div>
+              <div style="margin-top:12px"><div class="progress"><div class="progress-fill" style="width:100%;background:linear-gradient(90deg,var(--cyan),var(--purple))"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+  function nav(viewId, el) {
+    // Hide all views
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + viewId).classList.add('active');
+
+    // Update sidebar active
+    document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+    if (el) el.classList.add('active');
+
+    // Update topbar title
+    const titles = {
+      dashboard:    ['Dashboard', 'Overview · Monday, 13 Apr 2026'],
+      analytics:    ['Analytics & Insights', 'Member growth, revenue trends & projections'],
+      members:      ['Member Registry', '1,284 registered members'],
+      finance:      ['Finance & Revenue', 'Real-time financial management'],
+      integrations: ['Industry Integrations', 'Live API connections'],
+      hr:           ['Human Resources', 'GIFF Secretariat staff'],
+      system:       ['System Health & Settings', 'Infrastructure & configuration'],
+    };
+    if (titles[viewId]) {
+      document.getElementById('tb-title').innerHTML =
+        titles[viewId][0] + ' <span>' + titles[viewId][1] + '</span>';
+    }
+  }
+
+  // Tab switching
+  document.querySelectorAll('.tabs').forEach(tabs => {
+    tabs.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        tabs.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  });
+
+  // Toggle interaction
+  document.querySelectorAll('.toggle input').forEach(inp => {
+    inp.addEventListener('change', function() {
+      const thumb = this.parentElement.querySelector('.toggle-thumb');
+      // CSS handles visual state
+    });
+  });
+</script>
+</body>
+</html>

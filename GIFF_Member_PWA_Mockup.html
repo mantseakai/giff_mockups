@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIFF Member App — PWA Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────
+   PAGE LAYOUT — device presenter
+───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: #0A0F1E;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px 50px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Background ambient glow */
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 600px;
+  background: radial-gradient(ellipse at center, rgba(0,180,220,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -100px; right: -100px;
+  width: 400px; height: 400px;
+  background: radial-gradient(ellipse at center, rgba(124,58,237,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.page-title h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px; letter-spacing: 3px;
+  color: white; line-height: 1;
+  margin-bottom: 8px;
+}
+.page-title p {
+  font-size: 13.5px; color: rgba(255,255,255,0.4);
+  font-weight: 400; letter-spacing: 0.3px;
+}
+.page-title .badges {
+  display: flex; gap: 8px; justify-content: center; margin-top: 12px;
+}
+.tbadge {
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+  border: 1px solid;
+}
+.tbadge.teal { color: #2DD4BF; border-color: rgba(45,212,191,0.3); background: rgba(45,212,191,0.08); }
+.tbadge.blue { color: #60A5FA; border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.08); }
+.tbadge.grn  { color: #4ADE80; border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.08); }
+
+/* ─────────────────────────────────────────
+   DEVICE FRAME
+───────────────────────────────────────── */
+.device-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.device {
+  width: 375px;
+  background: #111827;
+  border-radius: 48px;
+  padding: 12px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.08),
+    0 40px 80px rgba(0,0,0,0.6),
+    0 0 60px rgba(0,180,220,0.06);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.device-screen {
+  width: 100%;
+  border-radius: 38px;
+  overflow: hidden;
+  background: #F8FAFC;
+  position: relative;
+  height: 780px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Notch */
+.notch {
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 32px;
+  background: #111827;
+  border-radius: 0 0 20px 20px;
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.notch-camera {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #1F2937; border: 2px solid #374151;
+}
+.notch-speaker {
+  width: 50px; height: 5px; border-radius: 3px;
+  background: #1F2937;
+}
+
+/* Status bar */
+.status-bar {
+  height: 44px; background: var(--header-bg, #0A1628);
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 0 22px 8px;
+  flex-shrink: 0;
+  position: relative; z-index: 10;
+}
+.status-time { font-size: 13px; font-weight: 700; color: white; }
+.status-icons { display: flex; gap: 5px; align-items: center; }
+.status-icons span { font-size: 12px; color: white; }
+
+/* App content area */
+.app {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Screens */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: #F1F5F9;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.screen.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+}
+.screen.slide-left {
+  transform: translateX(-30px);
+}
+
+/* ─────────────────────────────────────────
+   REUSABLE COMPONENTS
+───────────────────────────────────────── */
+
+/* App header */
+.app-header {
+  background: linear-gradient(160deg, #0A1628 0%, #112240 100%);
+  padding: 16px 20px 20px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.app-header::after {
+  content: '';
+  position: absolute;
+  right: -30px; top: -40px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,212,255,0.1);
+}
+.app-header::before {
+  content: '';
+  position: absolute;
+  right: 30px; top: 10px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,212,255,0.06);
+}
+
+.header-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 4px;
+}
+.header-greeting { font-size: 12px; color: rgba(255,255,255,0.45); font-weight: 500; }
+.header-name { font-size: 18px; font-weight: 800; color: white; margin-top: 1px; }
+.notif-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; cursor: pointer; position: relative;
+}
+.notif-dot {
+  position: absolute; top: 4px; right: 4px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #F97316; border: 2px solid #0A1628;
+}
+
+/* Scroll content */
+.scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 80px;
+}
+.scroll-content::-webkit-scrollbar { display: none; }
+
+/* ─────── BOTTOM NAV ─────── */
+.bottom-nav {
+  height: 68px;
+  background: white;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  padding: 0 4px 8px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 50;
+}
+.nav-tab {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; cursor: pointer; padding: 6px 2px;
+  transition: all 0.2s; border-radius: 12px;
+}
+.nav-tab:active { background: rgba(0,0,0,0.04); }
+.nav-tab-icon { font-size: 20px; line-height: 1; transition: transform 0.2s; }
+.nav-tab.active .nav-tab-icon { transform: scale(1.1); }
+.nav-tab-label { font-size: 10px; font-weight: 600; color: #94A3B8; letter-spacing: 0.2px; transition: color 0.2s; }
+.nav-tab.active .nav-tab-label { color: #0284C7; }
+.nav-tab-pip {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: #0284C7; opacity: 0; transition: opacity 0.2s;
+}
+.nav-tab.active .nav-tab-pip { opacity: 1; }
+
+/* ─────── CARDS ─────── */
+.card {
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.section-label {
+  font-size: 12px; font-weight: 700; color: #64748B;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  padding: 16px 20px 8px;
+}
+
+/* Pills */
+.pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+}
+.pill.green  { background: rgba(16,185,129,0.1); color: #059669; }
+.pill.orange { background: rgba(249,115,22,0.1); color: #EA580C; }
+.pill.blue   { background: rgba(2,132,199,0.1);  color: #0284C7; }
+.pill.red    { background: rgba(239,68,68,0.1);  color: #DC2626; }
+.pill.purple { background: rgba(124,58,237,0.1); color: #7C3AED; }
+.pill.gray   { background: rgba(100,116,139,0.1);color: #475569; }
+
+/* ─────────────────────────────────────────
+   SCREEN: HOME
+───────────────────────────────────────── */
+#screen-home .app-header { padding-bottom: 28px; }
+
+.member-card {
+  margin: 0 16px;
+  transform: translateY(-22px);
+  background: linear-gradient(135deg, #0EA5E9, #6366F1);
+  border-radius: 20px;
+  padding: 18px 20px;
+  color: white;
+  box-shadow: 0 12px 32px rgba(14,165,233,0.35);
+  position: relative; overflow: hidden;
+}
+.member-card::before {
+  content: '';
+  position: absolute; right: -20px; top: -30px;
+  width: 130px; height: 130px; border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.member-card::after {
+  content: '';
+  position: absolute; right: 40px; bottom: -40px;
+  width: 100px; height: 100px; border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.mc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.mc-logo { font-size: 10px; font-weight: 800; letter-spacing: 1px; opacity: 0.7; }
+.mc-type { font-size: 10px; font-weight: 700; background: rgba(255,255,255,0.15); padding: 3px 8px; border-radius: 10px; }
+.mc-id { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 3px; color: white; margin-bottom: 2px; }
+.mc-name { font-size: 14px; font-weight: 700; }
+.mc-bottom { display: flex; justify-content: space-between; margin-top: 14px; align-items: flex-end; }
+.mc-bal-label { font-size: 10px; opacity: 0.6; margin-bottom: 2px; }
+.mc-bal { font-size: 20px; font-weight: 800; }
+.mc-status { text-align: right; }
+.mc-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ADE80; display: inline-block; margin-right: 4px; box-shadow: 0 0 8px rgba(74,222,128,0.6); }
+.mc-expiry { font-size: 10px; opacity: 0.6; margin-top: 2px; }
+
+.quick-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; padding: 0 16px;
+  margin-top: -6px;
+}
+.quick-item {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  cursor: pointer; padding: 10px 4px;
+  border-radius: 14px; transition: all 0.18s;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.quick-item:active { transform: scale(0.93); background: #F8FAFC; }
+.qi-icon {
+  width: 42px; height: 42px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.qi-label { font-size: 10px; font-weight: 700; color: #475569; text-align: center; line-height: 1.2; }
+
+.activity-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #F1F5F9;
+  cursor: pointer; transition: background 0.15s;
+}
+.activity-row:last-child { border-bottom: none; }
+.activity-row:active { background: #F8FAFC; }
+.act-icon {
+  width: 38px; height: 38px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.act-title { font-size: 13px; font-weight: 600; color: #1E293B; }
+.act-sub   { font-size: 11px; color: #94A3B8; margin-top: 1px; }
+.act-right { margin-left: auto; text-align: right; }
+.act-amount { font-size: 13px; font-weight: 700; }
+.act-time   { font-size: 10.5px; color: #94A3B8; margin-top: 1px; }
+
+/* Alerts */
+.alert-banner {
+  margin: 0 16px 12px;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex; align-items: flex-start; gap: 10px;
+  cursor: pointer;
+}
+.alert-banner.orange { background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.2); }
+.alert-banner.blue   { background: rgba(2,132,199,0.07);  border: 1px solid rgba(2,132,199,0.18); }
+.alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.alert-title { font-size: 12.5px; font-weight: 700; color: #1E293B; }
+.alert-sub   { font-size: 11px; color: #64748B; margin-top: 2px; line-height: 1.4; }
+.alert-action { font-size: 11px; font-weight: 700; color: #0284C7; margin-top: 4px; }
+
+/* ─────────────────────────────────────────
+   SCREEN: WALLET
+───────────────────────────────────────── */
+.wallet-hero {
+  background: linear-gradient(160deg, #0A1628 0%, #1a2f50 100%);
+  padding: 20px 20px 40px;
+  position: relative; overflow: hidden;
+}
+.wallet-hero::before {
+  content: ''; position: absolute;
+  right: -20px; bottom: -40px;
+  width: 180px; height: 180px; border-radius: 50%;
+  border: 1px solid rgba(0,212,255,0.08);
+}
+.wh-label { font-size: 12px; color: rgba(255,255,255,0.45); margin-bottom: 6px; }
+.wh-amount { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: #00D4FF; line-height: 1; letter-spacing: 1px; }
+.wh-sub  { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 3px; }
+.wh-actions { display: flex; gap: 10px; margin-top: 18px; }
+.wh-btn {
+  flex: 1; padding: 11px; border-radius: 12px;
+  font-size: 12.5px; font-weight: 700;
+  border: none; cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.2s;
+}
+.wh-btn.primary { background: #00D4FF; color: #0A1628; }
+.wh-btn.outline { background: rgba(255,255,255,0.08); color: white; border: 1px solid rgba(255,255,255,0.15); }
+.wh-btn:active { transform: scale(0.96); }
+
+.finance-cards {
+  margin: -18px 16px 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  position: relative; z-index: 5;
+}
+.fin-card {
+  background: white; border-radius: 16px; padding: 14px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  cursor: pointer; transition: transform 0.2s;
+}
+.fin-card:active { transform: scale(0.97); }
+.fin-card-icon { font-size: 22px; margin-bottom: 8px; }
+.fin-card-label { font-size: 11px; color: #64748B; font-weight: 500; margin-bottom: 4px; }
+.fin-card-value { font-size: 16px; font-weight: 800; color: #1E293B; }
+.fin-card-sub   { font-size: 10.5px; color: #94A3B8; margin-top: 2px; }
+
+.txn-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px; border-bottom: 1px solid #F1F5F9; cursor: pointer;
+}
+.txn-item:last-child { border-bottom: none; }
+.txn-item:active { background: #F8FAFC; }
+.txn-icon { width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.txn-title { font-size: 13px; font-weight: 600; color: #1E293B; }
+.txn-sub   { font-size: 11px; color: #94A3B8; margin-top: 1px; }
+.txn-amount { margin-left: auto; font-size: 14px; font-weight: 800; }
+
+/* ─────────────────────────────────────────
+   SCREEN: PORT HUB
+───────────────────────────────────────── */
+.port-header {
+  background: linear-gradient(160deg, #064E3B 0%, #065F46 100%);
+  padding: 16px 20px 22px;
+}
+.port-header h2 { font-size: 20px; font-weight: 800; color: white; }
+.port-header p  { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.port-sync { font-size: 11px; color: #4ADE80; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+.status-tiles {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  padding: 16px 16px 0;
+}
+.stile {
+  background: white; border-radius: 16px; padding: 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  cursor: pointer; transition: transform 0.2s;
+}
+.stile:active { transform: scale(0.97); }
+.stile-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.stile-icon { font-size: 24px; }
+.stile-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #94A3B8; margin-bottom: 4px; }
+.stile-title { font-size: 13px; font-weight: 800; color: #1E293B; }
+.stile-metric { display: flex; justify-content: space-between; font-size: 11px; color: #64748B; padding: 4px 0; border-top: 1px solid #F1F5F9; margin-top: 6px; }
+.stile-metric span { font-weight: 700; color: #1E293B; }
+
+.container-card {
+  margin: 0 16px;
+  background: white; border-radius: 16px; padding: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  cursor: pointer; transition: all 0.2s; margin-bottom: 10px;
+}
+.container-card:active { transform: scale(0.98); }
+.cc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.cc-num { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 1px; color: #1E293B; }
+.cc-progress { margin-bottom: 6px; }
+.cc-progress-bar { height: 5px; background: #F1F5F9; border-radius: 3px; overflow: hidden; }
+.cc-progress-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.cc-steps { display: flex; justify-content: space-between; margin-top: 6px; }
+.cc-step { font-size: 9.5px; color: #94A3B8; font-weight: 500; }
+.cc-step.done { color: #059669; font-weight: 700; }
+.cc-step.current { color: #0284C7; font-weight: 700; }
+.cc-footer { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #F8FAFC; }
+.cc-footer-info { font-size: 11px; color: #64748B; }
+.cc-footer-info strong { color: #1E293B; font-weight: 700; }
+
+/* ─────────────────────────────────────────
+   SCREEN: CUSTOMS PAYMENT
+───────────────────────────────────────── */
+.customs-header {
+  background: linear-gradient(160deg, #1E1B4B 0%, #312E81 100%);
+  padding: 16px 20px 22px;
+}
+.customs-header h2 { font-size: 20px; font-weight: 800; color: white; }
+.customs-header p  { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+.progress-steps {
+  display: flex; align-items: center; gap: 0;
+  padding: 14px 16px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.progress-steps::-webkit-scrollbar { display: none; }
+.pstep {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 5px; flex-shrink: 0; min-width: 52px;
+}
+.pstep-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800;
+}
+.pstep-dot.done    { background: #10B981; color: white; }
+.pstep-dot.current { background: #3B82F6; color: white; box-shadow: 0 0 0 4px rgba(59,130,246,0.2); }
+.pstep-dot.pending { background: #E2E8F0; color: #94A3B8; }
+.pstep-label { font-size: 9.5px; font-weight: 600; color: #94A3B8; text-align: center; line-height: 1.2; }
+.pstep-label.done { color: #059669; }
+.pstep-label.current { color: #3B82F6; }
+.pstep-connector { flex: 1; height: 2px; background: #E2E8F0; margin: 0 3px; flex-shrink: 0; min-width: 12px; margin-bottom: 18px; }
+.pstep-connector.done { background: #10B981; }
+
+.duty-breakdown {
+  margin: 0 16px;
+  background: white; border-radius: 18px;
+  overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  margin-bottom: 12px;
+}
+.duty-header {
+  padding: 14px 16px;
+  background: #F8FAFC;
+  border-bottom: 1px solid #F1F5F9;
+  display: flex; align-items: center; gap: 8px;
+}
+.duty-header-icon { font-size: 20px; }
+.duty-header-title { font-size: 13.5px; font-weight: 800; color: #1E293B; }
+.duty-header-sub   { font-size: 11px; color: #64748B; }
+.duty-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; border-bottom: 1px solid #F8FAFC; font-size: 13px;
+}
+.duty-row:last-child { border-bottom: none; }
+.duty-row-label { color: #475569; font-weight: 500; }
+.duty-row-amount { font-weight: 700; color: #1E293B; }
+.duty-total {
+  display: flex; justify-content: space-between;
+  padding: 14px 16px;
+  background: #F8FAFC; border-top: 2px solid #E2E8F0;
+  font-weight: 800; font-size: 15px; color: #1E293B;
+}
+
+.payment-method-selector { margin: 0 16px; margin-bottom: 12px; }
+.pm-option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px; background: white; border-radius: 14px;
+  border: 2px solid transparent; cursor: pointer;
+  transition: all 0.2s; margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.pm-option.selected { border-color: #0EA5E9; background: rgba(14,165,233,0.03); }
+.pm-radio {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid #CBD5E1;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.2s;
+}
+.pm-option.selected .pm-radio {
+  border-color: #0EA5E9;
+  background: #0EA5E9;
+}
+.pm-option.selected .pm-radio::after {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: white;
+}
+.pm-icon  { font-size: 22px; }
+.pm-name  { font-size: 13.5px; font-weight: 700; color: #1E293B; }
+.pm-sub   { font-size: 11px; color: #94A3B8; }
+.pm-badge { margin-left: auto; font-size: 11px; font-weight: 700; color: #059669; background: rgba(5,150,105,0.08); padding: 3px 8px; border-radius: 8px; }
+
+.pay-btn {
+  margin: 0 16px;
+  width: calc(100% - 32px);
+  padding: 16px;
+  background: linear-gradient(135deg, #0EA5E9, #6366F1);
+  color: white; border: none; border-radius: 16px;
+  font-size: 15px; font-weight: 800;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 8px 24px rgba(14,165,233,0.35);
+  letter-spacing: 0.3px;
+}
+.pay-btn:active { transform: scale(0.98); box-shadow: 0 4px 12px rgba(14,165,233,0.3); }
+
+/* ─────────────────────────────────────────
+   SCREEN: AI CHAT
+───────────────────────────────────────── */
+.chat-header {
+  background: linear-gradient(160deg, #1E1B4B 0%, #312E81 100%);
+  padding: 16px 20px 18px;
+  display: flex; align-items: center; gap: 12px;
+}
+.chat-av {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #00D4FF, #3B82F6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.chat-name { font-size: 16px; font-weight: 800; color: white; }
+.chat-status { font-size: 11px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px; }
+.online-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ADE80; animation: pulse 2s infinite; }
+
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 14px 14px;
+  background: #F8FAFC;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.chat-messages::-webkit-scrollbar { display: none; }
+
+.chat-msg { display: flex; gap: 8px; max-width: 88%; }
+.chat-msg.user { flex-direction: row-reverse; align-self: flex-end; }
+.chat-bubble {
+  padding: 10px 13px; border-radius: 16px;
+  font-size: 13px; line-height: 1.5; color: #1E293B;
+}
+.chat-bubble.ai   { background: white; border-radius: 4px 16px 16px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+.chat-bubble.user { background: linear-gradient(135deg, #0EA5E9, #6366F1); color: white; border-radius: 16px 4px 16px 16px; }
+.chat-av-sm {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; align-self: flex-end;
+}
+.chat-time { font-size: 10px; color: #94A3B8; padding: 2px 4px; }
+.chat-msg.user .chat-time { text-align: right; }
+
+.chat-chips {
+  padding: 8px 14px 4px;
+  display: flex; gap: 6px; overflow-x: auto; background: white;
+}
+.chat-chips::-webkit-scrollbar { display: none; }
+.chip {
+  padding: 6px 12px; border-radius: 20px; white-space: nowrap;
+  font-size: 11.5px; font-weight: 600; cursor: pointer;
+  background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.chip:active { background: rgba(14,165,233,0.1); color: #0284C7; border-color: rgba(14,165,233,0.3); }
+
+.chat-input-row {
+  padding: 10px 14px 12px;
+  background: white;
+  display: flex; gap: 8px; align-items: center;
+  border-top: 1px solid #F1F5F9;
+}
+.chat-input {
+  flex: 1; padding: 10px 14px; border-radius: 22px;
+  border: 1.5px solid #E2E8F0; font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  outline: none; color: #1E293B; background: #F8FAFC;
+  transition: border-color 0.2s;
+}
+.chat-input:focus { border-color: #0EA5E9; background: white; }
+.chat-send {
+  width: 38px; height: 38px; border-radius: 50%; border: none;
+  background: linear-gradient(135deg, #0EA5E9, #6366F1);
+  color: white; font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: transform 0.15s;
+}
+.chat-send:active { transform: scale(0.9); }
+
+/* ─────────────────────────────────────────
+   SCREEN: PROFILE / MEMBERSHIP
+───────────────────────────────────────── */
+.profile-header {
+  background: linear-gradient(160deg, #0A1628 0%, #1a2f50 100%);
+  padding: 20px 20px 30px;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; position: relative; overflow: hidden;
+}
+.profile-header::before {
+  content: ''; position: absolute;
+  width: 200px; height: 200px; border-radius: 50%;
+  border: 1px solid rgba(0,212,255,0.08);
+  right: -40px; top: -60px;
+}
+.profile-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, #0EA5E9, #6366F1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 800; color: white;
+  margin-bottom: 12px; position: relative; z-index: 1;
+  border: 3px solid rgba(255,255,255,0.1);
+}
+.profile-name { font-size: 20px; font-weight: 800; color: white; position: relative; z-index: 1; }
+.profile-sub  { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 3px; position: relative; z-index: 1; }
+
+.profile-stats {
+  display: flex; gap: 0;
+  background: white; margin: -16px 16px 0;
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  position: relative; z-index: 5;
+}
+.ps-item {
+  flex: 1; padding: 14px 8px;
+  text-align: center; border-right: 1px solid #F1F5F9;
+}
+.ps-item:last-child { border-right: none; }
+.ps-value { font-size: 18px; font-weight: 800; color: #1E293B; }
+.ps-label { font-size: 10px; color: #94A3B8; font-weight: 500; margin-top: 2px; }
+
+.menu-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 20px; border-bottom: 1px solid #F8FAFC;
+  cursor: pointer; transition: background 0.15s;
+}
+.menu-item:last-child { border-bottom: none; }
+.menu-item:active { background: #F8FAFC; }
+.mi-icon {
+  width: 38px; height: 38px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.mi-title { font-size: 14px; font-weight: 600; color: #1E293B; }
+.mi-sub   { font-size: 11px; color: #94A3B8; margin-top: 1px; }
+.mi-arrow { margin-left: auto; font-size: 16px; color: #CBD5E1; }
+.mi-badge { margin-left: auto; }
+
+/* ─────────────────────────────────────────
+   SCREEN TRANSITIONS
+───────────────────────────────────────── */
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animated { animation: slideUp 0.4s ease forwards; }
+.animated:nth-child(1) { animation-delay: 0.05s; }
+.animated:nth-child(2) { animation-delay: 0.1s; }
+.animated:nth-child(3) { animation-delay: 0.15s; }
+.animated:nth-child(4) { animation-delay: 0.2s; }
+.animated:nth-child(5) { animation-delay: 0.25s; }
+
+/* ─────────────────────────────────────────
+   SIDE PANEL — screen labels
+───────────────────────────────────────── */
+.screen-guide {
+  width: 200px;
+  flex-shrink: 0;
+  padding-top: 12px;
+}
+.screen-guide h3 {
+  font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.3);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  margin-bottom: 14px;
+}
+.guide-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 10px;
+  cursor: pointer; transition: all 0.2s;
+  margin-bottom: 4px;
+}
+.guide-item:hover { background: rgba(255,255,255,0.06); }
+.guide-item.active { background: rgba(0,212,255,0.12); border: 1px solid rgba(0,212,255,0.2); }
+.guide-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.guide-label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.55); }
+.guide-item.active .guide-label { color: white; }
+
+/* install instruction */
+.install-note {
+  margin-top: 24px; padding: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+}
+.install-note p {
+  font-size: 11.5px; color: rgba(255,255,255,0.4);
+  line-height: 1.6;
+}
+.install-note strong { color: rgba(255,255,255,0.7); }
+
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  <h1>GIFF MEMBER APP</h1>
+  <p>Responsive Progressive Web Application · Works on any smartphone</p>
+  <div class="badges">
+    <span class="tbadge teal">📱 PWA</span>
+    <span class="tbadge blue">🔗 Industry-Connected</span>
+    <span class="tbadge grn">✓ Works Offline</span>
+  </div>
+</div>
+
+<div class="device-wrapper">
+
+  <!-- SCREEN GUIDE (left) -->
+  <div class="screen-guide">
+    <h3>Screens</h3>
+    <div class="guide-item active" onclick="switchScreen('home', this)">
+      <div class="guide-dot" style="background:#0EA5E9"></div>
+      <div class="guide-label">Home Dashboard</div>
+    </div>
+    <div class="guide-item" onclick="switchScreen('wallet', this)">
+      <div class="guide-dot" style="background:#00D4FF"></div>
+      <div class="guide-label">Wallet & Loans</div>
+    </div>
+    <div class="guide-item" onclick="switchScreen('port', this)">
+      <div class="guide-dot" style="background:#10B981"></div>
+      <div class="guide-label">Port & Shipping</div>
+    </div>
+    <div class="guide-item" onclick="switchScreen('customs', this)">
+      <div class="guide-dot" style="background:#7C3AED"></div>
+      <div class="guide-label">Customs Payment</div>
+    </div>
+    <div class="guide-item" onclick="switchScreen('ai', this)">
+      <div class="guide-dot" style="background:#6366F1"></div>
+      <div class="guide-label">AI Assistant</div>
+    </div>
+    <div class="guide-item" onclick="switchScreen('profile', this)">
+      <div class="guide-dot" style="background:#F97316"></div>
+      <div class="guide-label">Profile & Membership</div>
+    </div>
+
+    <div class="install-note">
+      <p><strong>PWA Install:</strong><br>
+      Members tap "Add to Home Screen" in their browser — it installs like a native app with no App Store required. Works on Android & iOS.</p>
+    </div>
+  </div>
+
+  <!-- PHONE DEVICE -->
+  <div class="device">
+    <div class="device-screen">
+      <div class="notch">
+        <div class="notch-speaker"></div>
+        <div class="notch-camera"></div>
+      </div>
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <span>▲▲▲</span>
+          <span>WiFi</span>
+          <span>🔋</span>
+        </div>
+      </div>
+
+      <div class="app">
+
+        <!-- ══ HOME ══ -->
+        <div class="screen active" id="screen-home">
+          <div class="app-header" style="padding-bottom:32px">
+            <div class="header-top">
+              <div>
+                <div class="header-greeting">Good morning,</div>
+                <div class="header-name">Kwame Asante 👋</div>
+              </div>
+              <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+            </div>
+          </div>
+          <div class="scroll-content">
+            <!-- Member Card -->
+            <div class="member-card">
+              <div class="mc-top">
+                <div class="mc-logo">GIFF MEMBER</div>
+                <div class="mc-type">Corporate</div>
+              </div>
+              <div class="mc-id">GFF - 002841</div>
+              <div class="mc-name">Kwame Asante</div>
+              <div class="mc-bottom">
+                <div>
+                  <div class="mc-bal-label">Wallet Balance</div>
+                  <div class="mc-bal">GHS 4,250</div>
+                </div>
+                <div class="mc-status">
+                  <div><span class="mc-status-dot"></span><span style="font-size:12px;font-weight:700;color:white">Active</span></div>
+                  <div class="mc-expiry">Expires Dec 2026</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="section-label">Quick Actions</div>
+            <div class="quick-grid">
+              <div class="quick-item" onclick="switchScreen('wallet', null, 'wallet')">
+                <div class="qi-icon" style="background:rgba(14,165,233,0.1)">💳</div>
+                <div class="qi-label">Pay Dues</div>
+              </div>
+              <div class="quick-item" onclick="switchScreen('customs', null, 'port')">
+                <div class="qi-icon" style="background:rgba(124,58,237,0.1)">🛃</div>
+                <div class="qi-label">Customs</div>
+              </div>
+              <div class="quick-item" onclick="switchScreen('port', null, 'port')">
+                <div class="qi-icon" style="background:rgba(16,185,129,0.1)">⚓</div>
+                <div class="qi-label">Port Status</div>
+              </div>
+              <div class="quick-item" onclick="switchScreen('ai', null, 'ai')">
+                <div class="qi-icon" style="background:rgba(99,102,241,0.1)">🤖</div>
+                <div class="qi-label">GIFF AI</div>
+              </div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="section-label">Alerts</div>
+            <div class="alert-banner orange" onclick="switchScreen('port', null, 'port')">
+              <div class="alert-icon">📦</div>
+              <div>
+                <div class="alert-title">Container Ready for Collection</div>
+                <div class="alert-sub">MSCU8821455 is at MPS Gate A3. Collection deadline: 15 Apr 2026.</div>
+                <div class="alert-action">Book gate appointment →</div>
+              </div>
+            </div>
+            <div class="alert-banner blue">
+              <div class="alert-icon">🏦</div>
+              <div>
+                <div class="alert-title">GRA Levy Allocation Received</div>
+                <div class="alert-sub">GHS 12,450 allocated from Consolidated Fund to GIFF account for Q1 2026.</div>
+                <div class="alert-action">View details →</div>
+              </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="section-label">Recent Activity</div>
+            <div class="card" style="margin:0 16px">
+              <div class="activity-row">
+                <div class="act-icon" style="background:rgba(16,185,129,0.1)">💳</div>
+                <div>
+                  <div class="act-title">Dues Payment</div>
+                  <div class="act-sub">Annual membership 2026</div>
+                </div>
+                <div class="act-right">
+                  <div class="act-amount" style="color:#059669">−GHS 350</div>
+                  <div class="act-time">Today</div>
+                </div>
+              </div>
+              <div class="activity-row">
+                <div class="act-icon" style="background:rgba(124,58,237,0.1)">🛃</div>
+                <div>
+                  <div class="act-title">Customs Levy</div>
+                  <div class="act-sub">Entry #GHA-2026-44821</div>
+                </div>
+                <div class="act-right">
+                  <div class="act-amount" style="color:#DC2626">−GHS 1,240</div>
+                  <div class="act-time">Yesterday</div>
+                </div>
+              </div>
+              <div class="activity-row">
+                <div class="act-icon" style="background:rgba(14,165,233,0.1)">💰</div>
+                <div>
+                  <div class="act-title">Wallet Top-Up</div>
+                  <div class="act-sub">Via MTN MoMo</div>
+                </div>
+                <div class="act-right">
+                  <div class="act-amount" style="color:#059669">+GHS 2,000</div>
+                  <div class="act-time">8 Apr</div>
+                </div>
+              </div>
+            </div>
+            <div style="height:16px"></div>
+          </div>
+
+          <!-- Bottom Nav -->
+          <div class="bottom-nav">
+            <div class="nav-tab active" id="nav-home" onclick="switchScreen('home', null, 'home')">
+              <div class="nav-tab-icon">🏠</div>
+              <div class="nav-tab-pip"></div>
+              <div class="nav-tab-label">Home</div>
+            </div>
+            <div class="nav-tab" id="nav-wallet" onclick="switchScreen('wallet', null, 'wallet')">
+              <div class="nav-tab-icon">💼</div>
+              <div class="nav-tab-pip"></div>
+              <div class="nav-tab-label">Wallet</div>
+            </div>
+            <div class="nav-tab" id="nav-port" onclick="switchScreen('port', null, 'port')">
+              <div class="nav-tab-icon">⚓</div>
+              <div class="nav-tab-pip"></div>
+              <div class="nav-tab-label">Port</div>
+            </div>
+            <div class="nav-tab" id="nav-ai" onclick="switchScreen('ai', null, 'ai')">
+              <div class="nav-tab-icon">🤖</div>
+              <div class="nav-tab-pip"></div>
+              <div class="nav-tab-label">AI</div>
+            </div>
+            <div class="nav-tab" id="nav-profile" onclick="switchScreen('profile', null, 'profile')">
+              <div class="nav-tab-icon">👤</div>
+              <div class="nav-tab-pip"></div>
+              <div class="nav-tab-label">Profile</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ WALLET ══ -->
+        <div class="screen" id="screen-wallet">
+          <div class="wallet-hero">
+            <div class="wh-label">Available Balance</div>
+            <div class="wh-amount">GHS 4,250.00</div>
+            <div class="wh-sub">Member Wallet · GFF-002841</div>
+            <div class="wh-actions">
+              <button class="wh-btn primary">↑ Top Up</button>
+              <button class="wh-btn outline">↓ Withdraw</button>
+              <button class="wh-btn outline">⟳ Pay</button>
+            </div>
+          </div>
+          <div class="scroll-content" style="padding-top:4px">
+            <div class="finance-cards">
+              <div class="fin-card" onclick="switchScreen('customs', null, 'port')">
+                <div class="fin-card-icon">⚡</div>
+                <div class="fin-card-label">Quick Loan</div>
+                <div class="fin-card-value">GHS 5,000</div>
+                <div class="fin-card-sub">Available · Apply now</div>
+              </div>
+              <div class="fin-card">
+                <div class="fin-card-icon">🏗️</div>
+                <div class="fin-card-label">Hire Purchase</div>
+                <div class="fin-card-value">GHS 50K</div>
+                <div class="fin-card-sub">Equipment finance</div>
+              </div>
+            </div>
+
+            <div class="section-label">Payment Channels</div>
+            <div style="padding:0 16px;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+              <span style="background:rgba(255,179,0,0.1);color:#D97706;border:1px solid rgba(255,179,0,0.25);padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700">📱 MTN MoMo</span>
+              <span style="background:rgba(220,38,38,0.08);color:#DC2626;border:1px solid rgba(220,38,38,0.2);padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700">📱 Vodafone</span>
+              <span style="background:rgba(37,99,235,0.08);color:#2563EB;border:1px solid rgba(37,99,235,0.2);padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700">📱 AirtelTigo</span>
+              <span style="background:rgba(71,85,105,0.08);color:#475569;border:1px solid rgba(71,85,105,0.2);padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700">🏦 Bank</span>
+              <span style="background:rgba(124,58,237,0.08);color:#7C3AED;border:1px solid rgba(124,58,237,0.2);padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700">💳 Card</span>
+            </div>
+
+            <div class="section-label">Transactions</div>
+            <div class="card" style="margin:0 16px">
+              <div class="txn-item">
+                <div class="txn-icon" style="background:rgba(220,38,38,0.08)">📤</div>
+                <div>
+                  <div class="txn-title">Annual Dues 2026</div>
+                  <div class="txn-sub">10 Apr 2026 · Debit</div>
+                </div>
+                <div class="txn-amount" style="color:#DC2626">−GHS 350</div>
+              </div>
+              <div class="txn-item">
+                <div class="txn-icon" style="background:rgba(16,185,129,0.08)">📥</div>
+                <div>
+                  <div class="txn-title">Wallet Top-Up</div>
+                  <div class="txn-sub">8 Apr 2026 · MTN MoMo</div>
+                </div>
+                <div class="txn-amount" style="color:#059669">+GHS 2,000</div>
+              </div>
+              <div class="txn-item">
+                <div class="txn-icon" style="background:rgba(220,38,38,0.08)">🛃</div>
+                <div>
+                  <div class="txn-title">Customs Duty</div>
+                  <div class="txn-sub">7 Apr 2026 · Entry 44821</div>
+                </div>
+                <div class="txn-amount" style="color:#DC2626">−GHS 1,240</div>
+              </div>
+              <div class="txn-item">
+                <div class="txn-icon" style="background:rgba(16,185,129,0.08)">📥</div>
+                <div>
+                  <div class="txn-title">Wallet Top-Up</div>
+                  <div class="txn-sub">2 Apr 2026 · Bank Transfer</div>
+                </div>
+                <div class="txn-amount" style="color:#059669">+GHS 5,000</div>
+              </div>
+            </div>
+            <div style="height:12px"></div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-tab" id="nav-home-w" onclick="switchScreen('home',null,'home')"><div class="nav-tab-icon">🏠</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Home</div></div>
+            <div class="nav-tab active" id="nav-wallet-w" onclick="switchScreen('wallet',null,'wallet')"><div class="nav-tab-icon">💼</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Wallet</div></div>
+            <div class="nav-tab" id="nav-port-w" onclick="switchScreen('port',null,'port')"><div class="nav-tab-icon">⚓</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Port</div></div>
+            <div class="nav-tab" id="nav-ai-w" onclick="switchScreen('ai',null,'ai')"><div class="nav-tab-icon">🤖</div><div class="nav-tab-pip"></div><div class="nav-tab-label">AI</div></div>
+            <div class="nav-tab" id="nav-profile-w" onclick="switchScreen('profile',null,'profile')"><div class="nav-tab-icon">👤</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Profile</div></div>
+          </div>
+        </div>
+
+        <!-- ══ PORT HUB ══ -->
+        <div class="screen" id="screen-port">
+          <div class="port-header">
+            <h2>Port & Shipping</h2>
+            <p>GPHA · MPS Terminal · Shipping Lines</p>
+            <div class="port-sync"><div class="sync-dot"></div>Live — last sync 2 min ago</div>
+          </div>
+          <div class="scroll-content">
+            <div class="status-tiles">
+              <div class="stile">
+                <div class="stile-header">
+                  <div><div class="stile-label">GPHA</div><div class="stile-title">Port Status</div></div>
+                  <div class="stile-icon">⚓</div>
+                </div>
+                <div class="stile-metric"><span>Berths occupied</span><span>11/14</span></div>
+                <div class="stile-metric"><span>Congestion</span><span style="color:#EA580C">Moderate</span></div>
+              </div>
+              <div class="stile">
+                <div class="stile-header">
+                  <div><div class="stile-label">MPS</div><div class="stile-title">Terminal</div></div>
+                  <div class="stile-icon">📦</div>
+                </div>
+                <div class="stile-metric"><span>Ready</span><span style="color:#059669">342</span></div>
+                <div class="stile-metric"><span>Gate wait</span><span>~25 min</span></div>
+              </div>
+            </div>
+
+            <div class="section-label">My Containers</div>
+            <div class="container-card">
+              <div class="cc-top">
+                <div class="cc-num">MSCU 8821455</div>
+                <span class="pill blue">Ready ✓</span>
+              </div>
+              <div class="cc-progress">
+                <div class="cc-progress-bar">
+                  <div class="cc-progress-fill" style="width:83%;background:linear-gradient(90deg,#0EA5E9,#10B981)"></div>
+                </div>
+                <div class="cc-steps">
+                  <span class="cc-step done">Arrived</span>
+                  <span class="cc-step done">Cleared</span>
+                  <span class="cc-step done">Duties</span>
+                  <span class="cc-step current">Ready</span>
+                  <span class="cc-step">Collected</span>
+                </div>
+              </div>
+              <div class="cc-footer">
+                <span class="cc-footer-info">MPS Yard B · Gate <strong>A3</strong></span>
+                <span class="cc-footer-info">Deadline: <strong style="color:#EA580C">15 Apr</strong></span>
+                <button style="margin-left:auto;padding:5px 12px;background:#0EA5E9;color:white;border:none;border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif">Book Gate</button>
+              </div>
+            </div>
+            <div class="container-card">
+              <div class="cc-top">
+                <div class="cc-num">TCKU 3456789</div>
+                <span class="pill orange">Examination</span>
+              </div>
+              <div class="cc-progress">
+                <div class="cc-progress-bar">
+                  <div class="cc-progress-fill" style="width:42%;background:linear-gradient(90deg,#F97316,#EAB308)"></div>
+                </div>
+                <div class="cc-steps">
+                  <span class="cc-step done">Arrived</span>
+                  <span class="cc-step done">Cleared</span>
+                  <span class="cc-step current">Duties</span>
+                  <span class="cc-step">Ready</span>
+                  <span class="cc-step">Collected</span>
+                </div>
+              </div>
+              <div class="cc-footer">
+                <span class="cc-footer-info">Vessel: <strong>MSC AURORA</strong></span>
+                <button style="margin-left:auto;padding:5px 12px;background:#F97316;color:white;border:none;border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif" onclick="switchScreen('customs',null,'port')">Pay Duties</button>
+              </div>
+            </div>
+
+            <div class="section-label">Vessel Schedule</div>
+            <div class="card" style="margin:0 16px">
+              <div class="activity-row">
+                <div class="act-icon" style="background:rgba(16,185,129,0.1)">🚢</div>
+                <div><div class="act-title">MSC AURORA</div><div class="act-sub">MSC · Berth 12</div></div>
+                <div class="act-right"><span class="pill green">Berthed</span><div class="act-time">Arrived 06:20</div></div>
+              </div>
+              <div class="activity-row">
+                <div class="act-icon" style="background:rgba(14,165,233,0.1)">🚢</div>
+                <div><div class="act-title">OOCL ACCRA</div><div class="act-sub">OOCL · ETA</div></div>
+                <div class="act-right"><span class="pill blue">En Route</span><div class="act-time">15 Apr</div></div>
+              </div>
+              <div class="activity-row">
+                <div class="act-icon" style="background:rgba(249,115,22,0.1)">🚢</div>
+                <div><div class="act-title">MAERSK TEMA</div><div class="act-sub">Maersk · Delayed</div></div>
+                <div class="act-right"><span class="pill orange">Delayed</span><div class="act-time">+6 hrs</div></div>
+              </div>
+            </div>
+            <div style="height:12px"></div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-tab" onclick="switchScreen('home',null,'home')"><div class="nav-tab-icon">🏠</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Home</div></div>
+            <div class="nav-tab" onclick="switchScreen('wallet',null,'wallet')"><div class="nav-tab-icon">💼</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Wallet</div></div>
+            <div class="nav-tab active"><div class="nav-tab-icon">⚓</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Port</div></div>
+            <div class="nav-tab" onclick="switchScreen('ai',null,'ai')"><div class="nav-tab-icon">🤖</div><div class="nav-tab-pip"></div><div class="nav-tab-label">AI</div></div>
+            <div class="nav-tab" onclick="switchScreen('profile',null,'profile')"><div class="nav-tab-icon">👤</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Profile</div></div>
+          </div>
+        </div>
+
+        <!-- ══ CUSTOMS ══ -->
+        <div class="screen" id="screen-customs">
+          <div class="customs-header">
+            <h2>Customs Payment</h2>
+            <p>GRA Customs Division · Entry #GHA-2026-44821</p>
+          </div>
+
+          <!-- Progress -->
+          <div class="progress-steps" style="background:white;border-bottom:1px solid #F1F5F9">
+            <div class="pstep"><div class="pstep-dot done">✓</div><div class="pstep-label done">Declared</div></div>
+            <div class="pstep-connector done"></div>
+            <div class="pstep"><div class="pstep-dot done">✓</div><div class="pstep-label done">Classified</div></div>
+            <div class="pstep-connector done"></div>
+            <div class="pstep"><div class="pstep-dot current">3</div><div class="pstep-label current">Pay Duty</div></div>
+            <div class="pstep-connector"></div>
+            <div class="pstep"><div class="pstep-dot pending">4</div><div class="pstep-label">Examine</div></div>
+            <div class="pstep-connector"></div>
+            <div class="pstep"><div class="pstep-dot pending">5</div><div class="pstep-label">Release</div></div>
+          </div>
+
+          <div class="scroll-content">
+            <div style="height:12px"></div>
+            <div class="duty-breakdown">
+              <div class="duty-header">
+                <div class="duty-header-icon">📦</div>
+                <div><div class="duty-header-title">TCKU 3456789</div><div class="duty-header-sub">Electronics · 20ft · CIF GHS 4,200</div></div>
+              </div>
+              <div class="duty-row"><span class="duty-row-label">Import Duty (20%)</span><span class="duty-row-amount">GHS 840.00</span></div>
+              <div class="duty-row"><span class="duty-row-label">VAT (15%)</span><span class="duty-row-amount">GHS 210.00</span></div>
+              <div class="duty-row"><span class="duty-row-label">NHIL (2.5%)</span><span class="duty-row-amount">GHS 35.00</span></div>
+              <div class="duty-row"><span class="duty-row-label">ECOWAS Levy</span><span class="duty-row-amount">GHS 7.00</span></div>
+              <div class="duty-row"><span class="duty-row-label">Processing Fee</span><span class="duty-row-amount">GHS 8.00</span></div>
+              <div class="duty-total"><span>Total Payable</span><span>GHS 1,100.00</span></div>
+            </div>
+
+            <div class="section-label">Pay With</div>
+            <div class="payment-method-selector">
+              <div class="pm-option selected">
+                <div class="pm-radio"></div>
+                <div class="pm-icon">💼</div>
+                <div><div class="pm-name">GIFF Wallet</div><div class="pm-sub">Balance: GHS 4,250</div></div>
+                <div class="pm-badge">Instant</div>
+              </div>
+              <div class="pm-option" onclick="selectPM(this)">
+                <div class="pm-radio"></div>
+                <div class="pm-icon">📱</div>
+                <div><div class="pm-name">MTN MoMo</div><div class="pm-sub">Mobile money</div></div>
+              </div>
+              <div class="pm-option" onclick="selectPM(this)">
+                <div class="pm-radio"></div>
+                <div class="pm-icon">🏦</div>
+                <div><div class="pm-name">Bank Transfer</div><div class="pm-sub">1–2 business days</div></div>
+              </div>
+            </div>
+
+            <div style="margin:0 16px 12px;padding:11px 14px;background:rgba(99,102,241,0.06);border-radius:12px;border:1px solid rgba(99,102,241,0.15);font-size:12px;color:#475569;line-height:1.5">
+              ℹ️ Payment routed to <strong style="color:#1E293B">GRA Consolidated Fund</strong>. Receipt and release notice issued within 2 hours.
+            </div>
+
+            <button class="pay-btn" onclick="showPaySuccess()">
+              Pay GHS 1,100.00 →
+            </button>
+            <div style="height:20px"></div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-tab" onclick="switchScreen('home',null,'home')"><div class="nav-tab-icon">🏠</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Home</div></div>
+            <div class="nav-tab" onclick="switchScreen('wallet',null,'wallet')"><div class="nav-tab-icon">💼</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Wallet</div></div>
+            <div class="nav-tab active"><div class="nav-tab-icon">⚓</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Port</div></div>
+            <div class="nav-tab" onclick="switchScreen('ai',null,'ai')"><div class="nav-tab-icon">🤖</div><div class="nav-tab-pip"></div><div class="nav-tab-label">AI</div></div>
+            <div class="nav-tab" onclick="switchScreen('profile',null,'profile')"><div class="nav-tab-icon">👤</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Profile</div></div>
+          </div>
+        </div>
+
+        <!-- ══ AI ASSISTANT ══ -->
+        <div class="screen" id="screen-ai" style="background:white">
+          <div class="chat-header">
+            <div class="chat-av">🤖</div>
+            <div>
+              <div class="chat-name">GIFF Assistant</div>
+              <div class="chat-status"><div class="online-dot"></div>Online · Instant replies</div>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="chat-messages">
+            <div>
+              <div class="chat-msg">
+                <div class="chat-av-sm" style="background:linear-gradient(135deg,#0EA5E9,#6366F1);color:white">AI</div>
+                <div>
+                  <div class="chat-bubble ai">Hi Kwame! 👋 I'm your GIFF AI assistant. Ask me anything about your membership, dues, customs procedures, or port status.</div>
+                  <div class="chat-time">09:00</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="chat-msg user">
+                <div class="chat-av-sm" style="background:#0EA5E9;color:white">KA</div>
+                <div>
+                  <div class="chat-bubble user">What docs do I need for electronics import?</div>
+                  <div class="chat-time">09:04</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="chat-msg">
+                <div class="chat-av-sm" style="background:linear-gradient(135deg,#0EA5E9,#6366F1);color:white">AI</div>
+                <div>
+                  <div class="chat-bubble ai">For electronics imports you'll need:<br><br>
+                    ✅ Bill of Lading<br>
+                    ✅ Commercial Invoice (CIF)<br>
+                    ✅ Packing List<br>
+                    ✅ NCA Type Approval<br>
+                    ✅ EPA Permit (if batteries)<br><br>
+                    Want me to start a customs entry for you?
+                  </div>
+                  <div class="chat-time">09:04</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="chat-msg user">
+                <div class="chat-av-sm" style="background:#0EA5E9;color:white">KA</div>
+                <div>
+                  <div class="chat-bubble user">When are my dues due?</div>
+                  <div class="chat-time">09:06</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="chat-msg">
+                <div class="chat-av-sm" style="background:linear-gradient(135deg,#0EA5E9,#6366F1);color:white">AI</div>
+                <div>
+                  <div class="chat-bubble ai">Your 2026 dues are ✅ <strong>already paid</strong> (GHS 350, 10 Apr). Next renewal: <strong>31 Dec 2026</strong>. I'll remind you 30 days before!</div>
+                  <div class="chat-time">09:06</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-chips">
+            <div class="chip" onclick="addChatMsg('Track my container')">Track container</div>
+            <div class="chip" onclick="addChatMsg('What is GIFF levy rate?')">GIFF levy rate</div>
+            <div class="chip" onclick="addChatMsg('Book gate appointment')">Book gate</div>
+            <div class="chip" onclick="addChatMsg('Renew membership')">Renew</div>
+            <div class="chip" onclick="addChatMsg('Quick loan info')">Quick loan</div>
+          </div>
+          <div class="chat-input-row">
+            <input class="chat-input" id="chat-inp" placeholder="Ask about GIFF, customs, port..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="chat-send" onclick="sendChat()">➤</button>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-tab" onclick="switchScreen('home',null,'home')"><div class="nav-tab-icon">🏠</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Home</div></div>
+            <div class="nav-tab" onclick="switchScreen('wallet',null,'wallet')"><div class="nav-tab-icon">💼</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Wallet</div></div>
+            <div class="nav-tab" onclick="switchScreen('port',null,'port')"><div class="nav-tab-icon">⚓</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Port</div></div>
+            <div class="nav-tab active"><div class="nav-tab-icon">🤖</div><div class="nav-tab-pip"></div><div class="nav-tab-label">AI</div></div>
+            <div class="nav-tab" onclick="switchScreen('profile',null,'profile')"><div class="nav-tab-icon">👤</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Profile</div></div>
+          </div>
+        </div>
+
+        <!-- ══ PROFILE ══ -->
+        <div class="screen" id="screen-profile">
+          <div class="profile-header">
+            <div class="profile-avatar">KA</div>
+            <div class="profile-name">Kwame Asante</div>
+            <div class="profile-sub">GFF-002841 · Corporate Member</div>
+          </div>
+          <div class="scroll-content">
+            <div class="profile-stats">
+              <div class="ps-item">
+                <div class="ps-value" style="color:#0284C7">2026</div>
+                <div class="ps-label">Member Since</div>
+              </div>
+              <div class="ps-item">
+                <div class="ps-value" style="color:#059669">Paid</div>
+                <div class="ps-label">Dues Status</div>
+              </div>
+              <div class="ps-item">
+                <div class="ps-value">2</div>
+                <div class="ps-label">Containers</div>
+              </div>
+            </div>
+
+            <div class="section-label" style="margin-top:20px">Membership</div>
+            <div class="card" style="margin:0 16px">
+              <div class="menu-item">
+                <div class="mi-icon" style="background:rgba(14,165,233,0.1)">🪪</div>
+                <div><div class="mi-title">Member Certificate</div><div class="mi-sub">Download PDF</div></div>
+                <div class="mi-arrow">›</div>
+              </div>
+              <div class="menu-item">
+                <div class="mi-icon" style="background:rgba(16,185,129,0.1)">💳</div>
+                <div><div class="mi-title">Dues History</div><div class="mi-sub">All payments 2021–2026</div></div>
+                <div class="mi-arrow">›</div>
+              </div>
+              <div class="menu-item">
+                <div class="mi-icon" style="background:rgba(249,115,22,0.1)">🔄</div>
+                <div><div class="mi-title">Renew Membership</div><div class="mi-sub">Due: Dec 31 2026</div></div>
+                <div class="mi-badge"><span class="pill gray">9 months</span></div>
+              </div>
+            </div>
+
+            <div class="section-label">Account</div>
+            <div class="card" style="margin:0 16px">
+              <div class="menu-item">
+                <div class="mi-icon" style="background:rgba(99,102,241,0.1)">👤</div>
+                <div><div class="mi-title">Edit Profile</div><div class="mi-sub">Name, company, contacts</div></div>
+                <div class="mi-arrow">›</div>
+              </div>
+              <div class="menu-item">
+                <div class="mi-icon" style="background:rgba(124,58,237,0.1)">🔔</div>
+                <div><div class="mi-title">Notifications</div><div class="mi-sub">Port alerts, reminders, news</div></div>
+                <div class="mi-arrow">›</div>
+              </div>
+              <div class="menu-item">
+                <div class="mi-icon" style="background:rgba(100,116,139,0.1)">🔒</div>
+                <div><div class="mi-title">Security</div><div class="mi-sub">PIN, biometrics, 2FA</div></div>
+                <div class="mi-arrow">›</div>
+              </div>
+              <div class="menu-item">
+                <div class="mi-icon" style="background:rgba(239,68,68,0.1)">🚪</div>
+                <div><div class="mi-title">Sign Out</div><div class="mi-sub"></div></div>
+                <div class="mi-arrow" style="color:#EF4444">›</div>
+              </div>
+            </div>
+
+            <div style="text-align:center;padding:20px;color:#94A3B8;font-size:11px">
+              GIFF Digital Platform v2.0 · Powered by Aliska
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-tab" onclick="switchScreen('home',null,'home')"><div class="nav-tab-icon">🏠</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Home</div></div>
+            <div class="nav-tab" onclick="switchScreen('wallet',null,'wallet')"><div class="nav-tab-icon">💼</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Wallet</div></div>
+            <div class="nav-tab" onclick="switchScreen('port',null,'port')"><div class="nav-tab-icon">⚓</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Port</div></div>
+            <div class="nav-tab" onclick="switchScreen('ai',null,'ai')"><div class="nav-tab-icon">🤖</div><div class="nav-tab-pip"></div><div class="nav-tab-label">AI</div></div>
+            <div class="nav-tab active"><div class="nav-tab-icon">👤</div><div class="nav-tab-pip"></div><div class="nav-tab-label">Profile</div></div>
+          </div>
+        </div>
+
+        <!-- ══ SUCCESS OVERLAY ══ -->
+        <div id="success-overlay" style="display:none;position:absolute;inset:0;background:white;z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px">
+          <div style="font-size:70px;margin-bottom:16px;animation:bounceIn 0.5s ease">✅</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;color:#059669;letter-spacing:2px;margin-bottom:8px">PAYMENT SENT</div>
+          <div style="font-size:28px;font-weight:800;color:#1E293B;margin-bottom:6px">GHS 1,100.00</div>
+          <div style="font-size:13px;color:#64748B;margin-bottom:4px">Entry #GHA-2026-44821</div>
+          <div style="font-size:12px;color:#94A3B8;margin-bottom:28px">Routed to GRA Consolidated Fund</div>
+          <div style="background:rgba(5,150,105,0.08);border:1px solid rgba(5,150,105,0.2);border-radius:14px;padding:14px 20px;margin-bottom:24px;width:100%">
+            <div style="font-size:12px;color:#64748B">Expected release time</div>
+            <div style="font-size:18px;font-weight:800;color:#059669;margin-top:3px">Within 2 hours</div>
+          </div>
+          <button onclick="hideSuccess()" style="padding:14px 32px;background:linear-gradient(135deg,#0EA5E9,#6366F1);color:white;border:none;border-radius:14px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;width:100%">Done</button>
+        </div>
+        @keyframes bounceIn { 0%{transform:scale(0.3);opacity:0} 60%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+
+      </div><!-- /app -->
+    </div><!-- /device-screen -->
+  </div><!-- /device -->
+
+  <!-- RIGHT GUIDE -->
+  <div class="screen-guide">
+    <h3>Features</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="padding:10px 12px;background:rgba(255,255,255,0.04);border-radius:10px;font-size:12px;color:rgba(255,255,255,0.55);line-height:1.5">
+        <strong style="color:rgba(255,255,255,0.8);display:block;margin-bottom:4px">🏠 Home</strong>
+        Member card, wallet balance, quick actions, live alerts, activity feed
+      </div>
+      <div style="padding:10px 12px;background:rgba(255,255,255,0.04);border-radius:10px;font-size:12px;color:rgba(255,255,255,0.55);line-height:1.5">
+        <strong style="color:rgba(255,255,255,0.8);display:block;margin-bottom:4px">💼 Wallet</strong>
+        Balance, MoMo/bank top-up, quick loans, hire purchase, transactions
+      </div>
+      <div style="padding:10px 12px;background:rgba(255,255,255,0.04);border-radius:10px;font-size:12px;color:rgba(255,255,255,0.55);line-height:1.5">
+        <strong style="color:rgba(255,255,255,0.8);display:block;margin-bottom:4px">⚓ Port</strong>
+        Live GPHA & MPS status, container tracker with progress bar, vessel schedule
+      </div>
+      <div style="padding:10px 12px;background:rgba(255,255,255,0.04);border-radius:10px;font-size:12px;color:rgba(255,255,255,0.55);line-height:1.5">
+        <strong style="color:rgba(255,255,255,0.8);display:block;margin-bottom:4px">🛃 Customs</strong>
+        GRA duty payment, progress tracker, one-tap wallet payment, GRA levy routing
+      </div>
+      <div style="padding:10px 12px;background:rgba(255,255,255,0.04);border-radius:10px;font-size:12px;color:rgba(255,255,255,0.55);line-height:1.5">
+        <strong style="color:rgba(255,255,255,0.8);display:block;margin-bottom:4px">🤖 AI</strong>
+        GIFF-trained chatbot, tap-to-ask chips, 24/7 instant responses
+      </div>
+      <div style="padding:10px 12px;background:rgba(255,255,255,0.04);border-radius:10px;font-size:12px;color:rgba(255,255,255,0.55);line-height:1.5">
+        <strong style="color:rgba(255,255,255,0.8);display:block;margin-bottom:4px">👤 Profile</strong>
+        Member card, certificate download, dues history, biometric security
+      </div>
+    </div>
+  </div>
+
+</div><!-- /device-wrapper -->
+
+<script>
+  const screens = ['home','wallet','port','customs','ai','profile'];
+  let current = 'home';
+
+  function switchScreen(id, guideEl, navHighlight) {
+    if (id === current) return;
+
+    // Animate out
+    const prev = document.getElementById('screen-' + current);
+    prev.classList.remove('active');
+    prev.classList.add('slide-left');
+    setTimeout(() => prev.classList.remove('slide-left'), 350);
+
+    // Animate in
+    const next = document.getElementById('screen-' + id);
+    next.classList.add('active');
+    current = id;
+
+    // Update guide
+    document.querySelectorAll('.guide-item').forEach(g => g.classList.remove('active'));
+    if (guideEl) guideEl.classList.add('active');
+    else {
+      document.querySelectorAll('.guide-item').forEach(g => {
+        if (g.getAttribute('onclick') && g.getAttribute('onclick').includes("'"+id+"'")) {
+          g.classList.add('active');
+        }
+      });
+    }
+  }
+
+  function selectPM(el) {
+    document.querySelectorAll('.pm-option').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function showPaySuccess() {
+    const overlay = document.getElementById('success-overlay');
+    overlay.style.display = 'flex';
+    setTimeout(() => { overlay.style.display = 'flex'; }, 10);
+  }
+  function hideSuccess() {
+    document.getElementById('success-overlay').style.display = 'none';
+    switchScreen('port', null, 'port');
+  }
+
+  const aiReplies = {
+    'track my container': "Your containers:\n\n📦 MSCU8821455 — Ready at MPS Gate A3. Book a gate appointment to collect.\n\n📦 TCKU3456789 — Under customs examination. Duties of GHS 1,100 are due.",
+    'what is giff levy rate?': "The GIFF levy is currently GHS 350/year for corporate members and GHS 180/year for individual members. Levies are paid through the platform and routed to the GRA Consolidated Fund.",
+    'book gate appointment': "I can book a gate appointment for MSCU8821455 at MPS Gate A3. Available slots today: 2:00 PM, 3:30 PM, 4:45 PM. Which works for you?",
+    'renew membership': "Your membership is valid until 31 December 2026 — no action needed yet! I'll send you a reminder 30 days before. Your wallet balance (GHS 4,250) can cover the GHS 350 renewal fee instantly.",
+    'quick loan info': "You're eligible for a Quick Loan of up to GHS 5,000 at 2.5%/month. Disbursed to your wallet within 2 hours. Repayable over 1–6 months. Tap 'Wallet' then 'Quick Loan' to apply.",
+  };
+
+  function addChatMsg(text) {
+    document.getElementById('chat-inp').value = text;
+    sendChat();
+  }
+
+  function sendChat() {
+    const inp = document.getElementById('chat-inp');
+    const text = inp.value.trim();
+    if (!text) return;
+    inp.value = '';
+
+    const msgs = document.getElementById('chat-messages');
+
+    // User msg
+    const userDiv = document.createElement('div');
+    userDiv.innerHTML = `<div class="chat-msg user">
+      <div class="chat-av-sm" style="background:#0EA5E9;color:white">KA</div>
+      <div><div class="chat-bubble user">${text}</div><div class="chat-time">${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>
+    </div>`;
+    msgs.appendChild(userDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    // AI reply
+    setTimeout(() => {
+      const key = text.toLowerCase();
+      let reply = aiReplies[key] || "Thanks for your question! Let me check our GIFF knowledge base... For specific regulatory queries, our secretariat team is also available on the platform. Is there anything else I can help you with?";
+      const aiDiv = document.createElement('div');
+      aiDiv.innerHTML = `<div class="chat-msg">
+        <div class="chat-av-sm" style="background:linear-gradient(135deg,#0EA5E9,#6366F1);color:white">AI</div>
+        <div><div class="chat-bubble ai">${reply.replace(/\n/g,'<br>')}</div><div class="chat-time">${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>
+      </div>`;
+      msgs.appendChild(aiDiv);
+      msgs.scrollTop = msgs.scrollHeight;
+    }, 800);
+  }
+</script>
+</body>
+</html>
