@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIFF Mockup Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1526;
+    --navy-2:#11233d;
+    --teal:#0f6e56;
+    --teal-2:#1d9e75;
+    --cyan:#35c8d6;
+    --pink:#993556;
+    --amber:#c48a26;
+    --ink:#12202b;
+    --muted:#617381;
+    --surface:#ffffff;
+    --surface-soft:#f3f8f8;
+    --border:rgba(18,32,43,0.1);
+    --shadow:0 24px 60px rgba(8, 22, 39, 0.14);
+    --radius-xl:30px;
+    --radius-lg:22px;
+    --radius-md:16px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  body{
+    min-height:100vh;
+    font-family:'Manrope',system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(53,200,214,0.14), transparent 28%),
+      radial-gradient(circle at top right, rgba(15,110,86,0.14), transparent 26%),
+      linear-gradient(180deg, #eef6f7 0%, #f8fbfb 28%, #ffffff 100%);
+    padding:28px 18px 40px;
+  }
+
+  .shell{
+    max-width:1180px;
+    margin:0 auto;
+  }
+
+  .hero{
+    position:relative;
+    overflow:hidden;
+    border-radius:var(--radius-xl);
+    padding:34px;
+    background:
+      radial-gradient(circle at 88% 18%, rgba(53,200,214,0.28), transparent 18%),
+      linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 48%, #123b47 100%);
+    color:#fff;
+    box-shadow:var(--shadow);
+  }
+
+  .hero::after{
+    content:"";
+    position:absolute;
+    inset:auto -80px -100px auto;
+    width:280px;
+    height:280px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.05);
+    filter:blur(8px);
+  }
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:14px;
+    padding:7px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.12);
+    font-size:.78rem;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+
+  .hero h1{
+    font-family:'Outfit',system-ui,sans-serif;
+    font-size:clamp(2rem, 5vw, 3.6rem);
+    line-height:.98;
+    max-width:720px;
+    margin-bottom:14px;
+  }
+
+  .hero p{
+    max-width:700px;
+    color:rgba(255,255,255,0.82);
+    line-height:1.7;
+    font-size:1rem;
+  }
+
+  .hero-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:22px;
+  }
+
+  .meta-chip{
+    display:inline-flex;
+    align-items:center;
+    min-height:40px;
+    padding:8px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.12);
+    font-size:.88rem;
+    color:rgba(255,255,255,0.88);
+  }
+
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:16px;
+    margin:28px 0 16px;
+  }
+
+  .section-head h2{
+    font-family:'Outfit',system-ui,sans-serif;
+    font-size:1.45rem;
+    margin-bottom:4px;
+  }
+
+  .section-head p{
+    color:var(--muted);
+    line-height:1.6;
+    max-width:640px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:16px;
+  }
+
+  .card{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    padding:22px;
+    border-radius:var(--radius-lg);
+    background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(243,248,248,0.9));
+    border:1px solid var(--border);
+    box-shadow:0 14px 34px rgba(13, 31, 45, 0.06);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+
+  .card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 20px 40px rgba(13, 31, 45, 0.1);
+    border-color:rgba(15,110,86,0.22);
+  }
+
+  .accent{
+    width:52px;
+    height:52px;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.35rem;
+    font-weight:700;
+    color:#fff;
+  }
+
+  .accent.platform{background:linear-gradient(135deg, #2563eb, #35c8d6)}
+  .accent.member{background:linear-gradient(135deg, #0f6e56, #1d9e75)}
+  .accent.admin{background:linear-gradient(135deg, #7c3aed, #2563eb)}
+  .accent.news{background:linear-gradient(135deg, #993556, #d1608b)}
+  .accent.calc{background:linear-gradient(135deg, #ba7517, #e6a53a)}
+
+  .card-top{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+  }
+
+  .tag{
+    display:inline-flex;
+    align-items:center;
+    padding:5px 10px;
+    border-radius:999px;
+    background:#e9f5f2;
+    color:var(--teal);
+    font-size:.74rem;
+    font-weight:800;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+
+  .card h3{
+    font-family:'Outfit',system-ui,sans-serif;
+    font-size:1.28rem;
+    line-height:1.15;
+    margin-bottom:8px;
+  }
+
+  .card p{
+    color:var(--muted);
+    line-height:1.65;
+    font-size:.96rem;
+  }
+
+  .file{
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:.78rem;
+    color:#45606e;
+    word-break:break-all;
+  }
+
+  .actions{
+    margin-top:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
+    padding:0 16px;
+    border-radius:14px;
+    text-decoration:none;
+    font-weight:800;
+    transition:transform .16s ease, filter .16s ease;
+  }
+
+  .btn:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.02);
+  }
+
+  .btn-primary{
+    background:linear-gradient(135deg, var(--teal) 0%, var(--teal-2) 100%);
+    color:#fff;
+  }
+
+  .btn-secondary{
+    background:#edf4f5;
+    color:var(--ink);
+  }
+
+  .footer{
+    margin-top:18px;
+    color:var(--muted);
+    font-size:.9rem;
+    text-align:center;
+  }
+
+  @media (max-width: 860px){
+    .grid{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media (max-width: 640px){
+    body{
+      padding:14px 12px 24px;
+    }
+
+    .hero{
+      padding:22px 18px;
+      border-radius:22px;
+    }
+
+    .section-head{
+      margin-top:20px;
+      flex-direction:column;
+      align-items:flex-start;
+    }
+
+    .card{
+      padding:18px;
+      border-radius:18px;
+    }
+
+    .card-top{
+      flex-direction:column;
+    }
+
+    .actions{
+      align-items:stretch;
+    }
+
+    .btn{
+      width:100%;
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">GIFF Demo Collection</div>
+      <h1>One place to open every GIFF mockup</h1>
+      <p>This landing page brings together the current GIFF interface mockups in the folder so you can jump quickly between platform concepts, member experiences, admin tools, and shipping utilities.</p>
+      <div class="hero-meta">
+        <div class="meta-chip">5 linked mockups</div>
+        <div class="meta-chip">Desktop + mobile friendly hub</div>
+        <div class="meta-chip">Built for quick review and handoff</div>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <div>
+        <h2>Available Mockups</h2>
+        <p>Open any screen directly from here. Each card includes a short summary plus a direct link to the source file in this folder.</p>
+      </div>
+    </div>
+
+    <section class="grid">
+      <article class="card">
+        <div class="card-top">
+          <div class="accent platform">01</div>
+          <div>
+            <div class="tag">Platform</div>
+            <h3>GIFF Digital Platform</h3>
+            <p>Main member portal experience for the GIFF digital platform, focused on dashboard access, navigation, and core service workflows.</p>
+          </div>
+        </div>
+        <div class="file">GIFF_Platform_Mockup.html</div>
+        <div class="actions">
+          <a class="btn btn-primary" href="GIFF_Platform_Mockup.html">Open Mockup</a>
+          <a class="btn btn-secondary" href="GIFF_Platform_Mockup.html" target="_blank" rel="noopener noreferrer">Open In New Tab</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="accent member">02</div>
+          <div>
+            <div class="tag">Mobile App</div>
+            <h3>GIFF Member PWA</h3>
+            <p>Mobile-first member app concept showing how a progressive web app experience could feel for GIFF users on phones.</p>
+          </div>
+        </div>
+        <div class="file">GIFF_Member_PWA_Mockup.html</div>
+        <div class="actions">
+          <a class="btn btn-primary" href="GIFF_Member_PWA_Mockup.html">Open Mockup</a>
+          <a class="btn btn-secondary" href="GIFF_Member_PWA_Mockup.html" target="_blank" rel="noopener noreferrer">Open In New Tab</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="accent admin">03</div>
+          <div>
+            <div class="tag">Admin</div>
+            <h3>GIFF Admin Portal</h3>
+            <p>Management dashboard concept for platform operations, oversight, data review, and administrative controls.</p>
+          </div>
+        </div>
+        <div class="file">GIFF_Admin_Portal.html</div>
+        <div class="actions">
+          <a class="btn btn-primary" href="GIFF_Admin_Portal.html">Open Mockup</a>
+          <a class="btn btn-secondary" href="GIFF_Admin_Portal.html" target="_blank" rel="noopener noreferrer">Open In New Tab</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="accent news">04</div>
+          <div>
+            <div class="tag">News Portal</div>
+            <h3>Shipping News & Intelligence</h3>
+            <p>Curated news, alerts, market updates, and trade intelligence view tailored for freight and shipping stakeholders.</p>
+          </div>
+        </div>
+        <div class="file">giff_shipping_news_portal.html</div>
+        <div class="actions">
+          <a class="btn btn-primary" href="giff_shipping_news_portal.html">Open Mockup</a>
+          <a class="btn btn-secondary" href="giff_shipping_news_portal.html" target="_blank" rel="noopener noreferrer">Open In New Tab</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-top">
+          <div class="accent calc">05</div>
+          <div>
+            <div class="tag">Utility Tool</div>
+            <h3>Shipping Cost Calculator</h3>
+            <p>Interactive landed-cost estimator for freight planning into Tema, including shipping, port, customs, and levy components.</p>
+          </div>
+        </div>
+        <div class="file">giff_shipping_cost_calculator.html</div>
+        <div class="actions">
+          <a class="btn btn-primary" href="giff_shipping_cost_calculator.html">Open Mockup</a>
+          <a class="btn btn-secondary" href="giff_shipping_cost_calculator.html" target="_blank" rel="noopener noreferrer">Open In New Tab</a>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer">Start with index.html in this folder whenever you want a quick entry point to the full GIFF mockup set.</div>
+  </main>
+</body>
+</html>
