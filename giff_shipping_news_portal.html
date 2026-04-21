@@ -1,0 +1,652 @@
+
+<h2 class="sr-only">GIFF Shipping News Portal — curated freight, port, and trade news for Ghana Institute of Freight Forwarders members</h2>
+<style>
+:root{
+  --gt:#0f6e56;
+  --gt-dark:#0a4f3f;
+  --gt2:#1d9e75;
+  --gtbg:#e1f5ee;
+  --gp:#993556;
+  --gpbg:#fbeaf0;
+  --ga:#ba7517;
+  --gabg:#faeeda;
+  --gink:#16211d;
+  --gmuted:#5f6c67;
+  --gborder:#d6e2dc;
+  --gsurface:#ffffff;
+  --gsurface-soft:#f6fbf9;
+  --gshadow:0 20px 50px rgba(12,54,42,0.12);
+  --radius-xl:28px;
+  --radius-lg:20px;
+  --radius-md:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.wrap{
+  padding:20px 0;
+  color:var(--gink);
+}
+.shell{
+  max-width:1120px;
+  margin:0 auto;
+  border-radius:var(--radius-xl);
+  overflow:hidden;
+  background:
+    radial-gradient(circle at top right, rgba(29,158,117,0.18), transparent 28%),
+    linear-gradient(180deg, #f4faf8 0%, #ffffff 32%);
+  border:1px solid rgba(15,110,86,0.12);
+  box-shadow:var(--gshadow);
+}
+.top-bar{
+  background:linear-gradient(135deg, var(--gt-dark) 0%, var(--gt) 55%, #148063 100%);
+  padding:22px 28px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  color:#fff;
+}
+.title-group{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+}
+.top-bar .logo{
+  background:rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:14px;
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  color:#fff;
+  flex:0 0 auto;
+}
+.title-copy h1{
+  font-size:clamp(1.2rem,2vw,1.65rem);
+  line-height:1.1;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.title-copy p{
+  max-width:620px;
+  font-size:0.95rem;
+  line-height:1.55;
+  color:rgba(255,255,255,0.82);
+}
+.date-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:40px;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.18);
+  font-size:0.82rem;
+  font-weight:600;
+  color:rgba(255,255,255,0.92);
+  white-space:nowrap;
+}
+.nav-bar{
+  background:rgba(255,255,255,0.9);
+  border-top:1px solid rgba(255,255,255,0.08);
+  border-bottom:1px solid rgba(15,110,86,0.1);
+  padding:0 20px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.nav-bar::-webkit-scrollbar{display:none}
+.nav-pill{
+  padding:14px 10px 12px;
+  font-size:0.82rem;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  color:var(--gmuted);
+  font-weight:700;
+  white-space:nowrap;
+  transition:color .15s ease, border-color .15s ease;
+}
+.nav-pill.active{
+  color:var(--gt);
+  border-bottom-color:var(--gt);
+}
+.nav-pill:hover{color:var(--gt2)}
+.body-wrap{
+  padding:24px 28px 28px;
+}
+.dashboard-intro{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(250px,0.8fr);
+  gap:16px;
+  margin-bottom:18px;
+}
+.intro-panel,
+.snapshot-panel{
+  background:var(--gsurface);
+  border:1px solid var(--gborder);
+  border-radius:var(--radius-lg);
+  padding:18px 20px;
+}
+.intro-panel{
+  background:linear-gradient(180deg, rgba(225,245,238,0.72) 0%, #fff 100%);
+}
+.eyebrow{
+  display:inline-block;
+  margin-bottom:10px;
+  font-size:0.74rem;
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--gt);
+}
+.intro-panel h2,
+.snapshot-panel h2{
+  font-size:1.05rem;
+  margin-bottom:8px;
+}
+.intro-panel p,
+.snapshot-panel p{
+  color:var(--gmuted);
+  line-height:1.55;
+  font-size:0.93rem;
+}
+.snapshot-list{
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+}
+.snapshot-item{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  color:var(--gmuted);
+  font-size:0.9rem;
+}
+.snapshot-item strong{color:var(--gink)}
+.snapshot-item::before{
+  content:"";
+  width:9px;
+  height:9px;
+  margin-top:5px;
+  border-radius:50%;
+  background:linear-gradient(135deg, var(--gt2), var(--gt));
+  flex:0 0 auto;
+}
+.ticker-bar{
+  background:linear-gradient(90deg, rgba(225,245,238,0.95), rgba(225,245,238,0.6));
+  border:1px solid rgba(15,110,86,0.12);
+  border-radius:16px;
+  padding:10px 14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px;
+  overflow:hidden;
+}
+.ticker-label{
+  font-size:0.74rem;
+  font-weight:700;
+  white-space:nowrap;
+  background:#085041;
+  color:#fff;
+  padding:5px 10px;
+  border-radius:999px;
+}
+.ticker-track{
+  overflow:hidden;
+  min-width:0;
+  flex:1;
+}
+.ticker-text{
+  display:inline-block;
+  font-size:0.86rem;
+  color:#085041;
+  white-space:nowrap;
+  padding-right:40px;
+  animation:ticker 28s linear infinite;
+}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-60%)}}
+.alert-banner{
+  background:linear-gradient(180deg, rgba(251,234,240,0.9), rgba(251,234,240,0.72));
+  border:1px solid #ed93b1;
+  border-radius:16px;
+  padding:14px 16px;
+  margin-bottom:18px;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+.alert-icon{
+  width:22px;
+  height:22px;
+  min-width:22px;
+  border-radius:50%;
+  background:var(--gp);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:1px;
+  box-shadow:0 8px 18px rgba(153,53,86,0.18);
+}
+.alert-icon svg{width:11px;height:11px;fill:#fff}
+.alert-banner p{
+  font-size:0.92rem;
+  color:#72243e;
+  line-height:1.55;
+}
+.grid-top{
+  display:grid;
+  grid-template-columns:minmax(0,1.55fr) minmax(280px,0.9fr);
+  gap:16px;
+  margin-bottom:18px;
+}
+.hero-card,
+.mini-card,
+.list-card,
+.rates-panel{
+  background:var(--gsurface);
+  border:1px solid var(--gborder);
+  box-shadow:0 8px 24px rgba(10,79,63,0.04);
+}
+.hero-card{
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.hero-card:hover,
+.mini-card:hover,
+.list-card:hover{
+  border-color:rgba(29,158,117,0.45);
+  transform:translateY(-1px);
+}
+.hero-img{
+  min-height:220px;
+  background:
+    radial-gradient(circle at top right, rgba(255,255,255,0.18), transparent 28%),
+    linear-gradient(135deg, #085041 0%, #0f6e56 55%, #1d9e75 100%);
+  position:relative;
+  display:flex;
+  align-items:flex-end;
+  padding:20px;
+}
+.hero-img .category{
+  font-size:0.72rem;
+  font-weight:700;
+  background:var(--gp);
+  color:#fff;
+  padding:5px 10px;
+  border-radius:999px;
+  position:absolute;
+  top:16px;
+  left:16px;
+  letter-spacing:0.04em;
+}
+.hero-img .port-art{
+  position:absolute;
+  right:22px;
+  top:50%;
+  transform:translateY(-50%);
+  opacity:0.14;
+  font-size:82px;
+}
+.hero-kicker{
+  position:relative;
+  z-index:1;
+  max-width:420px;
+  color:rgba(255,255,255,0.82);
+  font-size:0.9rem;
+  line-height:1.55;
+}
+.hero-body{padding:18px 20px 20px}
+.hero-body h3{
+  font-size:1.18rem;
+  font-weight:700;
+  color:var(--gink);
+  line-height:1.35;
+  margin-bottom:8px;
+}
+.hero-body p{
+  font-size:0.94rem;
+  color:var(--gmuted);
+  line-height:1.65;
+}
+.meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.meta .src{
+  font-size:0.78rem;
+  font-weight:700;
+  color:var(--gt);
+}
+.meta .ts{
+  font-size:0.8rem;
+  color:var(--gmuted);
+}
+.meta .dot{
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:#b7c8c1;
+}
+.side-stack{display:flex;flex-direction:column;gap:12px}
+.mini-card{
+  border-radius:16px;
+  padding:14px 16px;
+  cursor:pointer;
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.mini-card .cat,
+.list-card .cat{
+  font-size:0.72rem;
+  font-weight:700;
+  padding:4px 8px;
+  border-radius:999px;
+  display:inline-block;
+  margin-bottom:8px;
+}
+.cat-port{background:var(--gtbg);color:#085041}
+.cat-customs{background:var(--gabg);color:#633806}
+.cat-market{background:var(--gpbg);color:#72243e}
+.cat-policy{background:#e6f1fb;color:#0c447c}
+.cat-alert{background:#fcebeb;color:#a32d2d}
+.mini-card h3,
+.list-card h3{
+  font-size:0.97rem;
+  font-weight:700;
+  color:var(--gink);
+  line-height:1.45;
+  margin-bottom:6px;
+}
+.mini-card .ts{
+  font-size:0.82rem;
+  color:var(--gmuted);
+  line-height:1.45;
+}
+.section-label{
+  font-size:0.76rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:var(--gmuted);
+  margin:0 0 12px;
+}
+.list-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:20px;
+}
+.list-card{
+  border-radius:16px;
+  padding:14px 16px;
+  cursor:pointer;
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.list-card .snippet{
+  font-size:0.88rem;
+  color:var(--gmuted);
+  line-height:1.58;
+}
+.rates-panel{
+  background:linear-gradient(180deg, #ffffff 0%, #f6fbf9 100%);
+  border-radius:18px;
+  padding:16px 18px;
+  margin-top:4px;
+}
+.rates-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  padding:10px 0;
+  border-bottom:1px solid rgba(15,110,86,0.1);
+  font-size:0.92rem;
+}
+.rates-row:last-child{border-bottom:none}
+.rates-row .route{
+  color:var(--gink);
+  font-weight:600;
+}
+.rates-row .rate{
+  font-weight:700;
+  text-align:right;
+  white-space:nowrap;
+}
+.up{color:#0f6e56}
+.dn{color:#a32d2d}
+.unch{color:var(--gmuted)}
+.chg{font-size:0.76rem;margin-left:5px}
+.footer-strip{
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid rgba(15,110,86,0.1);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.footer-strip span{
+  font-size:0.82rem;
+  color:var(--gmuted);
+}
+.footer-strip .live-dot{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  font-size:0.82rem;
+  font-weight:700;
+  color:var(--gt);
+}
+.pulse{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--gt2);
+  animation:pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.85)}}
+@media (max-width: 900px){
+  .dashboard-intro,
+  .grid-top{
+    grid-template-columns:1fr;
+  }
+}
+@media (max-width: 760px){
+  .wrap{padding:12px 0}
+  .top-bar,
+  .body-wrap{padding:18px}
+  .top-bar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .date-chip{
+    align-self:flex-start;
+  }
+  .nav-bar{
+    padding:0 14px;
+  }
+  .ticker-bar{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .ticker-track{
+    width:100%;
+  }
+  .list-grid{
+    grid-template-columns:1fr;
+  }
+  .rates-row,
+  .footer-strip{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .rates-row .rate{
+    text-align:left;
+    white-space:normal;
+  }
+}
+@media (max-width: 480px){
+  .title-group{gap:12px}
+  .top-bar .logo{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+  }
+  .title-copy p,
+  .intro-panel p,
+  .snapshot-panel p,
+  .snapshot-item,
+  .alert-banner p,
+  .list-card .snippet,
+  .hero-body p{
+    font-size:0.88rem;
+  }
+  .hero-img{
+    min-height:180px;
+    padding:16px;
+  }
+  .hero-img .port-art{
+    right:16px;
+    font-size:64px;
+  }
+}
+</style>
+
+<div class="wrap">
+<div class="shell">
+  <div class="top-bar">
+    <div class="title-group">
+      <div class="logo">GIFF</div>
+      <div class="title-copy">
+        <h1>GIFF News & Intelligence Portal</h1>
+        <p>A cleaner member-facing dashboard for freight, port, customs, market, and policy updates relevant to Ghanaian shipping and forwarding operations.</p>
+      </div>
+    </div>
+    <span class="date-chip">Tuesday, 21 April 2026</span>
+  </div>
+  <div class="nav-bar">
+    <div class="nav-pill active">All News</div>
+    <div class="nav-pill">Tema Port</div>
+    <div class="nav-pill">Customs & GRA</div>
+    <div class="nav-pill">Freight Markets</div>
+    <div class="nav-pill">Shipping Lines</div>
+    <div class="nav-pill">Policy & Trade</div>
+    <div class="nav-pill">Member Alerts</div>
+  </div>
+  <div class="body-wrap">
+    <div class="dashboard-intro">
+      <div class="intro-panel">
+        <span class="eyebrow">Member Briefing</span>
+        <h2>Daily shipping intelligence in one place</h2>
+        <p>Surface the most important operational developments first, then let members scan stories, policy shifts, congestion alerts, and freight rate movement without wading through clutter.</p>
+      </div>
+      <div class="snapshot-panel">
+        <h2>Today’s focus</h2>
+        <div class="snapshot-list">
+          <div class="snapshot-item"><strong>Port operations:</strong> Tema throughput, gate activity, and terminal congestion.</div>
+          <div class="snapshot-item"><strong>Compliance:</strong> Customs directives, valuation, and documentation changes.</div>
+          <div class="snapshot-item"><strong>Markets:</strong> Spot freight rate changes on key GIFF trade lanes.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ticker-bar">
+      <span class="ticker-label">LIVE</span>
+      <div class="ticker-track">
+        <div class="ticker-text">GCMS UPDATE: Pre-arrival assessment window extended to 72hrs &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp; Maersk suspends Red Sea transits — 14-day routing delay on EU–West Africa lanes &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp; MPS Tema: Gate congestion advisory, container yard at 84% capacity &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp; GRA Customs: New HS code classification directive effective 1 May 2026 &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp; ECOWAS trade summit — Accra, 28 April 2026 &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp; Hapag-Lloyd announces GRI of USD 200/TEU on Asia–West Africa from 1 May &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;</div>
+      </div>
+    </div>
+
+    <div class="alert-banner">
+      <div class="alert-icon"><svg viewBox="0 0 10 10"><path d="M5 1L5 6M5 8L5 8.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg></div>
+      <p><strong>Member Alert:</strong> GRA Customs Division has issued a directive requiring all import entries for Chapter 84–85 (machinery &amp; electronics) to include a mandatory conformity certificate from Ghana Standards Authority effective 28 April 2026. Members are advised to notify consignees immediately.</p>
+    </div>
+
+    <div class="grid-top">
+      <div class="hero-card">
+        <div class="hero-img">
+          <span class="category">Port Operations</span>
+          <div class="hero-kicker">Operations watch: throughput, infrastructure upgrades, and berth productivity trends shaping import planning into Tema.</div>
+          <div class="port-art">⚓</div>
+        </div>
+        <div class="hero-body">
+          <h3>Tema Port records 12% volume growth in Q1 2026 as GPHA completes second container terminal expansion</h3>
+          <p>The Ghana Ports and Harbours Authority confirmed that Tema Port processed 312,000 TEUs in the first quarter of 2026, driven by increased intra-African trade flows and improved berth utilisation at the new CT3 terminal operated by APM Terminals.</p>
+          <div class="meta"><span class="src">GPHA Official</span><div class="dot"></div><span class="ts">2 hours ago</span></div>
+        </div>
+      </div>
+      <div class="side-stack">
+        <div class="mini-card">
+          <span class="cat cat-customs">Customs & GRA</span>
+          <h3>GRA introduces mandatory e-valuation for all consignments above USD 5,000 from May 2026</h3>
+          <div class="ts">4 hours ago · Ghana Revenue Authority</div>
+        </div>
+        <div class="mini-card">
+          <span class="cat cat-market">Freight Market</span>
+          <h3>Asia–West Africa spot rates rise 18% on rerouting of vessels away from Red Sea corridor</h3>
+          <div class="ts">6 hours ago · Freightos Baltic Index</div>
+        </div>
+        <div class="mini-card">
+          <span class="cat cat-policy">Policy & Trade</span>
+          <h3>AfCFTA secretariat calls on member states to reduce port dwell times ahead of Phase II implementation</h3>
+          <div class="ts">Yesterday · AfCFTA Secretariat</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">More stories</div>
+    <div class="list-grid">
+      <div class="list-card">
+        <span class="cat cat-port">Shipping Lines</span>
+        <h3>MSC launches new direct Tema–Qingdao weekly service in June 2026, cutting transit to 24 days</h3>
+        <div class="snippet">The new FAX4 service will call at Tema, Abidjan, and Lomé before heading to Chinese ports, reducing the current 30-day average significantly.</div>
+      </div>
+      <div class="list-card">
+        <span class="cat cat-customs">Customs & GRA</span>
+        <h3>Customs Division reports 31% increase in e-payment adoption among freight forwarders in March 2026</h3>
+        <div class="snippet">GRA data shows that the GCMS e-payment upgrade has reduced transaction times at Tema from 4.2 hours to under 45 minutes on average.</div>
+      </div>
+      <div class="list-card">
+        <span class="cat cat-customs">MPS Terminal</span>
+        <h3>MPS issues yard congestion advisory — dwell time surcharge applicable from 22 April 2026</h3>
+        <div class="snippet">Containers remaining in the MPS terminal beyond 5 free days will attract a congestion surcharge of USD 45/day effective Tuesday.</div>
+      </div>
+      <div class="list-card">
+        <span class="cat cat-policy">Policy & Trade</span>
+        <h3>Ghana's Minister of Trade announces new import duty concessions for industrial raw materials in 2026 budget supplement</h3>
+        <div class="snippet">The supplementary budget will reduce duty rates on HS chapters 28–38 by 5 percentage points to support local manufacturers.</div>
+      </div>
+    </div>
+
+    <div class="section-label">Spot freight rate tracker</div>
+    <div class="rates-panel">
+      <div class="rates-row"><span class="route">Shanghai → Tema (20'GP)</span><span class="rate up">USD 1,380 <span class="chg">▲ +4.2%</span></span></div>
+      <div class="rates-row"><span class="route">Shanghai → Tema (40'HC)</span><span class="rate up">USD 2,520 <span class="chg">▲ +3.8%</span></span></div>
+      <div class="rates-row"><span class="route">Rotterdam → Tema (20'GP)</span><span class="rate dn">USD 1,740 <span class="chg">▼ -1.1%</span></span></div>
+      <div class="rates-row"><span class="route">Hamburg → Tema (40'GP)</span><span class="rate unch">USD 2,780 <span class="chg">— 0.0%</span></span></div>
+      <div class="rates-row"><span class="route">Jebel Ali → Tema (20'GP)</span><span class="rate up">USD 1,090 <span class="chg">▲ +6.1%</span></span></div>
+      <div class="rates-row"><span class="route">Nhava Sheva → Tema (40'HC)</span><span class="rate dn">USD 1,650 <span class="chg">▼ -2.3%</span></span></div>
+    </div>
+
+    <div class="footer-strip">
+      <span>Sources: GPHA, GRA Customs, Freightos, MPS, Shipping line APIs, AfCFTA Secretariat</span>
+      <span class="live-dot"><div class="pulse"></div>Live feed active</span>
+    </div>
+  </div>
+</div>
+</div>
