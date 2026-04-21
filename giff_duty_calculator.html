@@ -1,0 +1,746 @@
+
+<h2 class="sr-only">GIFF Ghana Import Duty Calculator — live calculation of customs duties, levies and taxes for Tema Port imports</h2>
+<style>
+:root{
+  --gt:#0f6e56;
+  --gt-dark:#0a4f3f;
+  --gt2:#1d9e75;
+  --gtbg:#e1f5ee;
+  --gp:#993556;
+  --gpbg:#fbeaf0;
+  --ga:#ba7517;
+  --gabg:#faeeda;
+  --gb:#185fa5;
+  --gbbg:#e6f1fb;
+  --gink:#16211d;
+  --gmuted:#5f6c67;
+  --gborder:#d6e2dc;
+  --gsurface:#ffffff;
+  --gsurface-soft:#f6fbf9;
+  --gshadow:0 20px 50px rgba(12,54,42,0.12);
+  --radius-xl:28px;
+  --radius-lg:20px;
+  --radius-md:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.wrap{
+  padding:20px 0;
+  color:var(--gink);
+}
+.shell{
+  max-width:1120px;
+  margin:0 auto;
+  border-radius:var(--radius-xl);
+  overflow:hidden;
+  background:
+    radial-gradient(circle at top right, rgba(29,158,117,0.18), transparent 28%),
+    linear-gradient(180deg, #f4faf8 0%, #ffffff 32%);
+  border:1px solid rgba(15,110,86,0.12);
+  box-shadow:var(--gshadow);
+}
+.top-bar{
+  background:linear-gradient(135deg, var(--gt-dark) 0%, var(--gt) 58%, #148063 100%);
+  padding:24px 28px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  color:#fff;
+}
+.title-group{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+}
+.top-bar .logo{
+  background:rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:14px;
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.08em;
+  color:#fff;
+  flex:0 0 auto;
+}
+.title-copy h1{
+  font-size:clamp(1.2rem,2vw,1.65rem);
+  line-height:1.1;
+  font-weight:700;
+  margin-bottom:6px;
+}
+.title-copy p{
+  max-width:620px;
+  font-size:.95rem;
+  line-height:1.55;
+  color:rgba(255,255,255,0.82);
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:40px;
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.18);
+  font-size:.82rem;
+  font-weight:600;
+  color:rgba(255,255,255,0.92);
+  white-space:nowrap;
+}
+.body{
+  padding:24px 28px 28px;
+}
+.dashboard-intro{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(260px,0.8fr);
+  gap:16px;
+  margin-bottom:18px;
+}
+.intro-panel,
+.snapshot-panel,
+.form-panel,
+.result-panel{
+  background:var(--gsurface);
+  border:1px solid var(--gborder);
+  border-radius:var(--radius-lg);
+}
+.intro-panel,
+.snapshot-panel{
+  padding:18px 20px;
+}
+.intro-panel{
+  background:linear-gradient(180deg, rgba(225,245,238,0.72) 0%, #fff 100%);
+}
+.eyebrow{
+  display:inline-block;
+  margin-bottom:10px;
+  font-size:.74rem;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--gt);
+}
+.intro-panel h2,
+.snapshot-panel h2{
+  font-size:1.05rem;
+  margin-bottom:8px;
+}
+.intro-panel p,
+.snapshot-panel p{
+  color:var(--gmuted);
+  line-height:1.55;
+  font-size:.93rem;
+}
+.snapshot-list{
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+}
+.snapshot-item{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  color:var(--gmuted);
+  font-size:.9rem;
+}
+.snapshot-item strong{color:var(--gink)}
+.snapshot-item::before{
+  content:"";
+  width:9px;
+  height:9px;
+  margin-top:5px;
+  border-radius:50%;
+  background:linear-gradient(135deg, var(--gt2), var(--gt));
+  flex:0 0 auto;
+}
+.content-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(320px,0.94fr);
+  gap:16px;
+}
+.form-panel,
+.result-panel{
+  padding:20px;
+}
+.panel-label{
+  font-size:.76rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--gmuted);
+  margin-bottom:12px;
+}
+.two-col{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:16px;
+}
+.field label{
+  font-size:.76rem;
+  font-weight:700;
+  color:var(--gmuted);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.field select,
+.field input{
+  width:100%;
+  min-height:48px;
+  font-size:.95rem;
+  padding:12px 14px;
+  border-radius:var(--radius-md);
+  border:1px solid var(--gborder);
+  background:var(--gsurface-soft);
+  color:var(--gink);
+  transition:border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.field select:focus,
+.field input:focus{
+  outline:none;
+  border-color:rgba(15,110,86,0.42);
+  box-shadow:0 0 0 4px rgba(29,158,117,0.12);
+  background:#fff;
+}
+.field .hint{
+  font-size:.82rem;
+  color:var(--gmuted);
+  margin-top:2px;
+  line-height:1.45;
+}
+.hs-row{display:flex;gap:8px;align-items:flex-end}
+.section-divider{
+  border:none;
+  border-top:1px solid rgba(15,110,86,0.12);
+  margin:8px 0 18px;
+}
+.section-label{
+  font-size:.76rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--gmuted);
+  margin-bottom:12px;
+}
+.incoterm-tabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:4px;
+}
+.itab{
+  min-height:42px;
+  padding:10px 14px;
+  font-size:.9rem;
+  border-radius:999px;
+  border:1px solid var(--gborder);
+  cursor:pointer;
+  color:var(--gmuted);
+  background:var(--gsurface-soft);
+  transition:all .12s;
+  font-weight:700;
+}
+.itab.active{
+  background:var(--gt);
+  color:#fff;
+  border-color:var(--gt);
+  box-shadow:0 10px 24px rgba(15,110,86,0.18);
+}
+.note-box{
+  background:linear-gradient(180deg, rgba(250,238,218,0.92), rgba(250,238,218,0.72));
+  border-radius:16px;
+  padding:12px 14px;
+  margin-bottom:18px;
+  font-size:.9rem;
+  color:#633806;
+  border-left:4px solid var(--ga);
+  line-height:1.55;
+}
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+.stat{
+  background:linear-gradient(180deg, #ffffff 0%, #f5faf8 100%);
+  border:1px solid var(--gborder);
+  border-radius:var(--radius-md);
+  padding:14px;
+}
+.stat .sl{
+  font-size:.76rem;
+  color:var(--gmuted);
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.stat .sv{
+  font-size:1rem;
+  font-weight:700;
+  color:var(--gink);
+}
+.stat.highlight{
+  background:linear-gradient(180deg, rgba(225,245,238,0.95), rgba(238,250,245,0.92));
+  border-color:rgba(15,110,86,0.14);
+}
+.stat.highlight .sl,
+.stat.highlight .sv{color:#085041}
+.breakdown{
+  border:1px solid var(--gborder);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  margin-bottom:18px;
+  background:var(--gsurface);
+}
+.brow{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 16px;
+  border-bottom:1px solid rgba(15,110,86,0.1);
+  font-size:.94rem;
+}
+.brow:last-child{border-bottom:none}
+.brow.head-row{
+  background:var(--gsurface-soft);
+  font-size:.76rem;
+  font-weight:700;
+  color:var(--gmuted);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  padding:10px 16px;
+}
+.brow .bl{flex:2;color:var(--gmuted)}
+.brow .bc{flex:1;text-align:center;color:var(--gmuted)}
+.brow .br{flex:1;text-align:right;font-weight:700;color:var(--gink)}
+.brow.total-row{
+  background:linear-gradient(135deg, rgba(225,245,238,0.95), rgba(238,250,245,0.96));
+}
+.brow.total-row .bl,
+.brow.total-row .bc,
+.brow.total-row .br{color:#085041}
+.brow.total-row .br{font-size:1.08rem}
+.brow.giff-row .bl,
+.brow.giff-row .br{color:var(--gp)}
+.brow.base-row{
+  background:linear-gradient(180deg, rgba(230,241,251,0.95), rgba(230,241,251,0.78));
+}
+.brow.base-row .bl,
+.brow.base-row .br{color:#0c447c;font-weight:700}
+.pie-wrap{
+  display:flex;
+  gap:18px;
+  align-items:center;
+  margin-bottom:18px;
+  background:linear-gradient(180deg, #ffffff 0%, #f6fbf9 100%);
+  border:1px solid var(--gborder);
+  border-radius:var(--radius-lg);
+  padding:16px;
+}
+.pie-wrap svg{flex-shrink:0}
+.legend{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  flex:1;
+}
+.leg-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:.9rem;
+}
+.leg-dot{
+  width:10px;
+  height:10px;
+  border-radius:3px;
+  flex-shrink:0;
+}
+.leg-label{color:var(--gmuted);flex:1}
+.leg-val{font-weight:700;color:var(--gink)}
+.ghs-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  background:linear-gradient(135deg, rgba(15,110,86,0.08), rgba(29,158,117,0.04));
+  border:1px solid rgba(15,110,86,0.14);
+  border-radius:16px;
+  padding:16px 18px;
+  font-size:.96rem;
+}
+.ghs-row span{color:var(--gmuted)}
+.ghs-row strong{
+  color:#085041;
+  font-size:1.2rem;
+}
+@media (max-width: 960px){
+  .dashboard-intro,
+  .content-grid{
+    grid-template-columns:1fr;
+  }
+}
+@media (max-width: 760px){
+  .wrap{padding:12px 0}
+  .top-bar,
+  .body,
+  .form-panel,
+  .result-panel{padding:18px}
+  .top-bar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .badge{align-self:flex-start}
+  .two-col,
+  .stat-grid{
+    grid-template-columns:1fr;
+  }
+  .stat.highlight{grid-column:auto!important}
+  .pie-wrap,
+  .ghs-row,
+  .brow{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .brow .bc,
+  .brow .br{
+    text-align:left;
+  }
+}
+@media (max-width: 480px){
+  .title-group{gap:12px}
+  .top-bar .logo{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+  }
+  .title-copy p,
+  .intro-panel p,
+  .snapshot-panel p,
+  .snapshot-item,
+  .note-box,
+  .leg-item{
+    font-size:.88rem;
+  }
+}
+</style>
+
+<div class="wrap">
+<div class="shell">
+  <div class="top-bar">
+    <div class="title-group">
+      <div class="logo">GIFF</div>
+      <div class="title-copy">
+        <h1>Ghana Import Duty &amp; Tax Calculator</h1>
+        <p>Model landed import charges into Ghana with a clearer planning view for customs duty, statutory levies, GIFF charges, and local currency exposure.</p>
+      </div>
+    </div>
+    <span class="badge">GRA Tariff Schedule 2026</span>
+  </div>
+  <div class="body">
+    <div class="dashboard-intro">
+      <div class="intro-panel">
+        <span class="eyebrow">Scenario Builder</span>
+        <h2>Estimate the full customs picture</h2>
+        <p>Select the HS code, origin, incoterm, and commercial values to produce an indicative duty and tax profile before cargo arrives at Tema.</p>
+      </div>
+      <div class="snapshot-panel">
+        <h2>What’s included</h2>
+        <div class="snapshot-list">
+          <div class="snapshot-item"><strong>Dutiable base:</strong> invoice, freight, insurance, and CIF view.</div>
+          <div class="snapshot-item"><strong>Taxes and levies:</strong> duty, VAT, NHIL, GETFund, ECOWAS, EDIF, EXIM, and GIFF.</div>
+          <div class="snapshot-item"><strong>FX planning:</strong> total payable shown in both USD and GHS.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="form-panel">
+        <div class="panel-label">Import Inputs</div>
+        <div class="two-col">
+          <div>
+            <div class="field">
+              <label>HS Code / Commodity</label>
+              <div class="hs-row">
+                <select id="hscode" onchange="onHsChange()">
+                  <option value="8471">8471 — Computers &amp; Data Processing Machines</option>
+                  <option value="8528">8528 — TV Receivers / Monitors / Projectors</option>
+                  <option value="8703">8703 — Motor Vehicles (Passenger)</option>
+                  <option value="6109">6109 — T-shirts &amp; Vests (Knitted)</option>
+                  <option value="1006">1006 — Rice</option>
+                  <option value="3004">3004 — Medicaments / Pharmaceuticals</option>
+                  <option value="7308">7308 — Steel Structures &amp; Parts</option>
+                  <option value="8415">8415 — Air Conditioning Machines</option>
+                  <option value="2710">2710 — Petroleum Oils</option>
+                  <option value="0201">0201 — Meat of Bovine Animals, Fresh</option>
+                  <option value="6403">6403 — Footwear with Outer Soles of Rubber</option>
+                  <option value="3901">3901 — Polymers of Ethylene (Plastics)</option>
+                </select>
+              </div>
+              <span class="hint" id="hs-hint">Chapter 84 — Nuclear reactors, boilers, machinery</span>
+            </div>
+            <div class="field">
+              <label>Incoterm</label>
+              <div class="incoterm-tabs">
+                <div class="itab active" onclick="setInco('CIF',this)">CIF</div>
+                <div class="itab" onclick="setInco('FOB',this)">FOB</div>
+                <div class="itab" onclick="setInco('EXW',this)">EXW</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="field">
+              <label>Invoice Value (USD)</label>
+              <input type="number" id="invoiceVal" value="18500" min="100" step="100" oninput="recalc()">
+            </div>
+            <div class="field">
+              <label>Freight Cost (USD)</label>
+              <input type="number" id="freightVal" value="1380" min="0" step="50" oninput="recalc()">
+            </div>
+            <div class="field">
+              <label>Insurance (USD)</label>
+              <input type="number" id="insuranceVal" value="92" min="0" step="10" oninput="recalc()">
+            </div>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="field">
+            <label>Exchange Rate (USD → GHS)</label>
+            <input type="number" id="fxRate" value="15.40" min="1" step="0.05" oninput="recalc()">
+            <span class="hint">BoG indicative rate — updates daily on platform</span>
+          </div>
+          <div class="field">
+            <label>Country of Origin</label>
+            <select id="origin" onchange="recalc()">
+              <option value="cn">China</option>
+              <option value="eu">European Union</option>
+              <option value="us">United States</option>
+              <option value="ecowas">ECOWAS Member State</option>
+              <option value="in">India</option>
+              <option value="ae">UAE</option>
+              <option value="uk">United Kingdom</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="note-box" id="origin-note">Standard MFN rates apply. No preferential agreement in force between Ghana and China.</div>
+      </div>
+
+      <div class="result-panel">
+        <div class="panel-label">Duty Summary</div>
+        <div class="section-label">Dutiable value (CIF basis)</div>
+        <div class="stat-grid">
+          <div class="stat"><div class="sl">Invoice (FOB)</div><div class="sv" id="s-fob">USD 0</div></div>
+          <div class="stat"><div class="sl">+ Freight</div><div class="sv" id="s-freight">USD 0</div></div>
+          <div class="stat"><div class="sl">+ Insurance</div><div class="sv" id="s-ins">USD 0</div></div>
+          <div class="stat highlight" style="grid-column:span 3"><div class="sl">CIF Value (Customs Base)</div><div class="sv" id="s-cif">USD 0</div></div>
+        </div>
+
+        <div class="section-label">Duty &amp; tax breakdown</div>
+        <div class="breakdown">
+          <div class="brow head-row">
+            <span class="bl">Charge</span>
+            <span class="bc">Rate</span>
+            <span class="br">Amount (USD)</span>
+          </div>
+          <div class="brow base-row">
+            <span class="bl">CIF Value (taxable base)</span>
+            <span class="bc">—</span>
+            <span class="br" id="r-cif">0.00</span>
+          </div>
+          <div class="brow">
+            <span class="bl">Import Duty</span>
+            <span class="bc" id="r-duty-rate">20%</span>
+            <span class="br" id="r-duty">0.00</span>
+          </div>
+          <div class="brow">
+            <span class="bl">VAT (on CIF + Duty)</span>
+            <span class="bc">15%</span>
+            <span class="br" id="r-vat">0.00</span>
+          </div>
+          <div class="brow">
+            <span class="bl">NHIL (National Health Insurance Levy)</span>
+            <span class="bc">2.5%</span>
+            <span class="br" id="r-nhil">0.00</span>
+          </div>
+          <div class="brow">
+            <span class="bl">GETFund Levy</span>
+            <span class="bc">2.5%</span>
+            <span class="br" id="r-get">0.00</span>
+          </div>
+          <div class="brow">
+            <span class="bl">ECOWAS Community Levy</span>
+            <span class="bc">0.5%</span>
+            <span class="br" id="r-ecowas">0.00</span>
+          </div>
+          <div class="brow">
+            <span class="bl">EDIF Levy (Export Dev. &amp; Investment Fund)</span>
+            <span class="bc">0.5%</span>
+            <span class="br" id="r-edif">0.00</span>
+          </div>
+          <div class="brow">
+            <span class="bl">EXIM Levy</span>
+            <span class="bc">0.5%</span>
+            <span class="br" id="r-exim">0.00</span>
+          </div>
+          <div class="brow giff-row">
+            <span class="bl">GIFF Member Levy</span>
+            <span class="bc">0.3%</span>
+            <span class="br" id="r-giff">0.00</span>
+          </div>
+          <div class="brow">
+            <span class="bl">Processing Fee (GRA)</span>
+            <span class="bc">1%</span>
+            <span class="br" id="r-proc">0.00</span>
+          </div>
+          <div class="brow total-row">
+            <span class="bl">Total Tax &amp; Duty Payable</span>
+            <span class="bc" id="r-eff-rate">Eff. rate —</span>
+            <span class="br" id="r-total">0.00</span>
+          </div>
+        </div>
+
+        <div class="pie-wrap">
+          <svg id="pie-svg" width="110" height="110" viewBox="0 0 110 110"></svg>
+          <div class="legend" id="legend"></div>
+        </div>
+
+        <div class="ghs-row">
+          <span>Total payable in Ghanaian Cedis (GHS)</span>
+          <strong id="r-ghs">GHS 0.00</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const dutyRates={8471:0.10,8528:0.20,8703:0.20,6109:0.25,1006:0.20,3004:0.00,7308:0.10,8415:0.20,2710:0.15,201:0.20,6403:0.20,3901:0.10};
+const hsHints={8471:"Chapter 84 — Machinery & mechanical appliances",8528:"Chapter 85 — Electrical machinery & equipment",8703:"Chapter 87 — Vehicles other than railway stock",6109:"Chapter 61 — Articles of apparel, knitted or crocheted",1006:"Chapter 10 — Cereals",3004:"Chapter 30 — Pharmaceutical products",7308:"Chapter 73 — Articles of iron or steel",8415:"Chapter 84 — Machinery & mechanical appliances",2710:"Chapter 27 — Mineral fuels & oils",201:"Chapter 02 — Meat & edible meat offal",6403:"Chapter 64 — Footwear, gaiters and the like",3901:"Chapter 39 — Plastics and articles thereof"};
+const originNotes={cn:"Standard MFN rates apply. No preferential agreement in force between Ghana and China.",eu:"Standard MFN rates apply. EU–Ghana EPA interim rates may apply to select HS chapters.",us:"Standard MFN rates apply. No bilateral FTA between Ghana and the United States.",ecowas:"ECOWAS Trade Liberalisation Scheme (ETLS) may apply — verify origin certificate. Community levy exempted.",in:"Standard MFN rates apply. No bilateral preferential agreement in force.",ae:"Standard MFN rates apply. No bilateral FTA between Ghana and the UAE.",uk:"Ghana–UK EPA applies. Preferential duty rate of 0% on select HS chapters — verify with GRA."};
+const ecowasExempt={ecowas:true};
+let inco="CIF";
+
+function setInco(v,el){
+  inco=v;
+  document.querySelectorAll('.itab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  recalc();
+}
+
+function onHsChange(){
+  const v=parseInt(document.getElementById('hscode').value);
+  document.getElementById('hs-hint').textContent=hsHints[v]||"";
+  recalc();
+}
+
+function fmt(n){return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtI(n){return n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})}
+
+function recalc(){
+  const inv=parseFloat(document.getElementById('invoiceVal').value)||0;
+  const fr=parseFloat(document.getElementById('freightVal').value)||0;
+  const ins=parseFloat(document.getElementById('insuranceVal').value)||0;
+  const fx=parseFloat(document.getElementById('fxRate').value)||15.4;
+  const origin=document.getElementById('origin').value;
+  const hsCode=parseInt(document.getElementById('hscode').value);
+  let baseDutyRate=dutyRates[hsCode]!==undefined?dutyRates[hsCode]:0.20;
+  if(origin==='uk') baseDutyRate=Math.max(0,baseDutyRate-0.05);
+  if(origin==='ecowas') baseDutyRate=0;
+  document.getElementById('origin-note').textContent=originNotes[origin]||"";
+
+  let fob=inv;
+  let cifFr=fr, cifIns=ins;
+  if(inco==='CIF'){cifFr=fr;cifIns=ins;}
+  else if(inco==='FOB'){cifFr=fr;cifIns=ins;}
+  else{cifFr=fr+fob*0.08;cifIns=fob*0.005;}
+
+  const cif=fob+cifFr+cifIns;
+  const duty=cif*baseDutyRate;
+  const vatBase=cif+duty;
+  const vat=vatBase*0.15;
+  const nhil=vatBase*0.025;
+  const get=vatBase*0.025;
+  const ecowas=origin==='ecowas'?0:cif*0.005;
+  const edif=cif*0.005;
+  const exim=cif*0.005;
+  const giff=cif*0.003;
+  const proc=cif*0.01;
+  const total=duty+vat+nhil+get+ecowas+edif+exim+giff+proc;
+  const effRate=cif>0?(total/cif*100):0;
+
+  document.getElementById('s-fob').textContent='USD '+fmtI(fob);
+  document.getElementById('s-freight').textContent='USD '+fmtI(cifFr);
+  document.getElementById('s-ins').textContent='USD '+fmtI(cifIns);
+  document.getElementById('s-cif').textContent='USD '+fmtI(cif);
+  document.getElementById('r-cif').textContent=fmt(cif);
+  document.getElementById('r-duty-rate').textContent=Math.round(baseDutyRate*100)+'%';
+  document.getElementById('r-duty').textContent=fmt(duty);
+  document.getElementById('r-vat').textContent=fmt(vat);
+  document.getElementById('r-nhil').textContent=fmt(nhil);
+  document.getElementById('r-get').textContent=fmt(get);
+  document.getElementById('r-ecowas').textContent=origin==='ecowas'?'Exempt':fmt(ecowas);
+  document.getElementById('r-edif').textContent=fmt(edif);
+  document.getElementById('r-exim').textContent=fmt(exim);
+  document.getElementById('r-giff').textContent=fmt(giff);
+  document.getElementById('r-proc').textContent=fmt(proc);
+  document.getElementById('r-total').textContent=fmt(total);
+  document.getElementById('r-eff-rate').textContent='Eff. '+effRate.toFixed(1)+'%';
+  document.getElementById('r-ghs').textContent='GHS '+fmt(total*fx);
+
+  drawPie([
+    {label:'Import Duty',val:duty,color:'#0F6E56'},
+    {label:'VAT (15%)',val:vat,color:'#1D9E75'},
+    {label:'NHIL + GETFund',val:nhil+get,color:'#5DCAA5'},
+    {label:'ECOWAS + EDIF + EXIM',val:ecowas+edif+exim,color:'#BA7517'},
+    {label:'GIFF Levy + Processing',val:giff+proc,color:'#993556'}
+  ],total);
+}
+
+function drawPie(slices,total){
+  const svg=document.getElementById('pie-svg');
+  svg.innerHTML='';
+  const cx=55,cy=55,r=48;
+  let angle=-Math.PI/2;
+  const lg=document.getElementById('legend');
+  lg.innerHTML='';
+  slices.forEach(s=>{
+    if(s.val<=0)return;
+    const frac=s.val/total;
+    const sweep=frac*Math.PI*2;
+    const x1=cx+r*Math.cos(angle),y1=cy+r*Math.sin(angle);
+    angle+=sweep;
+    const x2=cx+r*Math.cos(angle),y2=cy+r*Math.sin(angle);
+    const large=sweep>Math.PI?1:0;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z`);
+    path.setAttribute('fill',s.color);
+    svg.appendChild(path);
+    const li=document.createElement('div');
+    li.className='leg-item';
+    li.innerHTML=`<div class="leg-dot" style="background:${s.color}"></div><span class="leg-label">${s.label}</span><span class="leg-val">${Math.round(frac*100)}%</span>`;
+    lg.appendChild(li);
+  });
+  const inner=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  inner.setAttribute('cx',cx);inner.setAttribute('cy',cy);inner.setAttribute('r',28);
+  inner.setAttribute('fill','var(--gsurface)');
+  svg.appendChild(inner);
+}
+
+recalc();
+</script>
