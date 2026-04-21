@@ -1,0 +1,602 @@
+
+<h2 class="sr-only">GIFF Automated Shipping Cost Estimator — demo calculator for freight, port, customs and levy charges</h2>
+<style>
+:root{
+  --giff-teal:#0f6e56;
+  --giff-teal-dark:#0a4f3f;
+  --giff-teal-light:#1d9e75;
+  --giff-teal-bg:#e1f5ee;
+  --giff-pink:#993556;
+  --giff-pink-bg:#fbeaf0;
+  --giff-ink:#16211d;
+  --giff-muted:#5e6d67;
+  --giff-border:#d6e2dc;
+  --giff-surface:#ffffff;
+  --giff-surface-soft:#f7fbf9;
+  --giff-shadow:0 18px 50px rgba(12, 54, 42, 0.12);
+  --radius-xl:28px;
+  --radius-lg:20px;
+  --radius-md:14px;
+  --radius-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.wrap{
+  padding:20px 0;
+  color:var(--giff-ink);
+}
+.shell{
+  max-width:980px;
+  margin:0 auto;
+  border-radius:var(--radius-xl);
+  overflow:hidden;
+  background:
+    radial-gradient(circle at top right, rgba(29,158,117,0.22), transparent 30%),
+    linear-gradient(180deg, #f6fbf9 0%, #ffffff 36%);
+  box-shadow:var(--giff-shadow);
+  border:1px solid rgba(15,110,86,0.12);
+}
+.header-bar{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:20px;
+  padding:24px 28px;
+  background:linear-gradient(135deg, var(--giff-teal-dark) 0%, var(--giff-teal) 60%, #137c61 100%);
+  color:#fff;
+}
+.header-copy{
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+}
+.header-bar .logo-mark{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.14);
+  border:1px solid rgba(255,255,255,0.2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0.08em;
+  flex:0 0 auto;
+}
+.header-text h1{
+  font-size:clamp(1.2rem,2vw,1.6rem);
+  font-weight:700;
+  line-height:1.1;
+  margin-bottom:6px;
+}
+.header-text p{
+  max-width:520px;
+  font-size:0.95rem;
+  line-height:1.5;
+  color:rgba(255,255,255,0.82);
+}
+.module-tag{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:38px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.18);
+  font-size:0.78rem;
+  font-weight:600;
+  color:rgba(255,255,255,0.92);
+  white-space:nowrap;
+}
+.card{
+  padding:28px;
+}
+.intro-strip{
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(240px,0.8fr);
+  gap:16px;
+  margin-bottom:22px;
+}
+.intro-card,
+.summary-card{
+  background:var(--giff-surface);
+  border:1px solid var(--giff-border);
+  border-radius:var(--radius-lg);
+  padding:18px 20px;
+}
+.intro-card{
+  background:linear-gradient(180deg, rgba(225,245,238,0.72) 0%, #fff 100%);
+}
+.eyebrow{
+  display:inline-block;
+  margin-bottom:10px;
+  font-size:0.74rem;
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--giff-teal);
+}
+.intro-card h3,
+.summary-card h3{
+  font-size:1.05rem;
+  margin-bottom:8px;
+}
+.intro-card p,
+.summary-card p{
+  color:var(--giff-muted);
+  line-height:1.55;
+  font-size:0.93rem;
+}
+.summary-points{
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+}
+.summary-point{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  color:var(--giff-muted);
+  font-size:0.9rem;
+}
+.summary-point strong{
+  color:var(--giff-ink);
+}
+.summary-point::before{
+  content:"";
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  margin-top:5px;
+  background:linear-gradient(135deg, var(--giff-teal-light), var(--giff-teal));
+  flex:0 0 auto;
+}
+.form-panel{
+  background:var(--giff-surface);
+  border:1px solid var(--giff-border);
+  border-radius:var(--radius-lg);
+  padding:20px;
+}
+.two-col{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:16px;
+}
+.field label{
+  font-size:0.76rem;
+  color:var(--giff-muted);
+  font-weight:700;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+.field select,
+.field input[type=number]{
+  width:100%;
+  min-height:48px;
+  padding:12px 14px;
+  border-radius:var(--radius-md);
+  border:1px solid var(--giff-border);
+  background:var(--giff-surface-soft);
+  color:var(--giff-ink);
+  font-size:0.95rem;
+  transition:border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+  appearance:none;
+}
+.field select:focus,
+.field input[type=number]:focus{
+  outline:none;
+  border-color:rgba(15,110,86,0.42);
+  box-shadow:0 0 0 4px rgba(29,158,117,0.12);
+  background:#fff;
+}
+.field select:disabled{
+  background:#edf3f0;
+  color:#4d5f58;
+}
+.divider{
+  border:none;
+  border-top:1px solid rgba(15,110,86,0.12);
+  margin:8px 0 18px;
+}
+.action-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.action-hint{
+  color:var(--giff-muted);
+  font-size:0.88rem;
+}
+.calc-btn{
+  width:100%;
+  min-height:52px;
+  padding:14px 18px;
+  background:linear-gradient(135deg, var(--giff-teal) 0%, var(--giff-teal-light) 100%);
+  color:#fff;
+  border:none;
+  border-radius:16px;
+  font-size:0.98rem;
+  font-weight:700;
+  cursor:pointer;
+  letter-spacing:0.01em;
+  transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  box-shadow:0 12px 26px rgba(15,110,86,0.22);
+}
+.calc-btn:hover{
+  filter:brightness(1.02);
+  transform:translateY(-1px);
+}
+.calc-btn:active{
+  transform:translateY(0);
+}
+.results{
+  margin-top:22px;
+  display:none;
+}
+.results.show{display:block}
+.results-shell{
+  background:var(--giff-surface);
+  border:1px solid var(--giff-border);
+  border-radius:var(--radius-lg);
+  padding:20px;
+}
+.results-top{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+  margin-bottom:16px;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:0.8rem;
+  font-weight:700;
+  padding:8px 12px;
+  border-radius:999px;
+  background:var(--giff-teal-bg);
+  color:#085041;
+}
+.badge-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--giff-teal-light);
+}
+.results-header{
+  font-size:0.76rem;
+  font-weight:700;
+  color:var(--giff-muted);
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  margin-bottom:12px;
+}
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+.stat{
+  background:linear-gradient(180deg, #ffffff 0%, #f5faf8 100%);
+  border:1px solid var(--giff-border);
+  border-radius:var(--radius-md);
+  padding:14px;
+}
+.stat .s-label{
+  font-size:0.76rem;
+  color:var(--giff-muted);
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+}
+.stat .s-val{
+  font-size:1rem;
+  font-weight:700;
+  color:var(--giff-ink);
+}
+.line-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  padding:12px 0;
+  border-bottom:1px solid rgba(15,110,86,0.1);
+  font-size:0.95rem;
+}
+.line-item:last-child{border-bottom:none}
+.line-item .label{
+  color:var(--giff-muted);
+  flex:1;
+}
+.line-item .amt{
+  font-weight:700;
+  color:var(--giff-ink);
+  text-align:right;
+  white-space:nowrap;
+}
+.line-item.total-row{
+  margin-top:12px;
+  padding:16px 18px;
+  background:linear-gradient(135deg, rgba(225,245,238,0.95), rgba(238,250,245,0.96));
+  border:1px solid rgba(15,110,86,0.14);
+  border-radius:var(--radius-md);
+  border-bottom:none;
+}
+.line-item.total-row .label{
+  color:#085041;
+  font-size:1rem;
+}
+.line-item.total-row .amt{
+  color:#085041;
+  font-size:1.18rem;
+}
+.line-item.levy-row .label,
+.line-item.levy-row .amt{
+  color:var(--giff-pink);
+}
+.eta-note{
+  font-size:0.84rem;
+  line-height:1.5;
+  color:var(--giff-muted);
+  margin-top:14px;
+  padding:12px 14px;
+  border-left:4px solid var(--giff-teal-light);
+  background:linear-gradient(180deg, rgba(225,245,238,0.85), rgba(225,245,238,0.45));
+  border-radius:0 var(--radius-md) var(--radius-md) 0;
+}
+@media (max-width: 760px){
+  .wrap{padding:12px 0}
+  .shell{border-radius:22px}
+  .header-bar,
+  .card,
+  .results-shell,
+  .form-panel{padding:18px}
+  .header-bar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .module-tag{
+    align-self:flex-start;
+  }
+  .intro-strip,
+  .two-col,
+  .stats-grid{
+    grid-template-columns:1fr;
+  }
+  .results-top{
+    flex-direction:column;
+  }
+  .line-item{
+    flex-direction:column;
+    gap:6px;
+  }
+  .line-item .amt{
+    text-align:left;
+    white-space:normal;
+  }
+}
+@media (max-width: 480px){
+  .header-copy{gap:12px}
+  .header-bar .logo-mark{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+  }
+  .header-text p,
+  .intro-card p,
+  .summary-card p,
+  .summary-point,
+  .action-hint{
+    font-size:0.88rem;
+  }
+  .calc-btn{
+    min-height:50px;
+    font-size:0.95rem;
+  }
+}
+</style>
+<div class="wrap">
+<div class="shell">
+  <div class="header-bar">
+    <div class="header-copy">
+      <div class="logo-mark">GIFF</div>
+      <div class="header-text">
+        <h1>Freight Cost Estimator</h1>
+        <p>Estimate landed shipping cost into Tema with a cleaner operational view of freight, port charges, customs duty, levies, and forwarding fees.</p>
+      </div>
+    </div>
+    <span class="module-tag">Module 07 • Industry Integration</span>
+  </div>
+  <div class="card">
+    <div class="intro-strip">
+      <div class="intro-card">
+        <span class="eyebrow">Planning View</span>
+        <h3>Build a quick import scenario</h3>
+        <p>Select the route, equipment, carrier, and cargo value to model an indicative landed cost before cargo reaches Tema Port.</p>
+      </div>
+      <div class="summary-card">
+        <h3>What this estimate includes</h3>
+        <div class="summary-points">
+          <div class="summary-point"><strong>Freight + origin:</strong> Ocean rate, THC, and documentation.</div>
+          <div class="summary-point"><strong>Tema charges:</strong> Destination THC, examination, and forwarding service.</div>
+          <div class="summary-point"><strong>Import costs:</strong> Duty, ECOWAS, EDIF, and GIFF member levy.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-panel">
+      <div class="two-col">
+        <div class="field">
+          <label>Origin Port</label>
+          <select id="origin">
+            <option value="shanghai">Shanghai (CNSHA)</option>
+            <option value="rotterdam">Rotterdam (NLRTM)</option>
+            <option value="hamburg">Hamburg (DEHAM)</option>
+            <option value="antwerp">Antwerp (BEANR)</option>
+            <option value="jnpt">Nhava Sheva (INJNP)</option>
+            <option value="dubai">Jebel Ali (AEJEA)</option>
+            <option value="guangzhou">Guangzhou (CNGUA)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Destination</label>
+          <select disabled>
+            <option>Tema Port (GHTEM)</option>
+          </select>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label>Container Type</label>
+          <select id="container">
+            <option value="20gp">20' GP — Standard Dry</option>
+            <option value="40gp">40' GP — Standard Dry</option>
+            <option value="40hc">40' HC — High Cube</option>
+            <option value="20rf">20' RF — Reefer</option>
+            <option value="40rf">40' RF — Reefer HC</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Shipping Line</label>
+          <select id="line">
+            <option value="maersk">Maersk Line</option>
+            <option value="msc">MSC</option>
+            <option value="cma">CMA CGM</option>
+            <option value="hapag">Hapag-Lloyd</option>
+            <option value="cosco">COSCO Shipping</option>
+          </select>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label>Commodity</label>
+          <select id="commodity">
+            <option value="general">General Merchandise</option>
+            <option value="electronics">Electronics / Appliances</option>
+            <option value="textiles">Textiles / Garments</option>
+            <option value="foodstuff">Foodstuff / FMCG</option>
+            <option value="machinery">Machinery / Equipment</option>
+            <option value="vehicles">Vehicles / Auto Parts</option>
+            <option value="chemicals">Chemicals / Raw Materials</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Cargo Value (USD)</label>
+          <input type="number" id="cargoVal" value="25000" min="500" max="5000000" step="500">
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="action-row">
+        <button class="calc-btn" onclick="calculate()">Calculate Landed Cost</button>
+        <div class="action-hint">Indicative figures for planning and client-facing demos.</div>
+      </div>
+    </div>
+
+    <div class="results" id="results">
+      <div class="results-shell">
+        <div class="results-top">
+          <div>
+            <div class="results-header">Latest scenario</div>
+            <div class="badge"><div class="badge-dot"></div><span id="route-label">Shanghai → Tema Port</span></div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat"><div class="s-label">Transit time</div><div class="s-val" id="stat-transit">—</div></div>
+          <div class="stat"><div class="s-label">Incoterm</div><div class="s-val">CIF Tema</div></div>
+          <div class="stat"><div class="s-label">Currency</div><div class="s-val">USD / GHS</div></div>
+        </div>
+        <div class="results-header">Cost breakdown</div>
+        <div class="line-item"><span class="label">Ocean Freight</span><span class="amt" id="r-freight">—</span></div>
+        <div class="line-item"><span class="label">Origin THC</span><span class="amt" id="r-othc">—</span></div>
+        <div class="line-item"><span class="label">Origin Documentation</span><span class="amt" id="r-odoc">—</span></div>
+        <div class="line-item"><span class="label">Destination THC — GPHA Tema</span><span class="amt" id="r-dthc">—</span></div>
+        <div class="line-item"><span class="label">Port / GPHA Examination Fee</span><span class="amt" id="r-exam">—</span></div>
+        <div class="line-item"><span class="label">Customs Import Duty</span><span class="amt" id="r-duty">—</span></div>
+        <div class="line-item"><span class="label">ECOWAS Levy (0.5%)</span><span class="amt" id="r-ecowas">—</span></div>
+        <div class="line-item"><span class="label">EDIF Levy (0.5%)</span><span class="amt" id="r-edif">—</span></div>
+        <div class="line-item levy-row"><span class="label">GIFF Member Levy</span><span class="amt" id="r-giff">—</span></div>
+        <div class="line-item"><span class="label">Freight Forwarder Service Fee</span><span class="amt" id="r-ff">—</span></div>
+        <div class="line-item total-row"><span class="label">Total Landed Cost (USD)</span><span class="amt" id="r-total">—</span></div>
+        <div class="eta-note" id="eta-note">Estimated transit and cost are indicative. Live rates are pulled from integrated shipping line APIs on the GIFF platform.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const freightRates={
+  shanghai:{base:{20:1350,40:2200,40:2200},hc:300,rf:1200,transit:"22–25 days"},
+  rotterdam:{base:{20:1800,40:2900},hc:350,rf:1400,transit:"18–21 days"},
+  hamburg:{base:{20:1750,40:2800},hc:350,rf:1380,transit:"19–22 days"},
+  antwerp:{base:{20:1720,40:2750},hc:340,rf:1360,transit:"18–21 days"},
+  jnpt:{base:{20:950,40:1600},hc:250,rf:900,transit:"12–15 days"},
+  dubai:{base:{20:1100,40:1800},hc:280,rf:1050,transit:"14–17 days"},
+  guangzhou:{base:{20:1280,40:2100},hc:290,rf:1150,transit:"23–26 days"}
+};
+const lineMultiplier={maersk:1.08,msc:0.97,cma:1.02,hapag:1.05,cosco:0.94};
+const dutyRates={general:0.20,electronics:0.15,textiles:0.25,foodstuff:0.20,machinery:0.10,vehicles:0.30,chemicals:0.12};
+const originNames={shanghai:"Shanghai",rotterdam:"Rotterdam",hamburg:"Hamburg",antwerp:"Antwerp",jnpt:"Nhava Sheva",dubai:"Jebel Ali",guangzhou:"Guangzhou"};
+
+function fmt(n){return"USD "+n.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:0})}
+
+function calculate(){
+  const origin=document.getElementById("origin").value;
+  const ct=document.getElementById("container").value;
+  const line=document.getElementById("line").value;
+  const commodity=document.getElementById("commodity").value;
+  const cargoVal=Math.max(500,parseFloat(document.getElementById("cargoVal").value)||25000);
+
+  const r=freightRates[origin];
+  const lm=lineMultiplier[line];
+  let baseFreight;
+  if(ct==="20gp"||ct==="20rf") baseFreight=r.base[20]||r.base["20"]||1300;
+  else baseFreight=r.base[40]||r.base["40"]||2200;
+  if(ct==="40hc") baseFreight+=r.hc||300;
+  if(ct==="20rf"||ct==="40rf") baseFreight+=r.rf||1100;
+  const freight=Math.round(baseFreight*lm);
+  const othc=Math.round(ct==="20gp"||ct==="20rf"?210:320);
+  const odoc=185;
+  const dthc=Math.round(ct==="20gp"||ct==="20rf"?280:420);
+  const exam=Math.round(ct==="20gp"||ct==="20rf"?95:140);
+  const cifVal=cargoVal+freight+(othc+odoc)*0.5;
+  const dutyRate=dutyRates[commodity]||0.20;
+  const duty=Math.round(cifVal*dutyRate);
+  const ecowas=Math.round(cifVal*0.005);
+  const edif=Math.round(cifVal*0.005);
+  const giff=Math.round(cifVal*0.003);
+  const ff=Math.round(freight*0.04+250);
+  const total=freight+othc+odoc+dthc+exam+duty+ecowas+edif+giff+ff;
+
+  document.getElementById("route-label").textContent=originNames[origin]+" → Tema Port";
+  document.getElementById("stat-transit").textContent=r.transit;
+  document.getElementById("r-freight").textContent=fmt(freight);
+  document.getElementById("r-othc").textContent=fmt(othc);
+  document.getElementById("r-odoc").textContent=fmt(odoc);
+  document.getElementById("r-dthc").textContent=fmt(dthc);
+  document.getElementById("r-exam").textContent=fmt(exam);
+  document.getElementById("r-duty").textContent=fmt(duty)+" ("+Math.round(dutyRate*100)+"%)";
+  document.getElementById("r-ecowas").textContent=fmt(ecowas);
+  document.getElementById("r-edif").textContent=fmt(edif);
+  document.getElementById("r-giff").textContent=fmt(giff);
+  document.getElementById("r-ff").textContent=fmt(ff);
+  document.getElementById("r-total").textContent=fmt(total);
+
+  const res=document.getElementById("results");
+  res.classList.add("show");
+}
+
+calculate();
+</script>
