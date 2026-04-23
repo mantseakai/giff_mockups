@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIFF Digital Platform — Core Modules</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal:      #0F6E56;
+    --teal2:     #1D9E75;
+    --teal3:     #5DCAA5;
+    --teal-bg:   #E1F5EE;
+    --teal-dark: #085041;
+    --pink:      #993556;
+    --pink2:     #D4537E;
+    --pink-bg:   #FBEAF0;
+    --amber:     #BA7517;
+    --amber-bg:  #FAEEDA;
+    --blue:      #185FA5;
+    --blue-bg:   #E6F1FB;
+    --off:       #F7F5F0;
+    --border:    rgba(0,0,0,0.08);
+    --text:      #1A1A1A;
+    --muted:     #666;
+    --light:     #999;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--off);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--teal);
+    padding: 0 48px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .header-left { display: flex; align-items: center; gap: 12px; }
+
+  .logo-mark {
+    width: 34px; height: 34px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: var(--teal);
+    letter-spacing: 0.02em;
+  }
+
+  .header-title { font-size: 14px; font-weight: 500; color: #fff; }
+  .header-sub   { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 1px; }
+
+  .header-badge {
+    font-size: 11px; color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 3px 10px; border-radius: 20px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--teal);
+    padding: 64px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: 120px;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    font-size: 11px; font-weight: 500;
+    padding: 4px 12px; border-radius: 20px;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .hero-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal3); }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 46px; font-weight: 400;
+    color: #fff; line-height: 1.18;
+    max-width: 620px;
+    margin-bottom: 18px;
+  }
+
+  .hero h1 em { font-style: italic; color: var(--teal3); }
+
+  .hero p {
+    font-size: 16px; color: rgba(255,255,255,0.65);
+    max-width: 560px; line-height: 1.75;
+    margin-bottom: 32px;
+  }
+
+  .hero-stats {
+    display: flex; gap: 40px; align-items: center;
+  }
+
+  .hero-stat .hs-num {
+    font-size: 28px; font-weight: 500; color: #fff;
+  }
+
+  .hero-stat .hs-label {
+    font-size: 12px; color: rgba(255,255,255,0.5);
+    margin-top: 2px;
+  }
+
+  .hero-divider {
+    width: 1px; height: 40px;
+    background: rgba(255,255,255,0.15);
+  }
+
+  /* ── MODULE NAV ── */
+  .module-nav {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+    display: flex; gap: 0;
+    position: sticky; top: 60px; z-index: 90;
+    overflow-x: auto;
+  }
+
+  .mnav-item {
+    padding: 16px 20px;
+    font-size: 13px; font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .mnav-item:hover { color: var(--teal2); }
+  .mnav-item.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+  .mnav-num {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600;
+    background: var(--teal-bg); color: var(--teal-dark);
+  }
+
+  .mnav-item.active .mnav-num {
+    background: var(--teal); color: #fff;
+  }
+
+  /* ── PAGE BODY ── */
+  .page-body { padding: 0 48px 80px; }
+
+  /* ── MODULE SECTION ── */
+  .module-section {
+    padding: 56px 0 0;
+    scroll-margin-top: 120px;
+  }
+
+  .module-header {
+    display: flex; align-items: flex-start;
+    gap: 24px; margin-bottom: 36px;
+  }
+
+  .mod-icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .mod-icon svg { width: 26px; height: 26px; }
+
+  .mod-icon.m1 { background: var(--teal-bg); }
+  .mod-icon.m2 { background: var(--blue-bg); }
+  .mod-icon.m3 { background: var(--amber-bg); }
+  .mod-icon.m4 { background: var(--pink-bg); }
+
+  .mod-eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+
+  .mod-eyebrow.c1 { color: var(--teal2); }
+  .mod-eyebrow.c2 { color: var(--blue); }
+  .mod-eyebrow.c3 { color: var(--amber); }
+  .mod-eyebrow.c4 { color: var(--pink); }
+
+  .mod-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px; font-weight: 400;
+    color: var(--text); line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .mod-subtitle {
+    font-size: 15px; color: var(--muted);
+    max-width: 580px; line-height: 1.65;
+  }
+
+  /* ── FEATURE GRID ── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .feature-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+
+  .feature-card:hover {
+    border-color: rgba(15, 110, 86, 0.25);
+    transform: translateY(-2px);
+  }
+
+  .fc-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .fc-icon svg { width: 18px; height: 18px; }
+
+  .fc-title {
+    font-size: 14px; font-weight: 500;
+    color: var(--text); margin-bottom: 6px;
+  }
+
+  .fc-desc {
+    font-size: 13px; color: var(--muted); line-height: 1.6;
+  }
+
+  /* ── MOCKUP PANEL ── */
+  .mockup-panel {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+
+  .mp-topbar {
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mp-dots { display: flex; gap: 5px; }
+  .mp-dot  { width: 10px; height: 10px; border-radius: 50%; }
+
+  .mp-title { font-size: 12px; font-weight: 500; color: var(--muted); }
+
+  /* ── METRICS STRIP ── */
+  .metrics-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 0; border-bottom: 1px solid var(--border);
+  }
+
+  .metric-cell {
+    padding: 18px 20px;
+    border-right: 1px solid var(--border);
+  }
+
+  .metric-cell:last-child { border-right: none; }
+
+  .mc-label { font-size: 11px; color: var(--light); margin-bottom: 5px; }
+  .mc-value { font-size: 22px; font-weight: 500; color: var(--text); }
+  .mc-sub   { font-size: 11px; margin-top: 3px; }
+  .up       { color: var(--teal2); }
+  .dn       { color: #E24B4A; }
+
+  /* ── TABLE MOCK ── */
+  .mock-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .mock-table th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--light);
+    border-bottom: 1px solid var(--border);
+    background: #fafafa;
+  }
+
+  .mock-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .mock-table tr:last-child td { border-bottom: none; }
+
+  .mock-table tr:hover td { background: #f9fefb; }
+
+  .status-pill {
+    display: inline-block;
+    padding: 2px 9px; border-radius: 20px;
+    font-size: 11px; font-weight: 500;
+  }
+
+  .s-active   { background: var(--teal-bg);  color: var(--teal-dark); }
+  .s-pending  { background: var(--amber-bg); color: #633806; }
+  .s-overdue  { background: #FCEBEB;         color: #A32D2D; }
+  .s-paid     { background: var(--blue-bg);  color: var(--blue); }
+  .s-leave    { background: var(--pink-bg);  color: var(--pink); }
+  .s-review   { background: var(--amber-bg); color: #633806; }
+
+  .avatar {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    font-size: 10px; font-weight: 600;
+    margin-right: 8px; vertical-align: middle;
+  }
+
+  /* ── FINANCE CHART MOCK ── */
+  .chart-mock {
+    padding: 20px 20px 10px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  .chart-bar-row { display: flex; align-items: center; gap: 10px; }
+  .chart-month   { font-size: 11px; color: var(--light); width: 30px; }
+  .chart-track   { flex: 1; height: 28px; background: #f4f4f0; border-radius: 4px; position: relative; overflow: hidden; }
+  .chart-fill    { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 10px; }
+  .chart-fill-label { font-size: 11px; font-weight: 500; color: #fff; }
+  .chart-val     { font-size: 12px; color: var(--text); font-weight: 500; width: 70px; text-align: right; }
+
+  /* ── PROGRESS BARS ── */
+  .prog-row { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--border); }
+  .prog-row:last-child { border-bottom: none; }
+  .prog-label { font-size: 13px; color: var(--text); flex: 1; }
+  .prog-track { width: 160px; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
+  .prog-fill  { height: 100%; border-radius: 3px; }
+  .prog-pct   { font-size: 12px; font-weight: 500; color: var(--text); width: 36px; text-align: right; }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    height: 1px; background: var(--border);
+    margin: 56px 0 0;
+  }
+
+  /* ── BOTTOM CTA ── */
+  .cta-section {
+    margin-top: 56px;
+    background: var(--teal);
+    border-radius: 20px;
+    padding: 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 32px;
+  }
+
+  .cta-left h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px; font-weight: 400;
+    color: #fff; margin-bottom: 10px;
+  }
+
+  .cta-left p { font-size: 14px; color: rgba(255,255,255,0.6); max-width: 460px; line-height: 1.7; }
+
+  .cta-btn {
+    flex-shrink: 0;
+    background: #fff; color: var(--teal);
+    padding: 13px 28px; border-radius: 10px;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer; border: none;
+    white-space: nowrap;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 56px;
+    padding: 24px 48px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .footer-left { font-size: 12px; color: var(--light); }
+  .footer-right { font-size: 12px; color: var(--light); }
+
+  .two-col-layout {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <div class="logo-mark">GIFF</div>
+    <div>
+      <div class="header-title">GIFF Digital Transformation Platform</div>
+      <div class="header-sub">Ghana Institute of Freight Forwarders · 2026</div>
+    </div>
+  </div>
+  <div class="header-badge">Proposal Reference: GIFF-DT-PROP-2026-001</div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <div class="dot"></div>
+    Core Platform Modules — Overview
+  </div>
+  <h1>Four modules.<br><em>One unified</em> platform.</h1>
+  <p>A fully integrated digital backbone for GIFF's operations — replacing manual systems with automated, transparent, and member-facing workflows across membership, finance, dues, and HR.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hs-num">01–04</div>
+      <div class="hs-label">Core admin modules</div>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat">
+      <div class="hs-num">Zero</div>
+      <div class="hs-label">Manual interventions</div>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat">
+      <div class="hs-num">Month 5</div>
+      <div class="hs-label">Target go-live</div>
+    </div>
+    <div class="hero-divider"></div>
+    <div class="hero-stat">
+      <div class="hs-num">100%</div>
+      <div class="hs-label">IP vests in GIFF</div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE NAV -->
+<nav class="module-nav">
+  <a href="#mod1" class="mnav-item active">
+    <span class="mnav-num">01</span> Membership Management
+  </a>
+  <a href="#mod2" class="mnav-item">
+    <span class="mnav-num">02</span> Dues &amp; Fees
+  </a>
+  <a href="#mod3" class="mnav-item">
+    <span class="mnav-num">03</span> Accounts &amp; Finance
+  </a>
+  <a href="#mod4" class="mnav-item">
+    <span class="mnav-num">04</span> Human Resources
+  </a>
+</nav>
+
+<div class="page-body">
+
+  <!-- ══════════════════════════════════════════════════════
+       MODULE 01 — MEMBERSHIP
+  ══════════════════════════════════════════════════════ -->
+  <section class="module-section" id="mod1">
+    <div class="module-header">
+      <div class="mod-icon m1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/>
+        </svg>
+      </div>
+      <div>
+        <div class="mod-eyebrow c1">Module 01</div>
+        <h2 class="mod-title">Membership Management</h2>
+        <p class="mod-subtitle">The membership module transforms how GIFF onboards, tracks, and serves its members, ensuring an engaged and compliant membership base — with every record digital, searchable, and real-time.</p>
+      </div>
+    </div>
+
+    <!-- Feature cards -->
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--teal-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        <div class="fc-title">Digital Onboarding</div>
+        <div class="fc-desc">Fully paperless member registration with document upload, approval workflow, and automatic issuance of digital membership certificates.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--teal-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/>
+          </svg>
+        </div>
+        <div class="fc-title">Member Self-Service Portal</div>
+        <div class="fc-desc">Members update their own profiles, renew subscriptions, download certificates, and raise support tickets — reducing secretariat workload significantly.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--teal-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <div class="fc-title">Renewal Automation</div>
+        <div class="fc-desc">Automated reminders at 90, 60, and 30 days before expiry — with one-click renewal and instant payment reconciliation to GRA.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--teal-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <div class="fc-title">Searchable Member Directory</div>
+        <div class="fc-desc">Instant search across all member records by name, company, district, licence class, or compliance status — replacing physical filing systems.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--teal-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <div class="fc-title">Compliance Dashboard</div>
+        <div class="fc-desc">Real-time compliance status for every member — licence validity, CPD credits, dues standing — with automated alerts before enforcement action.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--teal-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="fc-title">Broadcast & Notifications</div>
+        <div class="fc-desc">Push notifications, SMS, and WhatsApp alerts to all members or targeted segments — regulatory updates, events, and member alerts in one click.</div>
+      </div>
+    </div>
+
+    <!-- Mockup -->
+    <div class="mockup-panel">
+      <div class="mp-topbar">
+        <div class="mp-dots">
+          <div class="mp-dot" style="background:#f47067"></div>
+          <div class="mp-dot" style="background:#f9c84a"></div>
+          <div class="mp-dot" style="background:#57c754"></div>
+        </div>
+        <div class="mp-title">GIFF Platform — Membership Registry</div>
+      </div>
+      <div class="metrics-strip">
+        <div class="metric-cell">
+          <div class="mc-label">Total Members</div>
+          <div class="mc-value">1,847</div>
+          <div class="mc-sub up">▲ +63 this quarter</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">Active &amp; Compliant</div>
+          <div class="mc-value">1,612</div>
+          <div class="mc-sub up">87.3% compliance rate</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">Renewals Due (30d)</div>
+          <div class="mc-value">148</div>
+          <div class="mc-sub" style="color:var(--amber)">⚠ Reminders sent: 148</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">New Applications</div>
+          <div class="mc-value">23</div>
+          <div class="mc-sub" style="color:var(--blue)">14 awaiting review</div>
+        </div>
+      </div>
+      <table class="mock-table">
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Company</th>
+            <th>District</th>
+            <th>Licence Class</th>
+            <th>Expiry</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="avatar" style="background:var(--teal-bg);color:var(--teal-dark)">KA</span>Kwame Asante</td>
+            <td>Asante Logistics Ltd</td>
+            <td>Greater Accra</td>
+            <td>Class A — Full</td>
+            <td>31 Dec 2026</td>
+            <td><span class="status-pill s-active">Active</span></td>
+          </tr>
+          <tr>
+            <td><span class="avatar" style="background:var(--blue-bg);color:var(--blue)">AB</span>Abena Boateng</td>
+            <td>SwiftClear Freight</td>
+            <td>Tema</td>
+            <td>Class A — Full</td>
+            <td>30 Apr 2026</td>
+            <td><span class="status-pill s-pending">Renewing</span></td>
+          </tr>
+          <tr>
+            <td><span class="avatar" style="background:#FCEBEB;color:#A32D2D">EO</span>Emmanuel Owusu</td>
+            <td>Port Link Services</td>
+            <td>Tema</td>
+            <td>Class B — Associate</td>
+            <td>28 Feb 2026</td>
+            <td><span class="status-pill s-overdue">Overdue</span></td>
+          </tr>
+          <tr>
+            <td><span class="avatar" style="background:var(--pink-bg);color:var(--pink)">AA</span>Ama Acheampong</td>
+            <td>Gold Coast Forwarders</td>
+            <td>Western</td>
+            <td>Class A — Full</td>
+            <td>31 Dec 2026</td>
+            <td><span class="status-pill s-active">Active</span></td>
+          </tr>
+          <tr>
+            <td><span class="avatar" style="background:var(--amber-bg);color:#633806">KM</span>Kofi Mensah</td>
+            <td>Mensah &amp; Co Clearing</td>
+            <td>Ashanti</td>
+            <td>Class B — Associate</td>
+            <td>15 May 2026</td>
+            <td><span class="status-pill s-pending">Renewing</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════
+       MODULE 02 — DUES & FEES
+  ══════════════════════════════════════════════════════ -->
+  <section class="module-section" id="mod2">
+    <div class="module-header">
+      <div class="mod-icon m2">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+      <div>
+        <div class="mod-eyebrow c2">Module 02</div>
+        <h2 class="mod-title">Dues &amp; Fees Administration</h2>
+        <p class="mod-subtitle">Manual dues collection is GIFF's #1 revenue killer. Module 02 automates every step — from invoice generation to payment reconciliation — with zero manual intervention and full GRA compliance.</p>
+      </div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--blue-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/>
+          </svg>
+        </div>
+        <div class="fc-title">Automated Invoice Generation</div>
+        <div class="fc-desc">Annual dues, levies, and ad-hoc fees invoiced automatically on schedule — with branded PDF invoices delivered to members by email, SMS, and WhatsApp.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--blue-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <div class="fc-title">Multi-Channel Payments</div>
+        <div class="fc-desc">MTN MoMo, Vodafone Cash, AirtelTigo, card, and bank transfer — all routed through a unified payment layer with instant confirmation receipts.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--blue-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="fc-title">Real-Time Reconciliation</div>
+        <div class="fc-desc">Every payment instantly matched to its invoice and member record — arrears tracked automatically, eliminating the manual ledger reconciliation backlog.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--blue-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+          </svg>
+        </div>
+        <div class="fc-title">Arrears & Overdue Tracking</div>
+        <div class="fc-desc">Automated escalation workflow — reminder, follow-up, compliance flag, suspension notice — without a single secretariat email being manually written.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--blue-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+          </svg>
+        </div>
+        <div class="fc-title">Revenue Dashboard</div>
+        <div class="fc-desc">Live collection rates, outstanding balances, and month-over-month revenue trends visible to GIFF leadership without any manual report preparation.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--blue-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div class="fc-title">GRA Levy Routing</div>
+        <div class="fc-desc">GIFF levies automatically routed to the GRA Consolidated Fund with full audit trail — reconciliation reports generated on demand for compliance reviews.</div>
+      </div>
+    </div>
+
+    <div class="mockup-panel">
+      <div class="mp-topbar">
+        <div class="mp-dots">
+          <div class="mp-dot" style="background:#f47067"></div>
+          <div class="mp-dot" style="background:#f9c84a"></div>
+          <div class="mp-dot" style="background:#57c754"></div>
+        </div>
+        <div class="mp-title">GIFF Platform — Dues &amp; Collections Dashboard</div>
+      </div>
+      <div class="metrics-strip">
+        <div class="metric-cell">
+          <div class="mc-label">Collected YTD</div>
+          <div class="mc-value">GHS 412,800</div>
+          <div class="mc-sub up">▲ 31% vs last year</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">Outstanding</div>
+          <div class="mc-value">GHS 87,200</div>
+          <div class="mc-sub dn">▼ 235 overdue invoices</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">Collection Rate</div>
+          <div class="mc-value">82.6%</div>
+          <div class="mc-sub up">Target: 90%</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">Levy Remitted to GRA</div>
+          <div class="mc-value">GHS 206,400</div>
+          <div class="mc-sub up">Fully reconciled</div>
+        </div>
+      </div>
+      <table class="mock-table">
+        <thead>
+          <tr>
+            <th>Invoice #</th>
+            <th>Member</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Due Date</th>
+            <th>Payment Method</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--muted);font-size:12px">INV-2026-1847</td>
+            <td>Kwame Asante</td>
+            <td>Annual Dues</td>
+            <td style="font-weight:500">GHS 1,200</td>
+            <td>31 Mar 2026</td>
+            <td>MTN MoMo</td>
+            <td><span class="status-pill s-paid">Paid</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted);font-size:12px">INV-2026-1831</td>
+            <td>SwiftClear Freight</td>
+            <td>Annual Dues</td>
+            <td style="font-weight:500">GHS 1,200</td>
+            <td>15 Apr 2026</td>
+            <td>—</td>
+            <td><span class="status-pill s-pending">Pending</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted);font-size:12px">INV-2026-1801</td>
+            <td>Emmanuel Owusu</td>
+            <td>Annual Dues + Arrears</td>
+            <td style="font-weight:500">GHS 2,400</td>
+            <td>28 Feb 2026</td>
+            <td>—</td>
+            <td><span class="status-pill s-overdue">Overdue</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted);font-size:12px">INV-2026-1798</td>
+            <td>Gold Coast Forwarders</td>
+            <td>CPD Training Fee</td>
+            <td style="font-weight:500">GHS 450</td>
+            <td>20 Apr 2026</td>
+            <td>Card (Paystack)</td>
+            <td><span class="status-pill s-paid">Paid</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted);font-size:12px">INV-2026-1765</td>
+            <td>Mensah &amp; Co Clearing</td>
+            <td>Annual Dues</td>
+            <td style="font-weight:500">GHS 1,200</td>
+            <td>15 May 2026</td>
+            <td>—</td>
+            <td><span class="status-pill s-pending">Pending</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════
+       MODULE 03 — ACCOUNTS & FINANCE
+  ══════════════════════════════════════════════════════ -->
+  <section class="module-section" id="mod3">
+    <div class="module-header">
+      <div class="mod-icon m3">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#BA7517" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+        </svg>
+      </div>
+      <div>
+        <div class="mod-eyebrow c3">Module 03</div>
+        <h2 class="mod-title">Accounts &amp; Finance</h2>
+        <p class="mod-subtitle">This module introduces a real-time financial management system, replacing GIFF's reliance on manual bookkeeping and spreadsheet-based accounting with automated, transparent, and audit-ready processes.</p>
+      </div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--amber-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#BA7517" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/>
+          </svg>
+        </div>
+        <div class="fc-title">Real-Time Financial Reporting</div>
+        <div class="fc-desc">Income statements, balance sheets, and cash flow reports generated automatically — available to leadership at any time without waiting for a manual close.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--amber-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#BA7517" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </div>
+        <div class="fc-title">Bank Reconciliation</div>
+        <div class="fc-desc">Automated matching of bank transactions to system records — flagging discrepancies in real time and generating reconciliation reports for auditors.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--amber-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#BA7517" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="fc-title">Budget vs Actuals</div>
+        <div class="fc-desc">Live tracking of expenditure against approved budget lines — with variance alerts and drill-down to individual transactions for complete accountability.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--amber-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#BA7517" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </div>
+        <div class="fc-title">Audit Trail</div>
+        <div class="fc-desc">Every financial transaction timestamped, attributed, and immutably logged — giving auditors full traceability and eliminating the risk of undetected irregularities.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--amber-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#BA7517" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <div class="fc-title">Levy Allocation Tracking</div>
+        <div class="fc-desc">Full visibility of GIFF's levy income routed through GRA — allocation receipts tracked automatically with no manual reconciliation required by secretariat staff.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--amber-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#BA7517" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          </svg>
+        </div>
+        <div class="fc-title">Multi-Fund Management</div>
+        <div class="fc-desc">Separate funds — operational, levy, training, and reserve — tracked independently with ring-fenced reporting for governance and transparency.</div>
+      </div>
+    </div>
+
+    <div class="mockup-panel">
+      <div class="mp-topbar">
+        <div class="mp-dots">
+          <div class="mp-dot" style="background:#f47067"></div>
+          <div class="mp-dot" style="background:#f9c84a"></div>
+          <div class="mp-dot" style="background:#57c754"></div>
+        </div>
+        <div class="mp-title">GIFF Platform — Financial Overview · Q1 2026</div>
+      </div>
+      <div class="metrics-strip">
+        <div class="metric-cell">
+          <div class="mc-label">Total Revenue Q1</div>
+          <div class="mc-value">GHS 618,400</div>
+          <div class="mc-sub up">▲ +22.4% vs Q1 2025</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">Total Expenditure Q1</div>
+          <div class="mc-value">GHS 391,200</div>
+          <div class="mc-sub up">Within budget</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">Net Surplus Q1</div>
+          <div class="mc-value">GHS 227,200</div>
+          <div class="mc-sub up">36.7% margin</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">Levy Remitted YTD</div>
+          <div class="mc-value">GHS 206,400</div>
+          <div class="mc-sub up">GRA reconciled ✓</div>
+        </div>
+      </div>
+      <div class="chart-mock">
+        <div style="font-size:11px;color:var(--light);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.04em">Monthly revenue vs expenditure — 2026</div>
+        <div class="chart-bar-row">
+          <div class="chart-month">Jan</div>
+          <div class="chart-track">
+            <div class="chart-fill" style="width:72%;background:var(--teal2)"><span class="chart-fill-label">Revenue</span></div>
+          </div>
+          <div class="chart-val">GHS 198k</div>
+        </div>
+        <div class="chart-bar-row">
+          <div class="chart-month"></div>
+          <div class="chart-track">
+            <div class="chart-fill" style="width:46%;background:var(--amber)"><span class="chart-fill-label">Expenditure</span></div>
+          </div>
+          <div class="chart-val">GHS 127k</div>
+        </div>
+        <div class="chart-bar-row" style="margin-top:6px">
+          <div class="chart-month">Feb</div>
+          <div class="chart-track">
+            <div class="chart-fill" style="width:66%;background:var(--teal2)"></div>
+          </div>
+          <div class="chart-val">GHS 183k</div>
+        </div>
+        <div class="chart-bar-row">
+          <div class="chart-month"></div>
+          <div class="chart-track">
+            <div class="chart-fill" style="width:49%;background:var(--amber)"></div>
+          </div>
+          <div class="chart-val">GHS 134k</div>
+        </div>
+        <div class="chart-bar-row" style="margin-top:6px">
+          <div class="chart-month">Mar</div>
+          <div class="chart-track">
+            <div class="chart-fill" style="width:86%;background:var(--teal2)"></div>
+          </div>
+          <div class="chart-val">GHS 237k</div>
+        </div>
+        <div class="chart-bar-row">
+          <div class="chart-month"></div>
+          <div class="chart-track">
+            <div class="chart-fill" style="width:47%;background:var(--amber)"></div>
+          </div>
+          <div class="chart-val">GHS 130k</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════
+       MODULE 04 — HUMAN RESOURCES
+  ══════════════════════════════════════════════════════ -->
+  <section class="module-section" id="mod4">
+    <div class="module-header">
+      <div class="mod-icon m4">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div>
+        <div class="mod-eyebrow c4">Module 04</div>
+        <h2 class="mod-title">Human Resource Management</h2>
+        <p class="mod-subtitle">This module provides GIFF's Secretariat team with a comprehensive HR system, streamlining administrative tasks and enhancing overall staff management — from onboarding to performance reviews.</p>
+      </div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--pink-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="fc-title">Staff Digital Onboarding</div>
+        <div class="fc-desc">Paperless employee onboarding — contracts, policy sign-offs, access provisioning, and equipment allocation managed from a single digital workflow.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--pink-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div class="fc-title">Leave Management</div>
+        <div class="fc-desc">Self-service leave requests with automated approval workflow, balance tracking, and calendar visibility — eliminating paper forms and back-and-forth emails.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--pink-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="fc-title">Attendance Tracking</div>
+        <div class="fc-desc">Digital clock-in and clock-out — with attendance summaries, lateness reports, and integration to payroll for accurate salary calculations each month.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--pink-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="fc-title">Payroll Processing</div>
+        <div class="fc-desc">Automated monthly payroll calculation — integrating attendance data, deductions, SSNIT contributions, and income tax withholding with one-click payslip distribution.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--pink-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </div>
+        <div class="fc-title">Performance Appraisals</div>
+        <div class="fc-desc">Structured half-year and annual review cycles — with goal setting, peer feedback, and manager scoring tracked digitally for every Secretariat staff member.</div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon" style="background:var(--pink-bg)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#993556" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div class="fc-title">Training &amp; CPD Records</div>
+        <div class="fc-desc">Staff training history, CPD credits, and qualification records stored centrally — supporting compliance with GIFF's professional development standards.</div>
+      </div>
+    </div>
+
+    <div class="mockup-panel">
+      <div class="mp-topbar">
+        <div class="mp-dots">
+          <div class="mp-dot" style="background:#f47067"></div>
+          <div class="mp-dot" style="background:#f9c84a"></div>
+          <div class="mp-dot" style="background:#57c754"></div>
+        </div>
+        <div class="mp-title">GIFF Platform — HR Dashboard · Secretariat Staff</div>
+      </div>
+      <div class="metrics-strip">
+        <div class="metric-cell">
+          <div class="mc-label">Total Staff</div>
+          <div class="mc-value">18</div>
+          <div class="mc-sub" style="color:var(--muted)">Accra &amp; District Offices</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">Present Today</div>
+          <div class="mc-value">15</div>
+          <div class="mc-sub" style="color:var(--muted)">3 on approved leave</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">Leave Requests</div>
+          <div class="mc-value">4</div>
+          <div class="mc-sub" style="color:var(--amber)">2 pending approval</div>
+        </div>
+        <div class="metric-cell">
+          <div class="mc-label">Next Payroll Run</div>
+          <div class="mc-value">30 Apr 2026</div>
+          <div class="mc-sub up">On schedule</div>
+        </div>
+      </div>
+
+      <div class="two-col-layout" style="padding:16px;gap:14px">
+        <div>
+          <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:var(--light);margin-bottom:10px;padding-left:4px">Staff Directory</div>
+          <table class="mock-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="avatar" style="background:var(--pink-bg);color:var(--pink);font-size:9px">GS</span>Grace Sarpong</td>
+                <td>General Secretary</td>
+                <td><span class="status-pill s-active">Present</span></td>
+              </tr>
+              <tr>
+                <td><span class="avatar" style="background:var(--blue-bg);color:var(--blue);font-size:9px">JA</span>Joseph Aidoo</td>
+                <td>Finance Manager</td>
+                <td><span class="status-pill s-active">Present</span></td>
+              </tr>
+              <tr>
+                <td><span class="avatar" style="background:var(--teal-bg);color:var(--teal-dark);font-size:9px">MO</span>Mary Ofori</td>
+                <td>Membership Officer</td>
+                <td><span class="status-pill s-leave">On Leave</span></td>
+              </tr>
+              <tr>
+                <td><span class="avatar" style="background:var(--amber-bg);color:#633806;font-size:9px">DB</span>Daniel Boadu</td>
+                <td>IT Administrator</td>
+                <td><span class="status-pill s-active">Present</span></td>
+              </tr>
+              <tr>
+                <td><span class="avatar" style="background:#FCEBEB;color:#A32D2D;font-size:9px">EK</span>Efua Kyei</td>
+                <td>Admin Officer</td>
+                <td><span class="status-pill s-review">Review Due</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:var(--light);margin-bottom:10px;padding-left:4px">Performance Completion Rate</div>
+          <div class="prog-row">
+            <span class="prog-label">Grace Sarpong — General Secretary</span>
+            <div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--teal2)"></div></div>
+            <span class="prog-pct up">100%</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Joseph Aidoo — Finance Manager</span>
+            <div class="prog-track"><div class="prog-fill" style="width:80%;background:var(--teal2)"></div></div>
+            <span class="prog-pct">80%</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Daniel Boadu — IT Admin</span>
+            <div class="prog-track"><div class="prog-fill" style="width:65%;background:var(--amber)"></div></div>
+            <span class="prog-pct" style="color:var(--amber)">65%</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Efua Kyei — Admin Officer</span>
+            <div class="prog-track"><div class="prog-fill" style="width:40%;background:#E24B4A"></div></div>
+            <span class="prog-pct dn">40%</span>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Mary Ofori — Membership Officer</span>
+            <div class="prog-track"><div class="prog-fill" style="width:90%;background:var(--teal2)"></div></div>
+            <span class="prog-pct up">90%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-left">
+      <h2>Ready to digitise GIFF?</h2>
+      <p>All four core modules are designed for a Month 5 go-live, with full IP vesting in GIFF upon final payment. FES Consultancy Ltd and Aliska are ready to begin the Month 1 assessment immediately upon SLA signing.</p>
+    </div>
+    <button class="cta-btn">Begin Month 1 Assessment →</button>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    GIFF Digital Transformation Platform · GIFF-DT-PROP-2026-001 · Version 2.0 — April 2026
+  </div>
+  <div class="footer-right">
+    Submitted by FES Consultancy Ltd in collaboration with Aliska Business Advisory and Research Limited
+  </div>
+</footer>
+
+<script>
+  const navItems = document.querySelectorAll('.mnav-item');
+  const sections = ['mod1','mod2','mod3','mod4'].map(id => document.getElementById(id));
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navItems.forEach(n => n.classList.remove('active'));
+        const idx = sections.indexOf(entry.target);
+        if (idx >= 0) navItems[idx].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-120px 0px -60% 0px' });
+
+  sections.forEach(s => s && observer.observe(s));
+
+  navItems.forEach(item => {
+    item.addEventListener('click', e => {
+      navItems.forEach(n => n.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

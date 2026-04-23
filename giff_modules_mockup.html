@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIFF Digital Platform — Core Modules</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ───────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink:      #09111F;
+  --ink2:     #0D1B35;
+  --ink3:     #142240;
+  --gold:     #C9A84C;
+  --gold2:    #E8C97A;
+  --gold3:    #F5E4B0;
+  --cream:    #F7F2E8;
+  --offwhite: #EEE8DC;
+  --muted:    #8A8070;
+  --border:   rgba(201,168,76,0.18);
+  --text:     #2C2416;
+  --white:    #FFFFFF;
+
+  --m1: #1A6B8A;   /* teal-blue   — Membership */
+  --m2: #1D7A4F;   /* forest      — Dues */
+  --m3: #7B4E1A;   /* amber-brown — Finance */
+  --m4: #5A2D7A;   /* deep purple — HR */
+
+  --m1l: #E8F4F8;
+  --m2l: #E8F5EE;
+  --m3l: #FAF0E4;
+  --m4l: #F3EEF8;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ─── HERO ───────────────────────────────────────────────────────────────── */
+.hero {
+  background: var(--ink);
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 40px;
+  text-align: center;
+}
+
+/* Geometric background grid */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Gold diagonal accent */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 700px; height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.2s forwards;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(42px, 7vw, 88px);
+  line-height: 1.0;
+  color: var(--white);
+  margin-bottom: 12px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.35s forwards;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--gold2);
+}
+
+.hero-subtitle {
+  font-size: clamp(14px, 2vw, 17px);
+  color: rgba(255,255,255,0.45);
+  font-weight: 300;
+  max-width: 560px;
+  line-height: 1.7;
+  margin: 20px auto 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.5s forwards;
+}
+
+.hero-modules-row {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 56px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.65s forwards;
+}
+
+.module-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 2px;
+  border: 1px solid;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-decoration: none;
+}
+.module-chip:hover { transform: translateY(-2px); }
+.mc1 { color: var(--m1); border-color: rgba(26,107,138,0.4); background: rgba(26,107,138,0.06); }
+.mc2 { color: var(--m2); border-color: rgba(29,122,79,0.4);  background: rgba(29,122,79,0.06);  }
+.mc3 { color: var(--m3); border-color: rgba(123,78,26,0.4);  background: rgba(123,78,26,0.06);  }
+.mc4 { color: var(--m4); border-color: rgba(90,45,122,0.4);  background: rgba(90,45,122,0.06);  }
+
+.hero-scroll {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 1s forwards;
+}
+.scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  animation: scrollPulse 2s ease infinite;
+}
+.scroll-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ─── MODULE SECTIONS ────────────────────────────────────────────────────── */
+.module-section {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+}
+
+.module-section:nth-child(even) { direction: rtl; }
+.module-section:nth-child(even) > * { direction: ltr; }
+
+/* Left: narrative panel */
+.module-narrative {
+  padding: 80px 60px 80px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.module-section:nth-child(even) .module-narrative {
+  padding: 80px 80px 80px 60px;
+}
+
+.module-number {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.module-number::after {
+  content: '';
+  flex: 1;
+  max-width: 60px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.4;
+}
+
+.module-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: clamp(32px, 4vw, 52px);
+  line-height: 1.05;
+  margin-bottom: 6px;
+}
+
+.module-tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 300;
+  margin-bottom: 28px;
+  opacity: 0.75;
+}
+
+.module-body {
+  font-size: 15px;
+  line-height: 1.75;
+  font-weight: 300;
+  max-width: 480px;
+  margin-bottom: 36px;
+  opacity: 0.8;
+}
+
+/* Feature list */
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 2px;
+  border-left: 2px solid;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(4px);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.feature-item:hover {
+  transform: translateX(4px);
+  box-shadow: 4px 0 20px rgba(0,0,0,0.06);
+}
+.fi-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.fi-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.fi-desc {
+  font-size: 12px;
+  opacity: 0.65;
+  line-height: 1.5;
+}
+
+/* Right: visual panel */
+.module-visual {
+  position: relative;
+  overflow: hidden;
+}
+
+.module-visual-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+}
+
+/* ─── M1: MEMBERSHIP ─────────────────────────────────────────────────────── */
+.m1-bg { background: var(--ink); }
+.m1-color { color: var(--m1); }
+.m1-border { border-color: var(--m1); }
+.m1-bg-light { background: var(--m1l); }
+
+/* Member card visual */
+.member-card-mockup {
+  background: linear-gradient(135deg, var(--m1), #0D3D55);
+  border-radius: 12px;
+  padding: 24px;
+  width: 300px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  animation: floatCard 4s ease-in-out infinite;
+}
+.member-card-mockup::before {
+  content: '';
+  position: absolute;
+  right: -30px; top: -30px;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-10px) rotate(0.5deg); }
+}
+.mc-giff { font-size: 9px; letter-spacing: 2px; opacity: 0.6; margin-bottom: 12px; font-family: 'DM Mono', monospace; }
+.mc-id { font-family: 'DM Mono', monospace; font-size: 20px; letter-spacing: 3px; margin-bottom: 4px; }
+.mc-name { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+.mc-row { display: flex; justify-content: space-between; align-items: flex-end; }
+.mc-bal-label { font-size: 9px; opacity: 0.55; margin-bottom: 3px; }
+.mc-bal { font-size: 18px; font-weight: 800; }
+.mc-status-badge { background: rgba(74,222,128,0.2); color: #4ADE80; border: 1px solid rgba(74,222,128,0.3); padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+
+.lifecycle-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 300px;
+  margin-top: 20px;
+}
+.ls-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: white;
+  animation: slideIn 0.4s ease both;
+}
+.ls-step:nth-child(1) { animation-delay: 0.1s; background: rgba(26,107,138,0.7); }
+.ls-step:nth-child(2) { animation-delay: 0.2s; background: rgba(26,107,138,0.55); }
+.ls-step:nth-child(3) { animation-delay: 0.3s; background: rgba(26,107,138,0.4); }
+.ls-step:nth-child(4) { animation-delay: 0.4s; background: rgba(16,185,129,0.5); }
+.ls-step:nth-child(5) { animation-delay: 0.5s; background: rgba(249,115,22,0.4); }
+.ls-arrow { font-size: 10px; opacity: 0.6; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+/* ─── M2: DUES ────────────────────────────────────────────────────────────── */
+.m2-bg { background: linear-gradient(160deg, #0A1E15, #0D2B1B); }
+.m2-color { color: var(--m2); }
+.m2-border { border-color: var(--m2); }
+.m2-bg-light { background: var(--m2l); }
+
+.collection-visual {
+  width: 320px;
+}
+.cv-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.cv-title { color: white; font-size: 13px; font-weight: 700; }
+.cv-period { color: rgba(255,255,255,0.4); font-size: 11px; font-family: 'DM Mono', monospace; }
+.cv-progress-wrap {
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 8px;
+}
+.cv-progress-fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--m2), #2ECC71);
+  animation: grow 1.5s ease 0.5s both;
+  width: 87%;
+}
+@keyframes grow { from { width: 0; } }
+.cv-stats { display: flex; justify-content: space-between; margin-bottom: 20px; }
+.cv-stat-val { color: white; font-size: 16px; font-weight: 800; }
+.cv-stat-label { color: rgba(255,255,255,0.4); font-size: 10px; margin-top: 2px; }
+
+.payment-channels {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+}
+.pay-ch {
+  padding: 9px 12px; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  font-size: 11px; font-weight: 700; color: white;
+  display: flex; align-items: center; gap: 7px;
+  transition: all 0.2s;
+}
+.pay-ch:hover { background: rgba(29,122,79,0.25); border-color: var(--m2); }
+
+.flow-steps {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 16px; flex-wrap: wrap; justify-content: center;
+}
+.flow-step {
+  padding: 5px 10px; border-radius: 20px;
+  font-size: 10.5px; font-weight: 600; color: white;
+  background: rgba(29,122,79,0.4); border: 1px solid rgba(29,122,79,0.5);
+}
+.flow-arrow { color: rgba(255,255,255,0.3); font-size: 12px; }
+
+/* ─── M3: FINANCE ─────────────────────────────────────────────────────────── */
+.m3-bg { background: linear-gradient(160deg, #1C1006, #2A1A08); }
+.m3-color { color: var(--m3); }
+.m3-border { border-color: var(--m3); }
+.m3-bg-light { background: var(--m3l); }
+
+.finance-dashboard {
+  width: 340px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 10px;
+  padding: 20px;
+}
+.fd-title { color: white; font-size: 12px; font-weight: 700; margin-bottom: 16px; letter-spacing: 0.5px; }
+.fd-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 90px;
+  margin-bottom: 16px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.bar-stack { flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; }
+.bar-dues { border-radius: 3px 3px 0 0; background: linear-gradient(to top, #1D7A4F, #2ECC71); animation: barGrow 1s ease both; }
+.bar-platform { border-radius: 3px 3px 0 0; background: linear-gradient(to top, var(--gold), var(--gold2)); animation: barGrow 1s ease 0.15s both; }
+@keyframes barGrow { from { transform: scaleY(0); transform-origin: bottom; } }
+.bar-month { font-size: 9px; color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; }
+.fd-legend { display: flex; gap: 14px; margin-bottom: 14px; }
+.fd-leg { display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: rgba(255,255,255,0.5); }
+.fd-dot { width: 8px; height: 8px; border-radius: 2px; }
+.fd-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.fd-metric {
+  background: rgba(255,255,255,0.04); border-radius: 6px; padding: 10px;
+  border: 1px solid rgba(201,168,76,0.12);
+}
+.fd-metric-val { font-size: 16px; font-weight: 800; color: white; }
+.fd-metric-label { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+.fd-metric-delta { font-size: 10px; color: #4ADE80; margin-top: 1px; }
+
+/* ─── M4: HR ──────────────────────────────────────────────────────────────── */
+.m4-bg { background: linear-gradient(160deg, #130B1E, #1C1030); }
+.m4-color { color: var(--m4); }
+.m4-border { border-color: var(--m4); }
+.m4-bg-light { background: var(--m4l); }
+
+.hr-dashboard {
+  width: 320px;
+}
+.staff-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+  animation: slideIn 0.4s ease both;
+}
+.staff-row:hover { background: rgba(90,45,122,0.2); border-color: rgba(90,45,122,0.4); }
+.staff-row:nth-child(1) { animation-delay: 0.05s; }
+.staff-row:nth-child(2) { animation-delay: 0.1s; }
+.staff-row:nth-child(3) { animation-delay: 0.15s; }
+.staff-row:nth-child(4) { animation-delay: 0.2s; }
+.staff-av {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: white; flex-shrink: 0;
+}
+.staff-name { font-size: 12.5px; font-weight: 700; color: white; }
+.staff-role { font-size: 11px; color: rgba(255,255,255,0.45); }
+.staff-badge {
+  margin-left: auto; padding: 3px 8px; border-radius: 4px;
+  font-size: 10px; font-weight: 700;
+}
+
+.payroll-summary {
+  margin-top: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(90,45,122,0.3);
+  border-radius: 8px; padding: 14px;
+}
+.ps-title { color: rgba(255,255,255,0.5); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; font-family: 'DM Mono', monospace; }
+.ps-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.ps-row:last-child { border-bottom: none; padding-top: 8px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.1); }
+.ps-label { font-size: 11.5px; color: rgba(255,255,255,0.5); }
+.ps-val { font-size: 11.5px; font-weight: 700; color: white; }
+.ps-val.green { color: #4ADE80; }
+.ps-val.orange { color: #FB923C; }
+
+/* ─── STAT CALLOUT ───────────────────────────────────────────────────────── */
+.stat-callout {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 28px;
+  border-top: 1px solid;
+}
+.stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1;
+}
+.stat-unit {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.7;
+  margin-left: 2px;
+}
+.stat-desc {
+  font-size: 12px;
+  opacity: 0.6;
+  display: block;
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+/* ─── SECTION DIVIDER ────────────────────────────────────────────────────── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  opacity: 0.25;
+}
+
+/* ─── FOOTER ─────────────────────────────────────────────────────────────── */
+.footer {
+  background: var(--ink);
+  padding: 60px 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.footer-brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  color: var(--white);
+}
+.footer-brand em { color: var(--gold); font-style: italic; }
+.footer-note {
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  max-width: 400px;
+  line-height: 1.6;
+}
+.footer-partners {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.footer-partner-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+}
+.footer-partner-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold2);
+}
+
+/* ─── UTILITY ─────────────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Animate-on-scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .module-section { grid-template-columns: 1fr; min-height: auto; }
+  .module-section:nth-child(even) { direction: ltr; }
+  .module-narrative { padding: 60px 32px; }
+  .module-section:nth-child(even) .module-narrative { padding: 60px 32px; }
+  .module-visual { min-height: 420px; }
+  .footer { flex-direction: column; padding: 40px 32px; }
+  .footer-partners { align-items: flex-start; }
+}
+@media (max-width: 600px) {
+  .hero { padding: 60px 24px; }
+  .hero-modules-row { gap: 8px; }
+  .module-heading { font-size: 30px; }
+  .finance-dashboard, .collection-visual, .hr-dashboard { width: 100%; max-width: 320px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HERO ══════════════ -->
+<section class="hero">
+  <p class="hero-eyebrow">GIFF Digital Platform · 2026</p>
+  <h1 class="hero-title">Four Modules.<br><em>One Transformation.</em></h1>
+  <p class="hero-subtitle">The core of the GIFF Digital Platform: purpose-built modules that modernise every aspect of the Institute's administrative and financial operations.</p>
+
+  <div class="hero-modules-row">
+    <a href="#module-01" class="module-chip mc1">01 · Membership</a>
+    <a href="#module-02" class="module-chip mc2">02 · Dues & Fees</a>
+    <a href="#module-03" class="module-chip mc3">03 · Finance</a>
+    <a href="#module-04" class="module-chip mc4">04 · Human Resources</a>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Explore</span>
+  </div>
+</section>
+
+<!-- ══════════════ MODULE 01: MEMBERSHIP ══════════════ -->
+<section class="module-section" id="module-01">
+  <div class="module-narrative m1-bg-light">
+    <div class="reveal">
+      <p class="module-number m1-color">Module 01</p>
+      <h2 class="module-heading" style="color:var(--ink)">Membership<br>Management</h2>
+      <p class="module-tagline" style="color:var(--m1)">From paper-based to digital-first in one step.</p>
+      <p class="module-body">The membership module transforms how GIFF onboards, tracks, and serves its members — replacing physical files and manual chasing with a self-service portal and automated lifecycle management that ensures an engaged and compliant membership base.</p>
+    </div>
+
+    <div class="feature-list">
+      <div class="feature-item m1-border reveal reveal-delay-1">
+        <div class="fi-icon">🖥️</div>
+        <div>
+          <div class="fi-title" style="color:var(--m1)">Digital Onboarding</div>
+          <div class="fi-desc">Online registration with document upload, verification workflows, and instant member ID generation.</div>
+        </div>
+      </div>
+      <div class="feature-item m1-border reveal reveal-delay-2">
+        <div class="fi-icon">👤</div>
+        <div>
+          <div class="fi-title" style="color:var(--m1)">Member Self-Service Portal</div>
+          <div class="fi-desc">Members access profiles, payment receipts, certificates, and communications without secretariat intervention.</div>
+        </div>
+      </div>
+      <div class="feature-item m1-border reveal reveal-delay-3">
+        <div class="fi-icon">🔄</div>
+        <div>
+          <div class="fi-title" style="color:var(--m1)">Renewal Automation</div>
+          <div class="fi-desc">Email and SMS reminders dispatched automatically at 30, 14, and 7 days before expiry.</div>
+        </div>
+      </div>
+      <div class="feature-item m1-border reveal reveal-delay-4">
+        <div class="fi-icon">📊</div>
+        <div>
+          <div class="fi-title" style="color:var(--m1)">Analytics & Reporting</div>
+          <div class="fi-desc">Real-time dashboards showing membership trends, renewal rates, and district breakdowns.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-callout m1-border reveal" style="border-color:var(--m1);color:var(--m1)">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <span class="stat-num">100%</span>
+          <span class="stat-unit">digital</span>
+        </div>
+        <span class="stat-desc" style="color:var(--muted)">Member lifecycle from application to renewal — no paper, no manual chasing</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="module-visual m1-bg">
+    <div class="module-visual-inner">
+      <div class="member-card-mockup reveal">
+        <div class="mc-giff">GIFF MEMBER PORTAL</div>
+        <div class="mc-id">GFF – 002841</div>
+        <div class="mc-name">Kwame Asante</div>
+        <div class="mc-row">
+          <div>
+            <div class="mc-bal-label">Wallet Balance</div>
+            <div class="mc-bal">GHS 4,250</div>
+          </div>
+          <div class="mc-status-badge">● Active</div>
+        </div>
+      </div>
+
+      <div class="lifecycle-steps">
+        <div class="ls-step">📝 <span>Apply Online</span> <span class="ls-arrow">→</span></div>
+        <div class="ls-step">📄 <span>Document Verification</span> <span class="ls-arrow">→</span></div>
+        <div class="ls-step">💳 <span>Payment Processed</span> <span class="ls-arrow">→</span></div>
+        <div class="ls-step" style="background:rgba(16,185,129,0.5)">✓ <span>Active Member</span> <span class="ls-arrow">→</span></div>
+        <div class="ls-step" style="background:rgba(249,115,22,0.4)">🔔 <span>Annual Renewal</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════ MODULE 02: DUES ══════════════ -->
+<section class="module-section" id="module-02">
+  <div class="module-narrative m2-bg-light">
+    <div class="reveal">
+      <p class="module-number m2-color">Module 02</p>
+      <h2 class="module-heading" style="color:var(--ink)">Dues & Fees<br>Administration</h2>
+      <p class="module-tagline" style="color:var(--m2)">From revenue leakage to zero arrears, automatically.</p>
+      <p class="module-body">Manual dues collection is GIFF's number one revenue killer. Module 02 automates every step — from invoice generation through to bank reconciliation — with zero manual intervention, eliminating arrears and delivering real-time visibility on every payment.</p>
+    </div>
+
+    <div class="feature-list">
+      <div class="feature-item m2-border reveal reveal-delay-1">
+        <div class="fi-icon">🧾</div>
+        <div>
+          <div class="fi-title" style="color:var(--m2)">Automated Invoice Generation</div>
+          <div class="fi-desc">Invoices auto-dispatched by email and SMS on due dates with configurable schedules per membership tier.</div>
+        </div>
+      </div>
+      <div class="feature-item m2-border reveal reveal-delay-2">
+        <div class="fi-icon">📱</div>
+        <div>
+          <div class="fi-title" style="color:var(--m2)">5 Payment Channels</div>
+          <div class="fi-desc">MTN MoMo, Vodafone Cash, AirtelTigo, Bank Transfer, and Card — members pay how they prefer.</div>
+        </div>
+      </div>
+      <div class="feature-item m2-border reveal reveal-delay-3">
+        <div class="fi-icon">⚡</div>
+        <div>
+          <div class="fi-title" style="color:var(--m2)">Real-Time Reconciliation</div>
+          <div class="fi-desc">Every payment is instantly matched to a member record the moment it is received — no manual matching.</div>
+        </div>
+      </div>
+      <div class="feature-item m2-border reveal reveal-delay-4">
+        <div class="fi-icon">🚨</div>
+        <div>
+          <div class="fi-title" style="color:var(--m2)">Arrears Escalation Engine</div>
+          <div class="fi-desc">Automated reminder → flag → suspension workflow. Secretariat approves escalation at each stage.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-callout reveal" style="border-color:var(--m2);color:var(--m2)">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <span class="stat-num">87%</span>
+          <span class="stat-unit">target</span>
+        </div>
+        <span class="stat-desc" style="color:var(--muted)">Collection rate in the first operating month — vs unpredictable manual collection previously</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="module-visual m2-bg">
+    <div class="module-visual-inner">
+      <div class="collection-visual reveal">
+        <div class="cv-header">
+          <span class="cv-title">April 2026 — Collections</span>
+          <span class="cv-period">87% of target</span>
+        </div>
+        <div class="cv-progress-wrap"><div class="cv-progress-fill"></div></div>
+        <div class="cv-stats">
+          <div>
+            <div class="cv-stat-val">GHS 48,240</div>
+            <div class="cv-stat-label">Collected</div>
+          </div>
+          <div>
+            <div class="cv-stat-val" style="color:#FB923C">GHS 6,820</div>
+            <div class="cv-stat-label">Arrears</div>
+          </div>
+          <div>
+            <div class="cv-stat-val">1,116</div>
+            <div class="cv-stat-label">Members paid</div>
+          </div>
+        </div>
+
+        <div style="color:rgba(255,255,255,0.5);font-size:11px;margin-bottom:8px;font-family:'DM Mono',monospace;letter-spacing:1px;">PAYMENT CHANNELS</div>
+        <div class="payment-channels">
+          <div class="pay-ch">📱 MTN MoMo</div>
+          <div class="pay-ch">📱 Vodafone Cash</div>
+          <div class="pay-ch">📱 AirtelTigo</div>
+          <div class="pay-ch">🏦 Bank Transfer</div>
+          <div class="pay-ch">💳 Card Payment</div>
+          <div class="pay-ch" style="border-color:rgba(29,122,79,0.5);background:rgba(29,122,79,0.15)">💼 GIFF Wallet</div>
+        </div>
+
+        <div class="flow-steps">
+          <div class="flow-step">Invoice</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">SMS Sent</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Paid</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Auto-Reconciled</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step" style="background:rgba(74,222,128,0.3);border-color:rgba(74,222,128,0.4)">Receipt ✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════ MODULE 03: FINANCE ══════════════ -->
+<section class="module-section" id="module-03">
+  <div class="module-narrative m3-bg-light">
+    <div class="reveal">
+      <p class="module-number m3-color">Module 03</p>
+      <h2 class="module-heading" style="color:var(--ink)">Accounts &<br>Finance</h2>
+      <p class="module-tagline" style="color:var(--m3)">From spreadsheets to a real-time financial command centre.</p>
+      <p class="module-body">This module introduces a real-time financial management system, replacing GIFF's reliance on manual bookkeeping with automated, transparent processes — including full GRA levy tracking, budget management, and audit-ready reporting at every level.</p>
+    </div>
+
+    <div class="feature-list">
+      <div class="feature-item m3-border reveal reveal-delay-1">
+        <div class="fi-icon">📈</div>
+        <div>
+          <div class="fi-title" style="color:var(--m3)">Real-Time Income & Expenditure</div>
+          <div class="fi-desc">Every transaction posted instantly across all income lines — dues, levies, and platform revenue.</div>
+        </div>
+      </div>
+      <div class="feature-item m3-border reveal reveal-delay-2">
+        <div class="fi-icon">🏦</div>
+        <div>
+          <div class="fi-title" style="color:var(--m3)">GRA Levy Flow Tracking</div>
+          <div class="fi-desc">Member levy payments routed to GRA Consolidated Fund with automated reconciliation and allocation tracking.</div>
+        </div>
+      </div>
+      <div class="feature-item m3-border reveal reveal-delay-3">
+        <div class="fi-icon">🔒</div>
+        <div>
+          <div class="fi-title" style="color:var(--m3)">Full Audit Trail</div>
+          <div class="fi-desc">Every transaction logged with user identity, timestamp, and approval record — audit-ready at all times.</div>
+        </div>
+      </div>
+      <div class="feature-item m3-border reveal reveal-delay-4">
+        <div class="fi-icon">📋</div>
+        <div>
+          <div class="fi-title" style="color:var(--m3)">Budget Management</div>
+          <div class="fi-desc">Multi-budget line forecasting with anomaly alerts and export to CSV, PDF, and Excel for auditors.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-callout reveal" style="border-color:var(--m3);color:var(--m3)">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <span class="stat-num">Zero</span>
+        </div>
+        <span class="stat-desc" style="color:var(--muted)">Manual reconciliation steps between member payment, GRA submission, and GIFF allocation — fully automated</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="module-visual m3-bg">
+    <div class="module-visual-inner">
+      <div class="finance-dashboard reveal">
+        <div class="fd-title">REVENUE — 2026 YTD</div>
+        <div class="fd-chart">
+          <div class="bar-wrap">
+            <div class="bar-stack">
+              <div class="bar-platform" style="height:15%"></div>
+              <div class="bar-dues" style="height:55%"></div>
+            </div>
+            <div class="bar-month">Jan</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-stack">
+              <div class="bar-platform" style="height:18%"></div>
+              <div class="bar-dues" style="height:60%"></div>
+            </div>
+            <div class="bar-month">Feb</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-stack">
+              <div class="bar-platform" style="height:20%"></div>
+              <div class="bar-dues" style="height:70%"></div>
+            </div>
+            <div class="bar-month">Mar</div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-stack">
+              <div class="bar-platform" style="height:25%"></div>
+              <div class="bar-dues" style="height:80%"></div>
+            </div>
+            <div class="bar-month" style="color:var(--gold2)">Apr ←</div>
+          </div>
+        </div>
+        <div class="fd-legend">
+          <div class="fd-leg"><div class="fd-dot" style="background:var(--gold)"></div>Platform Revenue</div>
+          <div class="fd-leg"><div class="fd-dot" style="background:var(--m2)"></div>Dues Collected</div>
+        </div>
+        <div class="fd-metrics">
+          <div class="fd-metric">
+            <div class="fd-metric-val">GHS 142K</div>
+            <div class="fd-metric-label">Total Income YTD</div>
+            <div class="fd-metric-delta">↑ +18% vs 2025</div>
+          </div>
+          <div class="fd-metric">
+            <div class="fd-metric-val">GHS 58K</div>
+            <div class="fd-metric-label">Net Surplus</div>
+            <div class="fd-metric-delta">↑ Strong position</div>
+          </div>
+          <div class="fd-metric">
+            <div class="fd-metric-val">GHS 38.4K</div>
+            <div class="fd-metric-label">GRA Levies Submitted</div>
+            <div class="fd-metric-delta" style="color:var(--gold2)">✓ Confirmed</div>
+          </div>
+          <div class="fd-metric">
+            <div class="fd-metric-val">GHS 12.5K</div>
+            <div class="fd-metric-label">GRA Allocation Received</div>
+            <div class="fd-metric-delta">Q1 2026 ✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ══════════════ MODULE 04: HR ══════════════ -->
+<section class="module-section" id="module-04">
+  <div class="module-narrative m4-bg-light">
+    <div class="reveal">
+      <p class="module-number m4-color">Module 04</p>
+      <h2 class="module-heading" style="color:var(--ink)">Human Resource<br>Management</h2>
+      <p class="module-tagline" style="color:var(--m4)">The complete Secretariat people-management system.</p>
+      <p class="module-body">This module provides GIFF's Secretariat team with a comprehensive HR system, streamlining administrative tasks and enhancing staff management from onboarding to performance reviews — including Ghana-compliant payroll with SSNIT, PAYE, and NHIL calculations built in.</p>
+    </div>
+
+    <div class="feature-list">
+      <div class="feature-item m4-border reveal reveal-delay-1">
+        <div class="fi-icon">🪪</div>
+        <div>
+          <div class="fi-title" style="color:var(--m4)">Staff Profiles & Onboarding</div>
+          <div class="fi-desc">Digital staff records, employment contracts, document storage, and role-based access from day one.</div>
+        </div>
+      </div>
+      <div class="feature-item m4-border reveal reveal-delay-2">
+        <div class="fi-icon">🏖️</div>
+        <div>
+          <div class="fi-title" style="color:var(--m4)">Leave Management</div>
+          <div class="fi-desc">Staff submit leave requests digitally. Managers approve or reject with full visibility of team availability.</div>
+        </div>
+      </div>
+      <div class="feature-item m4-border reveal reveal-delay-3">
+        <div class="fi-icon">💵</div>
+        <div>
+          <div class="fi-title" style="color:var(--m4)">Ghana-Compliant Payroll</div>
+          <div class="fi-desc">Automated SSNIT (5.5% employee + 7.5% employer), PAYE progressive bands, NHIL deductions, and payslip generation.</div>
+        </div>
+      </div>
+      <div class="feature-item m4-border reveal reveal-delay-4">
+        <div class="fi-icon">⭐</div>
+        <div>
+          <div class="fi-title" style="color:var(--m4)">Performance Reviews</div>
+          <div class="fi-desc">Structured appraisal workflows with configurable review periods and documented outcome records.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-callout reveal" style="border-color:var(--m4);color:var(--m4)">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <span class="stat-num">24</span>
+          <span class="stat-unit">staff</span>
+        </div>
+        <span class="stat-desc" style="color:var(--muted)">Secretariat members managed from one dashboard — payroll, leave, attendance, and reviews</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="module-visual m4-bg">
+    <div class="module-visual-inner">
+      <div class="hr-dashboard reveal">
+        <div style="color:rgba(255,255,255,0.4);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:12px;">STAFF DIRECTORY</div>
+
+        <div class="staff-row">
+          <div class="staff-av" style="background:linear-gradient(135deg,#5A2D7A,#3B82F6)">SA</div>
+          <div>
+            <div class="staff-name">Solomon Addai</div>
+            <div class="staff-role">General Secretary</div>
+          </div>
+          <div class="staff-badge" style="background:rgba(74,222,128,0.12);color:#4ADE80;border:1px solid rgba(74,222,128,0.25)">Active</div>
+        </div>
+
+        <div class="staff-row">
+          <div class="staff-av" style="background:linear-gradient(135deg,#7B4E1A,#D97706)">MA</div>
+          <div>
+            <div class="staff-name">Mary Asiedu</div>
+            <div class="staff-role">Finance Officer</div>
+          </div>
+          <div class="staff-badge" style="background:rgba(74,222,128,0.12);color:#4ADE80;border:1px solid rgba(74,222,128,0.25)">Active</div>
+        </div>
+
+        <div class="staff-row">
+          <div class="staff-av" style="background:linear-gradient(135deg,#1D7A4F,#059669)">KO</div>
+          <div>
+            <div class="staff-name">Kwesi Owusu</div>
+            <div class="staff-role">IT Administrator</div>
+          </div>
+          <div class="staff-badge" style="background:rgba(74,222,128,0.12);color:#4ADE80;border:1px solid rgba(74,222,128,0.25)">Active</div>
+        </div>
+
+        <div class="staff-row">
+          <div class="staff-av" style="background:linear-gradient(135deg,#1A6B8A,#0891B2)">AK</div>
+          <div>
+            <div class="staff-name">Abena Kusi</div>
+            <div class="staff-role">Member Services</div>
+          </div>
+          <div class="staff-badge" style="background:rgba(249,115,22,0.12);color:#FB923C;border:1px solid rgba(249,115,22,0.25)">On Leave</div>
+        </div>
+
+        <div class="payroll-summary">
+          <div class="ps-title">April 2026 — Payroll Summary</div>
+          <div class="ps-row"><span class="ps-label">Gross Payroll</span><span class="ps-val">GHS 48,200</span></div>
+          <div class="ps-row"><span class="ps-label">SSNIT (Employee)</span><span class="ps-val orange">− GHS 2,651</span></div>
+          <div class="ps-row"><span class="ps-label">PAYE</span><span class="ps-val orange">− GHS 7,230</span></div>
+          <div class="ps-row"><span class="ps-label">NHIL</span><span class="ps-val orange">− GHS 1,084</span></div>
+          <div class="ps-row"><span class="ps-label" style="font-weight:700;color:white">Net Pay</span><span class="ps-val green">GHS 37,235</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer class="footer">
+  <div>
+    <div class="footer-brand">GIFF <em>Digital</em></div>
+    <p style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:6px;font-family:'DM Mono',monospace;letter-spacing:1px;">PLATFORM v2.0 · APRIL 2026</p>
+  </div>
+  <p class="footer-note">Delivered by FES Consultancy Ltd in collaboration with Aliska Business Advisory and Research Limited. Confidential — for GIFF Executive Council use only.</p>
+  <div class="footer-partners">
+    <span class="footer-partner-label">Lead Partner</span>
+    <span class="footer-partner-name">FES Consultancy Ltd</span>
+    <span class="footer-partner-label" style="margin-top:8px">In Collaboration With</span>
+    <span class="footer-partner-name" style="font-size:12px;color:rgba(255,255,255,0.5)">Aliska Business Advisory</span>
+  </div>
+</footer>
+
+<script>
+  // Intersection Observer for scroll reveals
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+  );
+  revealEls.forEach(el => observer.observe(el));
+
+  // Smooth anchor scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
