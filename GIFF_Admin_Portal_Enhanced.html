@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIFF Admin Portal — Management Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #070C18;
+  --surface:  #0D1525;
+  --surface2: #111D35;
+  --surface3: #16253E;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+  --text:     #E2E8F0;
+  --muted:    #64748B;
+  --faint:    #334155;
+  --cyan:     #00D4FF;
+  --cyan2:    #0891B2;
+  --blue:     #3B82F6;
+  --indigo:   #6366F1;
+  --green:    #10B981;
+  --orange:   #F97316;
+  --red:      #EF4444;
+  --yellow:   #F59E0B;
+  --pink:     #EC4899;
+  --purple:   #8B5CF6;
+  --teal:     #14B8A6;
+  --white:    #FFFFFF;
+  /* Module accent colours */
+  --m1:       #0EA5E9;   /* Membership  — sky blue  */
+  --m2:       #10B981;   /* Dues        — emerald   */
+  --m3:       #F59E0B;   /* Finance     — amber     */
+  --m4:       #8B5CF6;   /* HR          — violet    */
+  --sidebar:  228px;
+  --topbar:   56px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+/* ── SCROLLBAR ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+/* ── SIDEBAR ───────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 20;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+.brand-mark {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 13px; color: var(--bg);
+  flex-shrink: 0;
+}
+.brand-text strong { display: block; font-size: 13px; font-weight: 800; color: var(--white); }
+.brand-text span   { font-size: 10px; color: var(--muted); }
+
+/* Role badge in sidebar */
+.role-badge-wrap { padding: 10px 14px 4px; flex-shrink: 0; }
+.role-badge {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 10px; border-radius: 8px;
+  font-size: 11.5px; font-weight: 700;
+  cursor: pointer; transition: all 0.18s;
+  border: 1px solid;
+}
+.role-badge.national {
+  color: var(--cyan); border-color: rgba(0,212,255,0.25);
+  background: rgba(0,212,255,0.07);
+}
+.role-badge.district {
+  color: var(--yellow); border-color: rgba(245,158,11,0.25);
+  background: rgba(245,158,11,0.07);
+}
+.role-badge-dot { width: 7px; height: 7px; border-radius: 50%; }
+.role-switch-hint { font-size: 9.5px; color: var(--muted); margin-left: auto; }
+
+.sb-section { padding: 8px 10px 2px; }
+.sb-label {
+  font-size: 9.5px; font-weight: 700; color: var(--faint);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 4px 6px 6px;
+}
+
+.sb-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 8px;
+  cursor: pointer; color: var(--muted);
+  font-size: 12.5px; font-weight: 500;
+  transition: all 0.18s; position: relative; margin-bottom: 1px;
+}
+.sb-item:hover { color: var(--text); background: var(--surface2); }
+.sb-item.active {
+  color: var(--white); background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.18);
+}
+.sb-item.active::before {
+  content: ''; position: absolute; left: -1px; top: 20%; bottom: 20%;
+  width: 3px; border-radius: 0 2px 2px 0;
+  background: var(--cyan);
+}
+
+/* Module items get coloured left bars */
+.sb-item.mod-m1.active::before { background: var(--m1); }
+.sb-item.mod-m1.active { background: rgba(14,165,233,0.1); border-color: rgba(14,165,233,0.2); color: var(--white); }
+.sb-item.mod-m2.active::before { background: var(--m2); }
+.sb-item.mod-m2.active { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.2); color: var(--white); }
+.sb-item.mod-m3.active::before { background: var(--m3); }
+.sb-item.mod-m3.active { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); color: var(--white); }
+.sb-item.mod-m4.active::before { background: var(--m4); }
+.sb-item.mod-m4.active { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.2); color: var(--white); }
+
+.sb-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.sb-badge { margin-left: auto; padding: 1px 6px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+.sb-badge.red  { background: rgba(239,68,68,0.2); color: #FCA5A5; }
+.sb-badge.cyan { background: rgba(0,212,255,0.15); color: var(--cyan); }
+.sb-badge.grn  { background: rgba(16,185,129,0.15); color: #6EE7B7; }
+.sb-badge.amb  { background: rgba(245,158,11,0.15); color: #FCD34D; }
+
+/* Module divider pill in sidebar */
+.sb-module-pill {
+  margin: 6px 10px 2px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 10px; font-weight: 800;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 7px;
+}
+.sb-module-pill.mp1 { background: rgba(14,165,233,0.12); color: var(--m1); border: 1px solid rgba(14,165,233,0.2); }
+.sb-module-pill.mp2 { background: rgba(16,185,129,0.12); color: var(--m2); border: 1px solid rgba(16,185,129,0.2); }
+.sb-module-pill.mp3 { background: rgba(245,158,11,0.12);  color: var(--m3); border: 1px solid rgba(245,158,11,0.2); }
+.sb-module-pill.mp4 { background: rgba(139,92,246,0.12); color: var(--m4); border: 1px solid rgba(139,92,246,0.2); }
+
+.sidebar-footer {
+  margin-top: auto; border-top: 1px solid var(--border); padding: 10px 10px; flex-shrink: 0;
+}
+.user-pill {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: background 0.18s;
+}
+.user-pill:hover { background: var(--surface2); }
+.ua { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg,var(--indigo),var(--blue)); display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0; }
+.user-pill strong { display:block;font-size:12px;color:var(--white);font-weight:600; }
+.user-pill span   { font-size:10.5px;color:var(--muted); }
+
+/* ── MAIN ──────────────────────────────────────────── */
+.main { flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:0; }
+
+.topbar {
+  height: var(--topbar);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 20px; gap: 12px; flex-shrink: 0;
+}
+.topbar-title { font-size: 15px; font-weight: 700; color: var(--white); margin-right: auto; }
+.topbar-title span { font-size: 11.5px; color: var(--muted); font-weight: 400; margin-left: 8px; }
+
+/* Role toggle in topbar */
+.role-toggle {
+  display: flex; align-items: center;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 3px; gap: 2px;
+}
+.rt-btn {
+  padding: 4px 11px; border-radius: 6px;
+  font-size: 11.5px; font-weight: 700; cursor: pointer;
+  color: var(--muted); transition: all 0.18s; border: none; background: none;
+  font-family: 'Outfit', sans-serif;
+}
+.rt-btn.active.nat { background: rgba(0,212,255,0.15); color: var(--cyan); }
+.rt-btn.active.dis { background: rgba(245,158,11,0.15); color: var(--yellow); }
+
+.district-badge {
+  display: none; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 6px;
+  background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25);
+  font-size: 11px; font-weight: 700; color: var(--yellow);
+}
+.district-badge.visible { display: flex; }
+
+.search-wrap {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 6px 11px; width: 190px;
+}
+.search-wrap input { background:none;border:none;outline:none;font-size:12px;color:var(--text);width:100%;font-family:'Outfit',sans-serif; }
+.search-wrap input::placeholder { color:var(--muted); }
+
+.tb-btn {
+  width:32px;height:32px;border-radius:7px;
+  border:1px solid var(--border2);background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;color:var(--muted);
+  transition:all 0.18s;position:relative;
+}
+.tb-btn:hover { background:var(--surface3);color:var(--text); }
+.tb-dot { position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--orange);border:1.5px solid var(--surface); }
+
+.live-pill {
+  display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:20px;
+  background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);
+  font-size:11px;font-weight:700;color:#34D399;
+}
+.live-dot { width:6px;height:6px;border-radius:50%;background:#34D399;animation:blink 2s infinite; }
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+.content { flex:1;overflow-y:auto;padding:20px 22px;background:var(--bg); }
+
+.view { display:none;animation:fadeUp 0.25s ease; }
+.view.active { display:block; }
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── REUSABLE COMPONENTS ───────────────────────────── */
+.page-head { margin-bottom:18px; display:flex;align-items:flex-start;justify-content:space-between;gap:16px; }
+.page-head h2 { font-size:19px;font-weight:800;color:var(--white); }
+.page-head p  { font-size:12px;color:var(--muted);margin-top:3px; }
+.page-actions { display:flex;gap:8px;align-items:center;flex-shrink:0; }
+
+.btn {
+  padding:7px 13px;border-radius:7px;font-size:12px;font-weight:700;
+  cursor:pointer;border:none;font-family:'Outfit',sans-serif;
+  display:flex;align-items:center;gap:6px;transition:all 0.18s;
+}
+.btn.primary { background:linear-gradient(135deg,var(--cyan2),var(--blue));color:white; }
+.btn.primary:hover { opacity:0.9;transform:translateY(-1px); }
+.btn.ghost { background:var(--surface2);color:var(--text);border:1px solid var(--border2); }
+.btn.ghost:hover { background:var(--surface3); }
+.btn.danger { background:rgba(239,68,68,0.15);color:#FCA5A5;border:1px solid rgba(239,68,68,0.2); }
+
+/* ── MODULE BANNER ─────────────────────────────────── */
+/* Used at the top of each module's dedicated view */
+.module-banner {
+  border-radius: 14px; padding: 20px 24px;
+  margin-bottom: 18px; position: relative; overflow: hidden;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.module-banner::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent);
+}
+.mb-icon {
+  font-size: 36px; position: absolute; right: 24px; top: 50%;
+  transform: translateY(-50%); opacity: 0.12;
+}
+.mb-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; opacity: 0.7; margin-bottom: 4px;
+}
+.mb-title { font-size: 20px; font-weight: 800; color: var(--white); margin-bottom: 4px; }
+.mb-sub   { font-size: 12.5px; opacity: 0.6; max-width: 560px; line-height: 1.5; }
+.mb-badges { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.mb-badge {
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; border: 1px solid;
+}
+
+.mb1 { background: rgba(14,165,233,0.12); border-color: rgba(14,165,233,0.25); color: var(--m1); }
+.mb2 { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.25); color: var(--m2); }
+.mb3 { background: rgba(245,158,11,0.12);  border-color: rgba(245,158,11,0.25);  color: var(--m3); }
+.mb4 { background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.25); color: var(--m4); }
+
+.banner-m1 { background: linear-gradient(135deg, rgba(14,165,233,0.18), rgba(14,165,233,0.06)); border: 1px solid rgba(14,165,233,0.22); }
+.banner-m2 { background: linear-gradient(135deg, rgba(16,185,129,0.18), rgba(16,185,129,0.06)); border: 1px solid rgba(16,185,129,0.22); }
+.banner-m3 { background: linear-gradient(135deg, rgba(245,158,11,0.18),  rgba(245,158,11,0.06));  border: 1px solid rgba(245,158,11,0.22);  }
+.banner-m4 { background: linear-gradient(135deg, rgba(139,92,246,0.18), rgba(139,92,246,0.06)); border: 1px solid rgba(139,92,246,0.22); }
+
+/* ── STAT CARDS ────────────────────────────────────── */
+.stats-row { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px; }
+.stats-row-5 { grid-template-columns:repeat(5,1fr); }
+.stats-row-3 { grid-template-columns:repeat(3,1fr); }
+
+.stat {
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:15px 16px;
+  position:relative;overflow:hidden;
+  transition:border-color 0.2s;cursor:pointer;
+}
+.stat:hover { border-color:var(--border2); }
+.stat::before { content:'';position:absolute;top:0;left:0;right:0;height:2px; }
+.stat.c1::before { background:var(--m1); }
+.stat.c2::before { background:var(--m2); }
+.stat.c3::before { background:var(--m3); }
+.stat.c4::before { background:var(--m4); }
+.stat.c5::before { background:var(--pink); }
+.stat.cb::before { background:var(--cyan); }
+
+.stat-label { font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px; }
+.stat-value { font-size:24px;font-weight:800;color:var(--white);line-height:1; }
+.stat-delta { font-size:11px;margin-top:5px;display:flex;align-items:center;gap:4px; }
+.stat-delta.up   { color:var(--green); }
+.stat-delta.down { color:var(--red); }
+.stat-delta.flat { color:var(--muted); }
+.stat-icon { position:absolute;right:14px;top:14px;font-size:20px;opacity:0.12; }
+.sparkline { display:flex;align-items:flex-end;gap:2px;height:28px;margin-top:8px; }
+.spark { width:6px;border-radius:2px 2px 0 0; }
+
+/* ── PANEL ─────────────────────────────────────────── */
+.panel { background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden; }
+.panel-head { padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
+.panel-title { font-size:13.5px;font-weight:700;color:var(--white); }
+.panel-sub   { font-size:11px;color:var(--muted);margin-top:1px; }
+.panel-action { font-size:12px;color:var(--cyan);cursor:pointer;padding:4px 8px;border-radius:6px;transition:background 0.15s; }
+.panel-action:hover { background:rgba(0,212,255,0.08); }
+.panel-body { padding:14px 16px; }
+
+/* ── GRID LAYOUTS ──────────────────────────────────── */
+.grid-2  { display:grid;grid-template-columns:1fr 1fr;gap:14px; }
+.grid-3  { display:grid;grid-template-columns:repeat(3,1fr);gap:14px; }
+.grid-13 { display:grid;grid-template-columns:1.5fr 1fr;gap:14px; }
+.grid-31 { display:grid;grid-template-columns:1fr 1.5fr;gap:14px; }
+
+/* ── TABLE ─────────────────────────────────────────── */
+.tbl { width:100%;border-collapse:collapse; }
+.tbl th { font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:9px 13px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface2); }
+.tbl td { padding:10px 13px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text);vertical-align:middle; }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:rgba(255,255,255,0.02); }
+.tbl-name { font-weight:600;color:var(--white); }
+.tbl-sub  { font-size:10.5px;color:var(--muted);margin-top:1px; }
+
+/* ── BADGES ────────────────────────────────────────── */
+.badge { display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:6px;font-size:10.5px;font-weight:700; }
+.badge.green  { background:rgba(16,185,129,0.12);color:#4ADE80; }
+.badge.orange { background:rgba(249,115,22,0.12);color:#FB923C; }
+.badge.blue   { background:rgba(59,130,246,0.12);color:#93C5FD; }
+.badge.red    { background:rgba(239,68,68,0.12);color:#FCA5A5; }
+.badge.purple { background:rgba(139,92,246,0.12);color:#C4B5FD; }
+.badge.cyan   { background:rgba(0,212,255,0.1);color:var(--cyan); }
+.badge.gray   { background:rgba(100,116,139,0.15);color:#94A3B8; }
+.badge.amber  { background:rgba(245,158,11,0.12);color:#FCD34D; }
+
+.av { width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;flex-shrink:0; }
+
+.metric-row { display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border); }
+.metric-row:last-child { border-bottom:none; }
+.metric-label { font-size:12px;color:var(--muted); }
+.metric-value { font-size:12.5px;font-weight:700;color:var(--white); }
+
+.progress { height:5px;background:var(--surface3);border-radius:3px;overflow:hidden; }
+.progress-fill { height:100%;border-radius:3px;transition:width 0.6s ease; }
+
+.feed-item { display:flex;gap:11px;padding:10px 0;border-bottom:1px solid var(--border); }
+.feed-item:last-child { border-bottom:none; }
+.feed-icon { width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0; }
+.feed-title { font-size:12.5px;color:var(--text);font-weight:500;line-height:1.35; }
+.feed-time  { font-size:10.5px;color:var(--muted);margin-top:2px; }
+
+.tabs { display:flex;gap:2px;background:var(--surface2);border-radius:8px;padding:3px;width:fit-content;margin-bottom:14px; }
+.tab  { padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);transition:all 0.18s; }
+.tab.active { background:var(--surface);color:var(--white);box-shadow:0 1px 4px rgba(0,0,0,0.3); }
+.tab:hover:not(.active) { color:var(--text); }
+
+.alert { border-radius:10px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start;margin-bottom:12px; }
+.alert.warning { background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2); }
+.alert.info    { background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2); }
+.alert.success { background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2); }
+.alert-icon  { font-size:15px;flex-shrink:0;margin-top:1px; }
+.alert-title { font-size:12.5px;font-weight:700;color:var(--white); }
+.alert-body  { font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.5; }
+
+.health-row { display:flex;align-items:center;gap:11px;padding:8px 0;border-bottom:1px solid var(--border); }
+.health-row:last-child { border-bottom:none; }
+.health-dot { width:7px;height:7px;border-radius:50%;flex-shrink:0; }
+.health-name { font-size:12.5px;color:var(--text);font-weight:500; }
+.health-val  { margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px; }
+
+.mono { font-family:'JetBrains Mono',monospace;font-size:11.5px; }
+
+.donut-wrap { display:flex;align-items:center;gap:18px; }
+.donut { width:90px;height:90px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative; }
+.donut::after { content:'';position:absolute;width:54px;height:54px;border-radius:50%;background:var(--surface); }
+.donut-label { position:relative;z-index:1;font-size:16px;font-weight:800;color:var(--white); }
+.legend-item { display:flex;align-items:center;gap:7px;margin-bottom:6px; }
+.legend-dot  { width:7px;height:7px;border-radius:50%;flex-shrink:0; }
+.legend-label { font-size:12px;color:var(--muted); }
+.legend-val   { margin-left:auto;font-size:12px;font-weight:700;color:var(--white); }
+
+.toggle { position:relative;width:36px;height:20px;cursor:pointer; }
+.toggle input { opacity:0;width:0;height:0; }
+.toggle-track { position:absolute;inset:0;background:var(--faint);border-radius:20px;transition:background 0.2s; }
+.toggle input:checked + .toggle-track { background:var(--cyan2); }
+.toggle-thumb { position:absolute;top:3px;left:3px;width:14px;height:14px;background:white;border-radius:50%;transition:transform 0.2s; }
+.toggle input:checked ~ .toggle-thumb { transform:translateX(16px); }
+
+/* ── MODULE TILES (Dashboard) ──────────────────────── */
+.module-tiles { display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px; }
+.module-tile {
+  border-radius:14px;padding:18px;
+  cursor:pointer;transition:all 0.22s;
+  position:relative;overflow:hidden;
+  border:1px solid;
+}
+.module-tile::before {
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.05),transparent);
+}
+.module-tile:hover { transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.3); }
+.mt-icon { font-size:28px;margin-bottom:12px; }
+.mt-num  { font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;margin-bottom:4px;font-weight:600; }
+.mt-name { font-size:15px;font-weight:800;color:var(--white);margin-bottom:4px; }
+.mt-desc { font-size:11.5px;line-height:1.45;opacity:0.65;margin-bottom:14px; }
+.mt-footer { display:flex;justify-content:space-between;align-items:flex-end; }
+.mt-stat-val   { font-size:20px;font-weight:900;color:var(--white); }
+.mt-stat-label { font-size:10px;opacity:0.55;margin-top:1px; }
+.mt-arrow { font-size:18px;opacity:0.5;transition:opacity 0.18s;align-self:flex-end; }
+.module-tile:hover .mt-arrow { opacity:1; }
+
+.mt1 { background:rgba(14,165,233,0.12);border-color:rgba(14,165,233,0.25);color:var(--m1); }
+.mt2 { background:rgba(16,185,129,0.12);border-color:rgba(16,185,129,0.25);color:var(--m2); }
+.mt3 { background:rgba(245,158,11,0.12); border-color:rgba(245,158,11,0.25); color:var(--m3); }
+.mt4 { background:rgba(139,92,246,0.12);border-color:rgba(139,92,246,0.25);color:var(--m4); }
+
+</style>
+</head>
+<body>
+
+<!-- ══════ SIDEBAR ══════ -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">GF</div>
+    <div class="brand-text"><strong>GIFF Admin</strong><span>Management Portal</span></div>
+  </div>
+
+  <!-- Role indicator -->
+  <div class="role-badge-wrap">
+    <div class="role-badge national" id="sb-role-badge" onclick="toggleRole()">
+      <div class="role-badge-dot" style="background:var(--cyan)" id="sb-role-dot"></div>
+      <span id="sb-role-label">National Admin</span>
+      <span class="role-switch-hint">Switch ↕</span>
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-label">Overview</div>
+    <div class="sb-item active" onclick="nav('dashboard',this)"><span class="sb-icon">▦</span>Dashboard</div>
+    <div class="sb-item" onclick="nav('analytics',this)"><span class="sb-icon">📈</span>Analytics</div>
+    <div class="sb-item" onclick="nav('integrations',this)"><span class="sb-icon">🔗</span>Integrations<span class="sb-badge grn">Live</span></div>
+    <div class="sb-item" onclick="nav('system',this)"><span class="sb-icon">⚙️</span>System</div>
+  </div>
+
+  <!-- Module 01 -->
+  <div class="sb-module-pill mp1">🪪 Module 01 — Membership</div>
+  <div class="sb-section" style="padding-top:2px">
+    <div class="sb-item mod-m1" onclick="nav('membership',this)"><span class="sb-icon">👥</span>Membership Dashboard</div>
+    <div class="sb-item mod-m1" onclick="nav('membership',this)"><span class="sb-icon">📋</span>Applications<span class="sb-badge red">7</span></div>
+    <div class="sb-item mod-m1" onclick="nav('membership',this)"><span class="sb-icon">⚠️</span>Arrears<span class="sb-badge red">23</span></div>
+    <div class="sb-item mod-m1 district-only" style="display:none" onclick="nav('membership',this)"><span class="sb-icon">📍</span>My District</div>
+  </div>
+
+  <!-- Module 02 -->
+  <div class="sb-module-pill mp2">💳 Module 02 — Dues & Fees</div>
+  <div class="sb-section" style="padding-top:2px">
+    <div class="sb-item mod-m2" onclick="nav('dues',this)"><span class="sb-icon">💰</span>Dues Dashboard</div>
+    <div class="sb-item mod-m2" onclick="nav('dues',this)"><span class="sb-icon">🧾</span>Invoices</div>
+    <div class="sb-item mod-m2" onclick="nav('dues',this)"><span class="sb-icon">⚡</span>Reconciliation</div>
+  </div>
+
+  <!-- Module 03 -->
+  <div class="sb-module-pill mp3">📊 Module 03 — Finance</div>
+  <div class="sb-section" style="padding-top:2px">
+    <div class="sb-item mod-m3" onclick="nav('finance',this)"><span class="sb-icon">🏦</span>Finance Portal</div>
+    <div class="sb-item mod-m3 national-only" onclick="nav('finance',this)"><span class="sb-icon">🔁</span>GRA Levy Flow</div>
+    <div class="sb-item mod-m3 national-only" onclick="nav('finance',this)"><span class="sb-icon">📄</span>Reports</div>
+  </div>
+
+  <!-- Module 04 -->
+  <div class="sb-module-pill mp4">🪪 Module 04 — HR</div>
+  <div class="sb-section" style="padding-top:2px">
+    <div class="sb-item mod-m4" onclick="nav('hr',this)"><span class="sb-icon">👔</span>HR Dashboard</div>
+    <div class="sb-item mod-m4 national-only" onclick="nav('hr',this)"><span class="sb-icon">💵</span>Payroll</div>
+    <div class="sb-item mod-m4" onclick="nav('hr',this)"><span class="sb-icon">🏖️</span>Leave Requests<span class="sb-badge amb">3</span></div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="ua" id="user-av">SA</div>
+      <div><strong id="user-name">Solomon Addai</strong><span id="user-role-label">General Secretary · National</span></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════ MAIN ══════ -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="tb-title">Dashboard <span>Overview · Monday, 13 Apr 2026</span></div>
+
+    <!-- District badge (shown in district mode) -->
+    <div class="district-badge" id="district-badge">📍 Tema District</div>
+
+    <!-- Role toggle -->
+    <div class="role-toggle">
+      <button class="rt-btn active nat" id="rt-nat" onclick="setRole('national')">National</button>
+      <button class="rt-btn dis" id="rt-dis" onclick="setRole('district')">District</button>
+    </div>
+
+    <div class="search-wrap">
+      <span style="color:var(--muted);font-size:12px">🔍</span>
+      <input type="text" placeholder="Search members, invoices...">
+    </div>
+    <div class="tb-btn">🔔<div class="tb-dot"></div></div>
+    <div class="live-pill"><div class="live-dot"></div>All Systems Live</div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ══════════ DASHBOARD ══════════ -->
+    <div class="view active" id="view-dashboard">
+
+      <div class="alert warning">
+        <div class="alert-icon">⚠️</div>
+        <div><div class="alert-title">23 members with outstanding arrears — GHS 6,820 overdue</div>
+        <div class="alert-body">Automated reminders dispatched via SMS. 3 members flagged for escalation to suspension. Secretary approval required.</div></div>
+        <button class="btn ghost" style="margin-left:auto;flex-shrink:0;font-size:11px" onclick="nav('membership',null)">Review →</button>
+      </div>
+
+      <!-- National KPIs -->
+      <div class="stats-row stats-row-5" id="nat-stats">
+        <div class="stat cb" onclick="nav('membership',null)">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">Total Members</div>
+          <div class="stat-value">1,284</div>
+          <div class="stat-delta up">↑ +34 this month</div>
+          <div class="sparkline">
+            <div class="spark" style="height:40%;background:rgba(0,212,255,0.3)"></div>
+            <div class="spark" style="height:60%;background:rgba(0,212,255,0.35)"></div>
+            <div class="spark" style="height:50%;background:rgba(0,212,255,0.4)"></div>
+            <div class="spark" style="height:75%;background:rgba(0,212,255,0.45)"></div>
+            <div class="spark" style="height:65%;background:rgba(0,212,255,0.5)"></div>
+            <div class="spark" style="height:88%;background:rgba(0,212,255,0.6)"></div>
+            <div class="spark" style="height:100%;background:var(--cyan)"></div>
+          </div>
+        </div>
+        <div class="stat c2" onclick="nav('dues',null)">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">Dues Collected Apr</div>
+          <div class="stat-value">GHS 48.2K</div>
+          <div class="stat-delta up">↑ +12% vs last month</div>
+          <div class="sparkline">
+            <div class="spark" style="height:45%;background:rgba(16,185,129,0.3)"></div>
+            <div class="spark" style="height:60%;background:rgba(16,185,129,0.35)"></div>
+            <div class="spark" style="height:55%;background:rgba(16,185,129,0.4)"></div>
+            <div class="spark" style="height:80%;background:rgba(16,185,129,0.5)"></div>
+            <div class="spark" style="height:72%;background:rgba(16,185,129,0.55)"></div>
+            <div class="spark" style="height:90%;background:rgba(16,185,129,0.65)"></div>
+            <div class="spark" style="height:100%;background:var(--green)"></div>
+          </div>
+        </div>
+        <div class="stat c3">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-label">Arrears Outstanding</div>
+          <div class="stat-value">GHS 6.8K</div>
+          <div class="stat-delta down">↓ 23 members</div>
+        </div>
+        <div class="stat c4" onclick="nav('finance',null)">
+          <div class="stat-icon">🏦</div>
+          <div class="stat-label">GRA Levy YTD</div>
+          <div class="stat-value">GHS 38.4K</div>
+          <div class="stat-delta up">↑ Submitted & confirmed</div>
+        </div>
+        <div class="stat c5" onclick="nav('hr',null)">
+          <div class="stat-icon">👔</div>
+          <div class="stat-label">Staff on Duty</div>
+          <div class="stat-value">22 / 24</div>
+          <div class="stat-delta flat">2 on approved leave</div>
+        </div>
+      </div>
+
+      <!-- District KPIs (hidden by default) -->
+      <div class="stats-row" id="dis-stats" style="display:none;grid-template-columns:repeat(4,1fr)">
+        <div class="stat c1"><div class="stat-icon">👥</div><div class="stat-label">District Members</div><div class="stat-value">187</div><div class="stat-delta up">↑ +6 this month</div></div>
+        <div class="stat c2"><div class="stat-icon">💰</div><div class="stat-label">Dues Collected</div><div class="stat-value">GHS 6.8K</div><div class="stat-delta up">↑ 84% of target</div></div>
+        <div class="stat c3"><div class="stat-icon">⚠️</div><div class="stat-label">Arrears</div><div class="stat-value">GHS 920</div><div class="stat-delta down">4 members</div></div>
+        <div class="stat c4"><div class="stat-icon">📋</div><div class="stat-label">Pending Applications</div><div class="stat-value">2</div><div class="stat-delta flat">Awaiting review</div></div>
+      </div>
+
+      <!-- ── FOUR MODULE TILES ── -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Core Modules</div>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <div style="font-size:11px;color:var(--muted)">Click to open module dashboard →</div>
+      </div>
+
+      <div class="module-tiles">
+        <!-- Module 01 -->
+        <div class="module-tile mt1" onclick="nav('membership',null)">
+          <div class="mt-icon">🪪</div>
+          <div class="mt-num">MODULE 01</div>
+          <div class="mt-name">Membership</div>
+          <div class="mt-desc">Digital onboarding, lifecycle tracking, renewal automation, and member self-service portal.</div>
+          <div class="mt-footer">
+            <div>
+              <div class="mt-stat-val">1,284</div>
+              <div class="mt-stat-label">Total members</div>
+            </div>
+            <div class="mt-arrow">→</div>
+          </div>
+        </div>
+        <!-- Module 02 -->
+        <div class="module-tile mt2" onclick="nav('dues',null)">
+          <div class="mt-icon">💳</div>
+          <div class="mt-num">MODULE 02</div>
+          <div class="mt-name">Dues & Fees</div>
+          <div class="mt-desc">Automated invoicing, mobile money collection, real-time reconciliation, and arrears management.</div>
+          <div class="mt-footer">
+            <div>
+              <div class="mt-stat-val">87%</div>
+              <div class="mt-stat-label">April collection rate</div>
+            </div>
+            <div class="mt-arrow">→</div>
+          </div>
+        </div>
+        <!-- Module 03 -->
+        <div class="module-tile mt3" onclick="nav('finance',null)">
+          <div class="mt-icon">📊</div>
+          <div class="mt-num">MODULE 03</div>
+          <div class="mt-name">Finance Portal</div>
+          <div class="mt-desc">Real-time accounts, GRA levy routing, budget management, and full audit trail reporting.</div>
+          <div class="mt-footer">
+            <div>
+              <div class="mt-stat-val">GHS 142K</div>
+              <div class="mt-stat-label">Income YTD</div>
+            </div>
+            <div class="mt-arrow">→</div>
+          </div>
+        </div>
+        <!-- Module 04 -->
+        <div class="module-tile mt4" onclick="nav('hr',null)">
+          <div class="mt-icon">👔</div>
+          <div class="mt-num">MODULE 04</div>
+          <div class="mt-name">Human Resources</div>
+          <div class="mt-desc">Staff management, leave workflows, Ghana-compliant payroll, and performance reviews.</div>
+          <div class="mt-footer">
+            <div>
+              <div class="mt-stat-val">24</div>
+              <div class="mt-stat-label">Secretariat staff</div>
+            </div>
+            <div class="mt-arrow">→</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity + Integration status -->
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Live Activity Feed</div><div class="panel-action">View all →</div></div>
+          <div class="panel-body" style="padding:10px 16px">
+            <div class="feed-item">
+              <div class="feed-icon" style="background:rgba(16,185,129,0.1)">💳</div>
+              <div><div class="feed-title"><strong style="color:var(--white)">Ama Boateng</strong> — Annual dues paid · GFF-003102</div><div class="feed-time">Today 09:14 · MTN MoMo · +GHS 350</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background:rgba(99,102,241,0.1)">🛃</div>
+              <div><div class="feed-title"><strong style="color:var(--white)">Kwame Asante</strong> — Customs levy paid · Entry 44821</div><div class="feed-time">Today 08:33 · GIFF Wallet → GRA Fund</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background:rgba(245,158,11,0.1)">👤</div>
+              <div><div class="feed-title">New application — <strong style="color:var(--white)">Priscilla Adu</strong> · Tema Port Logistics</div><div class="feed-time">Yesterday 15:48 · Pending review</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background:rgba(239,68,68,0.1)">⚠️</div>
+              <div><div class="feed-title">3rd reminder sent — <strong style="color:var(--white)">Ben Nkrumah</strong> · 2 yrs overdue</div><div class="feed-time">Yesterday 11:02 · Escalation flagged</div></div>
+            </div>
+            <div class="feed-item">
+              <div class="feed-icon" style="background:rgba(20,184,166,0.1)">🏦</div>
+              <div><div class="feed-title">GRA levy allocation received — Q1 2026</div><div class="feed-time">10 Apr 2026 · GHS 12,450 from Consolidated Fund</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Integration Status</div><span class="badge green">All Live</span></div>
+            <div class="panel-body" style="padding:10px 16px">
+              <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">GPHA Port API</div><div class="health-val" style="color:var(--green)">99.8%</div></div>
+              <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">MPS Terminal Feed</div><div class="health-val" style="color:var(--green)">99.6%</div></div>
+              <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">GRA Customs Portal</div><div class="health-val" style="color:var(--green)">100%</div></div>
+              <div class="health-row"><div class="health-dot" style="background:var(--yellow)"></div><div class="health-name">Shipping Line APIs</div><div class="health-val" style="color:var(--yellow)">97.2%</div></div>
+              <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Hubtel / Paystack</div><div class="health-val" style="color:var(--green)">99.9%</div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Quick Actions</div></div>
+            <div class="panel-body" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <button class="btn primary" style="justify-content:center;font-size:11.5px" onclick="nav('membership',null)">+ Add Member</button>
+              <button class="btn ghost" style="justify-content:center;font-size:11.5px" onclick="nav('dues',null)">Generate Invoice</button>
+              <button class="btn ghost" style="justify-content:center;font-size:11.5px" onclick="nav('finance',null)">Finance Report</button>
+              <button class="btn ghost" style="justify-content:center;font-size:11.5px" onclick="nav('hr',null)">HR Payroll</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ MODULE 01: MEMBERSHIP ══════════ -->
+    <div class="view" id="view-membership">
+      <div class="module-banner banner-m1">
+        <div>
+          <div class="mb-num" style="color:var(--m1)">Module 01 · Membership Management</div>
+          <div class="mb-title">Membership Dashboard</div>
+          <div class="mb-sub">Digital onboarding, member lifecycle, renewal automation, and district-level visibility — all in one place.</div>
+          <div class="mb-badges">
+            <span class="mb-badge mb1">🪪 1,284 Members</span>
+            <span class="mb-badge mb1">✓ 96% Renewal Rate</span>
+            <span class="mb-badge mb1">📋 7 Pending</span>
+            <span class="mb-badge" style="background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.25);color:var(--red)">⚠️ 23 Arrears</span>
+          </div>
+        </div>
+        <div class="mb-icon">🪪</div>
+      </div>
+
+      <div class="stats-row" style="grid-template-columns:repeat(5,1fr)">
+        <div class="stat c1"><div class="stat-label">Active Members</div><div class="stat-value">1,201</div><div class="stat-delta up">↑ +34 this month</div></div>
+        <div class="stat c2"><div class="stat-label">New Applications</div><div class="stat-value">7</div><div class="stat-delta flat">Awaiting review</div></div>
+        <div class="stat c3"><div class="stat-label">In Arrears</div><div class="stat-value">23</div><div class="stat-delta down">GHS 6,820 owed</div></div>
+        <div class="stat c4"><div class="stat-label">Suspended</div><div class="stat-value">22</div><div class="stat-delta flat">Non-payment</div></div>
+        <div class="stat cb"><div class="stat-label">Renewals Due (30d)</div><div class="stat-value">142</div><div class="stat-delta flat">Reminders sent</div></div>
+      </div>
+
+      <div class="grid-13" style="margin-bottom:14px">
+        <div class="panel">
+          <div class="panel-head">
+            <div><div class="panel-title">Member Registry</div><div class="panel-sub">Filter, search, and manage all members</div></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn ghost" style="font-size:11px">⬇ Export</button>
+              <button class="btn primary" style="font-size:11px">+ Add Member</button>
+            </div>
+          </div>
+          <!-- Filters -->
+          <div style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;gap:8px">
+            <div class="tabs" style="margin:0">
+              <div class="tab active">All</div><div class="tab">Active</div><div class="tab">Arrears</div><div class="tab">Pending</div>
+            </div>
+            <div class="search-wrap" style="width:180px;margin-left:auto">
+              <span style="color:var(--muted);font-size:12px">🔍</span>
+              <input type="text" placeholder="Name, ID, company...">
+            </div>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>Member</th><th>Category</th><th>Dues Status</th><th>Status</th><th>Wallet</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:linear-gradient(135deg,#0EA5E9,#6366F1)">KA</div><div><div class="tbl-name">Kwame Asante</div><div class="tbl-sub">GFF-002841 · Asante Freight Ltd</div></div></div></td><td><span class="badge blue">Corporate</span></td><td><span class="badge green">Paid 2026</span></td><td><span class="badge green">Active</span></td><td><span style="font-weight:700;color:var(--white)">GHS 4,250</span></td><td><div style="display:flex;gap:5px"><button class="btn ghost" style="padding:3px 8px;font-size:11px">View</button><button class="btn ghost" style="padding:3px 8px;font-size:11px">Edit</button></div></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:linear-gradient(135deg,var(--teal),var(--green))">AB</div><div><div class="tbl-name">Ama Boateng</div><div class="tbl-sub">GFF-003102 · Tema Clearing Agency</div></div></div></td><td><span class="badge blue">Corporate</span></td><td><span class="badge green">Paid 2026</span></td><td><span class="badge green">Active</span></td><td><span style="font-weight:700;color:var(--white)">GHS 1,800</span></td><td><div style="display:flex;gap:5px"><button class="btn ghost" style="padding:3px 8px;font-size:11px">View</button><button class="btn ghost" style="padding:3px 8px;font-size:11px">Edit</button></div></td></tr>
+              <tr style="background:rgba(245,158,11,0.03)"><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:linear-gradient(135deg,var(--orange),var(--yellow))">KM</div><div><div class="tbl-name">Kofi Mensah</div><div class="tbl-sub">GFF-001987 · KM Logistics GH</div></div></div></td><td><span class="badge purple">Individual</span></td><td><span class="badge orange">Overdue</span></td><td><span class="badge orange">At Risk</span></td><td><span style="font-weight:700;color:var(--muted)">GHS 0</span></td><td><div style="display:flex;gap:5px"><button class="btn ghost" style="padding:3px 8px;font-size:11px">View</button><button class="btn danger" style="padding:3px 8px;font-size:11px">Remind</button></div></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:linear-gradient(135deg,var(--green),var(--teal))">EA</div><div><div class="tbl-name">Efua Appiah</div><div class="tbl-sub">GFF-003540 · Gold Coast Forwarding</div></div></div></td><td><span class="badge blue">Corporate</span></td><td><span class="badge green">Paid 2026</span></td><td><span class="badge green">Active</span></td><td><span style="font-weight:700;color:var(--white)">GHS 920</span></td><td><div style="display:flex;gap:5px"><button class="btn ghost" style="padding:3px 8px;font-size:11px">View</button><button class="btn ghost" style="padding:3px 8px;font-size:11px">Edit</button></div></td></tr>
+              <tr style="background:rgba(14,165,233,0.03)"><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:linear-gradient(135deg,var(--cyan2),var(--blue))">PA</div><div><div class="tbl-name">Priscilla Adu</div><div class="tbl-sub">GFF-003621 · Tema Port Logistics</div></div></div></td><td><span class="badge blue">Corporate</span></td><td><span class="badge cyan">—</span></td><td><span class="badge cyan">Pending</span></td><td><span style="color:var(--muted)">—</span></td><td><div style="display:flex;gap:5px"><button class="btn primary" style="padding:3px 8px;font-size:11px">Approve</button><button class="btn danger" style="padding:3px 8px;font-size:11px">Reject</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Right side -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Membership Status</div></div>
+            <div class="panel-body">
+              <div class="donut-wrap">
+                <div class="donut" style="background:conic-gradient(var(--green) 0deg 336deg,var(--orange) 336deg 352deg,var(--red) 352deg 358deg,var(--blue) 358deg 360deg)"><div class="donut-label">1,284</div></div>
+                <div style="flex:1">
+                  <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div><div class="legend-label">Active</div><div class="legend-val">1,201</div></div>
+                  <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div><div class="legend-label">At Risk</div><div class="legend-val">46</div></div>
+                  <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div><div class="legend-label">Suspended</div><div class="legend-val">22</div></div>
+                  <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div><div class="legend-label">Pending</div><div class="legend-val">15</div></div>
+                </div>
+              </div>
+              <div style="margin-top:14px">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:5px">Collection Rate — April 2026</div>
+                <div class="progress"><div class="progress-fill" style="width:87%;background:linear-gradient(90deg,var(--m1),var(--teal))"></div></div>
+                <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10.5px">
+                  <span style="color:var(--m1)">87% collected</span>
+                  <span style="color:var(--muted)">GHS 48.2K / 55.4K</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- District breakdown (national only) -->
+          <div class="panel national-only">
+            <div class="panel-head"><div class="panel-title">By District</div></div>
+            <div class="panel-body" style="padding:10px 16px">
+              <div class="metric-row"><div class="metric-label">Greater Accra</div><div class="metric-value" style="color:var(--m1)">487 members</div></div>
+              <div class="metric-row"><div class="metric-label">Tema</div><div class="metric-value" style="color:var(--m1)">312 members</div></div>
+              <div class="metric-row"><div class="metric-label">Ashanti</div><div class="metric-value" style="color:var(--m1)">221 members</div></div>
+              <div class="metric-row"><div class="metric-label">Western</div><div class="metric-value" style="color:var(--m1)">158 members</div></div>
+              <div class="metric-row"><div class="metric-label">Central</div><div class="metric-value" style="color:var(--m1)">106 members</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ MODULE 02: DUES ══════════ -->
+    <div class="view" id="view-dues">
+      <div class="module-banner banner-m2">
+        <div>
+          <div class="mb-num" style="color:var(--m2)">Module 02 · Dues & Fees Administration</div>
+          <div class="mb-title">Dues Dashboard</div>
+          <div class="mb-sub">Automated invoicing, 5-channel payment collection, real-time reconciliation, and arrears management with zero manual intervention.</div>
+          <div class="mb-badges">
+            <span class="mb-badge mb2">💰 GHS 48.2K Collected</span>
+            <span class="mb-badge mb2">87% Collection Rate</span>
+            <span class="mb-badge mb2">⚡ Instant Reconciliation</span>
+          </div>
+        </div>
+        <div class="mb-icon">💳</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat c2"><div class="stat-label">Collected — April</div><div class="stat-value">GHS 48.2K</div><div class="stat-delta up">↑ +12% vs March</div></div>
+        <div class="stat c3"><div class="stat-label">Arrears Outstanding</div><div class="stat-value">GHS 6.8K</div><div class="stat-delta down">23 members</div></div>
+        <div class="stat c1"><div class="stat-label">Invoices Issued</div><div class="stat-value">1,284</div><div class="stat-delta flat">This cycle</div></div>
+        <div class="stat c4"><div class="stat-label">Auto-Reconciled</div><div class="stat-value">100%</div><div class="stat-delta up">↑ Zero manual matches</div></div>
+      </div>
+
+      <div class="grid-13" style="margin-bottom:14px">
+        <div class="panel">
+          <div class="panel-head">
+            <div><div class="panel-title">Invoice Ledger</div></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn ghost" style="font-size:11px">⬇ Export CSV</button>
+              <button class="btn primary" style="font-size:11px">+ New Invoice</button>
+            </div>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>Invoice #</th><th>Member</th><th>Type</th><th>Channel</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><span class="mono" style="color:var(--m2)">INV-2026-0341</span></td><td>Ama Boateng</td><td>Annual Dues</td><td>MTN MoMo</td><td class="mono" style="color:var(--muted)">13 Apr</td><td style="font-weight:700;color:var(--white)">GHS 350</td><td><span class="badge green">Paid</span></td></tr>
+              <tr><td><span class="mono" style="color:var(--m2)">INV-2026-0340</span></td><td>Kwame Asante</td><td>Port Levy</td><td>Wallet</td><td class="mono" style="color:var(--muted)">13 Apr</td><td style="font-weight:700;color:var(--white)">GHS 1,240</td><td><span class="badge green">Paid</span></td></tr>
+              <tr style="background:rgba(245,158,11,0.03)"><td><span class="mono" style="color:var(--orange)">INV-2026-0335</span></td><td>Kofi Mensah</td><td>Annual Dues</td><td>—</td><td class="mono" style="color:var(--muted)">01 Apr</td><td style="font-weight:700;color:var(--white)">GHS 350</td><td><span class="badge orange">Overdue</span></td></tr>
+              <tr><td><span class="mono" style="color:var(--m2)">INV-2026-0338</span></td><td>Efua Appiah</td><td>Annual Dues</td><td>Vodafone</td><td class="mono" style="color:var(--muted)">10 Apr</td><td style="font-weight:700;color:var(--white)">GHS 350</td><td><span class="badge green">Paid</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Collection Progress</div></div>
+            <div class="panel-body">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:4px">April 2026 — GHS 48,240 / 55,400</div>
+              <div class="progress" style="height:10px"><div class="progress-fill" style="width:87%;background:linear-gradient(90deg,var(--m2),var(--teal))"></div></div>
+              <div style="display:flex;justify-content:space-between;margin-top:5px;font-size:11px">
+                <span style="color:var(--m2);font-weight:700">87%</span>
+                <span style="color:var(--muted)">GHS 7,160 remaining</span>
+              </div>
+              <div style="margin-top:14px">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:8px">By payment channel</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:11px"><span>MTN MoMo</span><span style="color:var(--white)">42%</span></div>
+                    <div class="progress"><div class="progress-fill" style="width:42%;background:#FFB300"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:11px"><span>GIFF Wallet</span><span style="color:var(--white)">28%</span></div>
+                    <div class="progress"><div class="progress-fill" style="width:28%;background:var(--m2)"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:11px"><span>Bank Transfer</span><span style="color:var(--white)">18%</span></div>
+                    <div class="progress"><div class="progress-fill" style="width:18%;background:var(--blue)"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:11px"><span>Vodafone Cash</span><span style="color:var(--white)">8%</span></div>
+                    <div class="progress"><div class="progress-fill" style="width:8%;background:#E32636"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:11px"><span>Card / AirtelTigo</span><span style="color:var(--white)">4%</span></div>
+                    <div class="progress"><div class="progress-fill" style="width:4%;background:var(--purple)"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Arrears Escalation</div></div>
+            <div class="panel-body" style="padding:10px 16px">
+              <div class="metric-row"><div class="metric-label">Reminder 1 Sent</div><div class="metric-value">14 members</div></div>
+              <div class="metric-row"><div class="metric-label">Reminder 2 Sent</div><div class="metric-value" style="color:var(--orange)">6 members</div></div>
+              <div class="metric-row"><div class="metric-label">Reminder 3 — Escalation</div><div class="metric-value" style="color:var(--red)">3 members</div></div>
+              <div class="metric-row"><div class="metric-label">Pending Suspension</div><div class="metric-value" style="color:var(--red)">2 members</div></div>
+              <button class="btn danger" style="width:100%;justify-content:center;margin-top:10px;font-size:11.5px">Review Escalations →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ MODULE 03: FINANCE ══════════ -->
+    <div class="view" id="view-finance">
+      <div class="module-banner banner-m3">
+        <div>
+          <div class="mb-num" style="color:var(--m3)">Module 03 · Accounts & Finance</div>
+          <div class="mb-title">Finance Portal</div>
+          <div class="mb-sub">Real-time financial management replacing manual bookkeeping. Full GRA levy flow tracking, budget management, audit trails, and automated reconciliation.</div>
+          <div class="mb-badges">
+            <span class="mb-badge mb3">GHS 142K Income YTD</span>
+            <span class="mb-badge mb3">+18% vs 2025</span>
+            <span class="mb-badge mb3">✓ GRA Levy Tracked</span>
+            <span class="mb-badge mb3 national-only">Full Audit Trail</span>
+          </div>
+        </div>
+        <div class="mb-icon">📊</div>
+      </div>
+
+      <div class="stats-row stats-row-5">
+        <div class="stat c3"><div class="stat-label">Total Income YTD</div><div class="stat-value">GHS 142K</div><div class="stat-delta up">↑ +18% vs 2025</div></div>
+        <div class="stat c2"><div class="stat-label">Net Surplus</div><div class="stat-value">GHS 58K</div><div class="stat-delta up">↑ Strong position</div></div>
+        <div class="stat c1"><div class="stat-label">GRA Levies Submitted</div><div class="stat-value">GHS 38.4K</div><div class="stat-delta up">✓ Confirmed</div></div>
+        <div class="stat c4"><div class="stat-label">Q1 Allocation Received</div><div class="stat-value">GHS 12.5K</div><div class="stat-delta up">↑ 10 Apr 2026</div></div>
+        <div class="stat cb"><div class="stat-label">Platform Revenue</div><div class="stat-value">GHS 18.4K</div><div class="stat-delta up">↑ Wallet + tx fees</div></div>
+      </div>
+
+      <!-- GRA Levy Flow (national only) -->
+      <div class="panel national-only" style="margin-bottom:14px">
+        <div class="panel-head">
+          <div><div class="panel-title">GRA Levy Flow — Real-Time Tracking</div><div class="panel-sub">Member payments → GRA Consolidated Fund → GIFF allocation</div></div>
+          <button class="btn ghost" style="font-size:11px">Full Report</button>
+        </div>
+        <div class="panel-body">
+          <div style="display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr;gap:8px;align-items:center">
+            <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+              <div style="font-size:10.5px;color:var(--muted);margin-bottom:5px">Members Paid Levy</div>
+              <div style="font-size:20px;font-weight:800;color:var(--white)">1,114</div>
+              <div style="font-size:11px;color:var(--green);margin-top:2px">of 1,201 active</div>
+            </div>
+            <div style="text-align:center;font-size:20px;color:var(--m3)">→</div>
+            <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid rgba(59,130,246,0.2)">
+              <div style="font-size:10.5px;color:var(--muted);margin-bottom:5px">Submitted to GRA Fund</div>
+              <div style="font-size:20px;font-weight:800;color:var(--white)">GHS 38,400</div>
+              <div style="font-size:11px;color:var(--blue);margin-top:2px">Consolidated Fund ✓</div>
+            </div>
+            <div style="text-align:center;font-size:20px;color:var(--m3)">→</div>
+            <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid rgba(16,185,129,0.2)">
+              <div style="font-size:10.5px;color:var(--muted);margin-bottom:5px">Allocated Back to GIFF</div>
+              <div style="font-size:20px;font-weight:800;color:var(--green)">GHS 12,450</div>
+              <div style="font-size:11px;color:var(--green);margin-top:2px">Q1 received 10 Apr ✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-13">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Revenue Streams — YTD</div></div>
+          <div class="panel-body" style="padding:12px 16px">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px">Annual Dues</span><span style="font-size:12px;font-weight:700;color:var(--white)">GHS 105,200</span></div><div class="progress"><div class="progress-fill" style="width:74%;background:var(--m2)"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px">Wallet Transaction Fees</span><span style="font-size:12px;font-weight:700;color:var(--white)">GHS 7,200</span></div><div class="progress"><div class="progress-fill" style="width:34%;background:var(--pink)"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px">GRA Levy Allocation</span><span style="font-size:12px;font-weight:700;color:var(--white)">GHS 12,450</span></div><div class="progress"><div class="progress-fill" style="width:55%;background:var(--blue)"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px">Loan & HP Processing Fees</span><span style="font-size:12px;font-weight:700;color:var(--white)">GHS 4,100</span></div><div class="progress"><div class="progress-fill" style="width:20%;background:var(--m4)"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px">Float / Interest Income</span><span style="font-size:12px;font-weight:700;color:var(--white)">GHS 3,100</span></div><div class="progress"><div class="progress-fill" style="width:15%;background:var(--cyan)"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">P&L Summary — April 2026</div></div>
+            <div class="panel-body" style="padding:10px 16px">
+              <div class="metric-row"><div class="metric-label">Total Income</div><div class="metric-value">GHS 142,600</div></div>
+              <div class="metric-row"><div class="metric-label">Staff Payroll</div><div class="metric-value" style="color:var(--orange)">− GHS 35,186</div></div>
+              <div class="metric-row"><div class="metric-label">Operations</div><div class="metric-value" style="color:var(--orange)">− GHS 22,400</div></div>
+              <div class="metric-row"><div class="metric-label">IT & Platform</div><div class="metric-value" style="color:var(--orange)">− GHS 26,800</div></div>
+              <div class="metric-row" style="border-top:2px solid var(--border2);padding-top:10px;margin-top:4px"><div class="metric-label" style="font-weight:700;color:var(--white)">Net Surplus</div><div class="metric-value" style="color:var(--green);font-size:16px">GHS 58,214</div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Budget Utilisation</div></div>
+            <div class="panel-body" style="padding:10px 16px">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div><div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:11px"><span>Payroll</span><span style="color:var(--green)">71% used</span></div><div class="progress"><div class="progress-fill" style="width:71%;background:var(--green)"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:11px"><span>Operations</span><span style="color:var(--yellow)">68% used</span></div><div class="progress"><div class="progress-fill" style="width:68%;background:var(--yellow)"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;margin-bottom:3px;font-size:11px"><span>IT & Platform</span><span style="color:var(--orange)">89% used</span></div><div class="progress"><div class="progress-fill" style="width:89%;background:var(--orange)"></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ MODULE 04: HR ══════════ -->
+    <div class="view" id="view-hr">
+      <div class="module-banner banner-m4">
+        <div>
+          <div class="mb-num" style="color:var(--m4)">Module 04 · Human Resource Management</div>
+          <div class="mb-title">HR Dashboard</div>
+          <div class="mb-sub">Comprehensive HR system for the GIFF Secretariat — staff profiles, leave workflows, Ghana-compliant payroll (SSNIT, PAYE, NHIL), and performance reviews.</div>
+          <div class="mb-badges">
+            <span class="mb-badge mb4">👔 24 Staff</span>
+            <span class="mb-badge mb4">2 On Leave</span>
+            <span class="mb-badge mb4">3 Leave Requests</span>
+            <span class="mb-badge mb4 national-only">Payroll: GHS 37,235 Net</span>
+          </div>
+        </div>
+        <div class="mb-icon">👔</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat c4"><div class="stat-label">Total Staff</div><div class="stat-value">24</div><div class="stat-delta up">Full complement</div></div>
+        <div class="stat c2"><div class="stat-label">On Duty Today</div><div class="stat-value">22</div><div class="stat-delta flat">2 on leave</div></div>
+        <div class="stat c3"><div class="stat-label">Leave Requests</div><div class="stat-value">3</div><div class="stat-delta flat">Pending approval</div></div>
+        <div class="stat c1"><div class="stat-label">Next Payroll</div><div class="stat-value">Apr 28</div><div class="stat-delta flat">15 days away</div></div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Staff directory -->
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Staff Directory</div><button class="btn primary" style="font-size:11px">+ Add Staff</button></div>
+          <table class="tbl">
+            <thead><tr><th>Staff Member</th><th>Role</th><th>Dept</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:var(--blue)">SA</div><div><div class="tbl-name">Solomon Addai</div><div class="tbl-sub">General Secretary</div></div></div></td><td>Management</td><td>Executive</td><td><span class="badge green">Active</span></td><td><button class="btn ghost" style="padding:3px 8px;font-size:11px">View</button></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:var(--m3)">MA</div><div><div class="tbl-name">Mary Asiedu</div><div class="tbl-sub">Finance Officer</div></div></div></td><td>Finance</td><td>Accounts</td><td><span class="badge green">Active</span></td><td><button class="btn ghost" style="padding:3px 8px;font-size:11px">View</button></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:var(--teal)">KO</div><div><div class="tbl-name">Kwesi Owusu</div><div class="tbl-sub">IT Administrator</div></div></div></td><td>Technical</td><td>IT</td><td><span class="badge green">Active</span></td><td><button class="btn ghost" style="padding:3px 8px;font-size:11px">View</button></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:var(--orange)">AK</div><div><div class="tbl-name">Abena Kusi</div><div class="tbl-sub">Member Services</div></div></div></td><td>Operations</td><td>Mbr Svcs</td><td><span class="badge orange">On Leave</span></td><td><button class="btn ghost" style="padding:3px 8px;font-size:11px">View</button></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="background:var(--purple)">JT</div><div><div class="tbl-name">James Tetteh</div><div class="tbl-sub">Member Services</div></div></div></td><td>Operations</td><td>Mbr Svcs</td><td><span class="badge orange">Sick Leave</span></td><td><button class="btn ghost" style="padding:3px 8px;font-size:11px">View</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Right column -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <!-- Leave requests -->
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title">Leave Requests</div><span class="badge amber">3 pending</span></div>
+            <div class="panel-body" style="padding:10px 16px">
+              <div class="feed-item">
+                <div class="feed-icon" style="background:rgba(245,158,11,0.1)">🏖️</div>
+                <div><div class="feed-title"><strong style="color:var(--white)">Abena Kusi</strong> — Annual Leave · 5 days</div><div class="feed-time">14–18 Apr 2026</div></div>
+                <div style="display:flex;gap:5px;margin-left:auto">
+                  <button class="btn primary" style="padding:3px 8px;font-size:11px">✓</button>
+                  <button class="btn danger" style="padding:3px 8px;font-size:11px">✗</button>
+                </div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-icon" style="background:rgba(239,68,68,0.1)">🏥</div>
+                <div><div class="feed-title"><strong style="color:var(--white)">James Tetteh</strong> — Sick Leave · 1 day</div><div class="feed-time">13 Apr 2026</div></div>
+                <div style="display:flex;gap:5px;margin-left:auto">
+                  <button class="btn primary" style="padding:3px 8px;font-size:11px">✓</button>
+                  <button class="btn danger" style="padding:3px 8px;font-size:11px">✗</button>
+                </div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-icon" style="background:rgba(139,92,246,0.1)">📚</div>
+                <div><div class="feed-title"><strong style="color:var(--white)">Diana Mensah</strong> — Study Leave · 3 days</div><div class="feed-time">20–22 Apr 2026</div></div>
+                <div style="display:flex;gap:5px;margin-left:auto">
+                  <button class="btn primary" style="padding:3px 8px;font-size:11px">✓</button>
+                  <button class="btn danger" style="padding:3px 8px;font-size:11px">✗</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payroll summary (national only) -->
+          <div class="panel national-only">
+            <div class="panel-head"><div class="panel-title">Payroll — April 2026</div><button class="btn primary" style="font-size:11px">Run Payroll</button></div>
+            <div class="panel-body" style="padding:10px 16px">
+              <div class="metric-row"><div class="metric-label">Staff Count</div><div class="metric-value">24</div></div>
+              <div class="metric-row"><div class="metric-label">Gross Payroll</div><div class="metric-value">GHS 48,200</div></div>
+              <div class="metric-row"><div class="metric-label">SSNIT Deductions</div><div class="metric-value" style="color:var(--orange)">GHS 2,651</div></div>
+              <div class="metric-row"><div class="metric-label">PAYE Income Tax</div><div class="metric-value" style="color:var(--orange)">GHS 7,230</div></div>
+              <div class="metric-row"><div class="metric-label">NHIL (2.5%)</div><div class="metric-value" style="color:var(--orange)">GHS 1,084</div></div>
+              <div class="metric-row" style="border-top:2px solid var(--border2);padding-top:8px;margin-top:4px"><div class="metric-label" style="font-weight:700;color:var(--white)">Net Pay</div><div class="metric-value" style="color:var(--green);font-size:15px">GHS 37,235</div></div>
+            </div>
+          </div>
+
+          <!-- District HR note -->
+          <div class="panel district-only" style="display:none">
+            <div class="panel-head"><div class="panel-title">District Staff Overview</div></div>
+            <div class="panel-body" style="padding:10px 16px">
+              <div class="metric-row"><div class="metric-label">District Officers</div><div class="metric-value">3</div></div>
+              <div class="metric-row"><div class="metric-label">On Duty Today</div><div class="metric-value">3</div></div>
+              <div class="metric-row"><div class="metric-label">Payroll</div><div class="metric-value" style="color:var(--muted)">National Admin only</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ ANALYTICS ══════════ -->
+    <div class="view" id="view-analytics">
+      <div class="page-head"><div><h2>Analytics & Insights</h2><p>Platform usage, member growth, and module performance</p></div><button class="btn primary">⬇ Export Report</button></div>
+      <div class="stats-row stats-row-5">
+        <div class="stat c1"><div class="stat-label">New Members (Apr)</div><div class="stat-value">34</div><div class="stat-delta up">↑ +12% vs Mar</div></div>
+        <div class="stat c2"><div class="stat-label">Renewals (Apr)</div><div class="stat-value">218</div><div class="stat-delta up">↑ 96% renewal rate</div></div>
+        <div class="stat c3"><div class="stat-label">Wallet Transactions</div><div class="stat-value">1,847</div><div class="stat-delta up">↑ +31%</div></div>
+        <div class="stat c4"><div class="stat-label">AI Queries (Apr)</div><div class="stat-value">4,210</div><div class="stat-delta up">↑ 78% resolved by AI</div></div>
+        <div class="stat c5"><div class="stat-label">Customs Entries</div><div class="stat-value">342</div><div class="stat-delta up">↑ via platform</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-title">Module Usage — April 2026</div></div>
+        <div class="panel-body" style="padding:12px 16px;display:flex;flex-direction:column;gap:9px">
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:var(--m1)">🪪</span> Membership Module</span><span style="font-size:12px;font-weight:700;color:var(--white)">94%</span></div><div class="progress" style="height:7px"><div class="progress-fill" style="width:94%;background:var(--m1)"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:var(--m2)">💳</span> Dues & Fees Module</span><span style="font-size:12px;font-weight:700;color:var(--white)">91%</span></div><div class="progress" style="height:7px"><div class="progress-fill" style="width:91%;background:var(--m2)"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:var(--m3)">📊</span> Finance Portal</span><span style="font-size:12px;font-weight:700;color:var(--white)">78%</span></div><div class="progress" style="height:7px"><div class="progress-fill" style="width:78%;background:var(--m3)"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:var(--m4)">👔</span> HR Module</span><span style="font-size:12px;font-weight:700;color:var(--white)">65%</span></div><div class="progress" style="height:7px"><div class="progress-fill" style="width:65%;background:var(--m4)"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;display:flex;align-items:center;gap:6px"><span style="color:var(--cyan)">🤖</span> AI Assistant</span><span style="font-size:12px;font-weight:700;color:var(--white)">82%</span></div><div class="progress" style="height:7px"><div class="progress-fill" style="width:82%;background:var(--cyan)"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ INTEGRATIONS ══════════ -->
+    <div class="view" id="view-integrations">
+      <div class="page-head"><div><h2>Industry Integrations</h2><p>Live API connections to Ghana's port, customs, and payment ecosystem</p></div><button class="btn primary">+ Add Integration</button></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div class="panel"><div class="panel-head"><div><div class="panel-title">GPHA Port API</div><div class="panel-sub">Vessel schedule, berth status, port dues</div></div><span class="badge green">Live</span></div><div class="panel-body"><div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Uptime</div><div class="health-val" style="color:var(--green)">99.8%</div></div><div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Latency</div><div class="health-val" style="color:var(--green)">88ms avg</div></div></div></div>
+        <div class="panel"><div class="panel-head"><div><div class="panel-title">GRA Customs Portal</div><div class="panel-sub">Duty payments, levy routing, allocation</div></div><span class="badge green">Live</span></div><div class="panel-body"><div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Uptime</div><div class="health-val" style="color:var(--green)">100%</div></div><div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Latency</div><div class="health-val" style="color:var(--green)">142ms avg</div></div></div></div>
+        <div class="panel"><div class="panel-head"><div><div class="panel-title">Hubtel / Paystack</div><div class="panel-sub">Card, bank transfer, mobile money</div></div><span class="badge green">Live</span></div><div class="panel-body"><div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Uptime</div><div class="health-val" style="color:var(--green)">99.9%</div></div><div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Latency</div><div class="health-val" style="color:var(--green)">204ms avg</div></div></div></div>
+        <div class="panel"><div class="panel-head"><div><div class="panel-title">MPS Terminal Feed</div><div class="panel-sub">Container status, gate appointments</div></div><span class="badge green">Live</span></div><div class="panel-body"><div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Uptime</div><div class="health-val" style="color:var(--green)">99.6%</div></div></div></div>
+        <div class="panel"><div class="panel-head"><div><div class="panel-title">Shipping Line APIs</div><div class="panel-sub">MSC, Maersk, OOCL, CMA CGM</div></div><span class="badge orange">Partial</span></div><div class="panel-body"><div class="health-row"><div class="health-dot" style="background:var(--yellow)"></div><div class="health-name">Uptime</div><div class="health-val" style="color:var(--yellow)">97.2%</div></div><div class="health-row"><div class="health-dot" style="background:var(--orange)"></div><div class="health-name">Maersk</div><div class="health-val" style="color:var(--orange)">Slow</div></div></div></div>
+        <div class="panel"><div class="panel-head"><div><div class="panel-title">Twilio / SendGrid</div><div class="panel-sub">SMS, email, WhatsApp notifications</div></div><span class="badge green">Live</span></div><div class="panel-body"><div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Uptime</div><div class="health-val" style="color:var(--green)">99.7%</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- ══════════ SYSTEM ══════════ -->
+    <div class="view" id="view-system">
+      <div class="page-head"><div><h2>System Health & Settings</h2><p>Platform infrastructure, services, and configuration</p></div><button class="btn ghost">🔄 Run Healthcheck</button></div>
+      <div class="stats-row">
+        <div class="stat c2"><div class="stat-label">System Uptime</div><div class="stat-value">99.94%</div><div class="stat-delta up">↑ 30 days</div></div>
+        <div class="stat c1"><div class="stat-label">Avg Latency</div><div class="stat-value">187ms</div><div class="stat-delta up">↑ Healthy</div></div>
+        <div class="stat c3"><div class="stat-label">Active Sessions</div><div class="stat-value">342</div><div class="stat-delta flat">Members online</div></div>
+        <div class="stat c4"><div class="stat-label">DB Size</div><div class="stat-value">14.2 GB</div><div class="stat-delta flat">Backup: 02:00 ✓</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Service Status</div></div>
+          <div class="panel-body" style="padding:10px 16px">
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">API Gateway</div><div class="health-val" style="color:var(--green)">Healthy</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Membership Service (M01)</div><div class="health-val" style="color:var(--m1)">Healthy</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Dues Service (M02)</div><div class="health-val" style="color:var(--m2)">Healthy</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Finance Service (M03)</div><div class="health-val" style="color:var(--m3)">Healthy</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">HR Service (M04)</div><div class="health-val" style="color:var(--m4)">Healthy</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">Wallet Service</div><div class="health-val" style="color:var(--green)">Healthy</div></div>
+            <div class="health-row"><div class="health-dot" style="background:var(--green)"></div><div class="health-name">AI Agent Service</div><div class="health-val" style="color:var(--green)">Healthy</div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div class="panel-title">Platform Settings</div></div>
+          <div class="panel-body" style="padding:10px 16px">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)"><div><div style="font-size:12.5px;color:var(--text)">AI Assistant</div><div style="font-size:11px;color:var(--muted)">Member chatbot</div></div><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)"><div><div style="font-size:12.5px;color:var(--text)">SMS Notifications</div><div style="font-size:11px;color:var(--muted)">Reminders & receipts</div></div><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)"><div><div style="font-size:12.5px;color:var(--text)">Auto-Renewal Reminders</div><div style="font-size:11px;color:var(--muted)">30, 14, 7 days before</div></div><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0"><div><div style="font-size:12.5px;color:var(--text)">Maintenance Mode</div><div style="font-size:11px;color:var(--muted)">Disable member access</div></div><label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+// ── Navigation ───────────────────────────────────────
+function nav(viewId, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + viewId).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  const titles = {
+    dashboard:    ['Dashboard', 'Overview · Monday, 13 Apr 2026'],
+    membership:   ['Membership Dashboard', 'Module 01 · Member lifecycle management'],
+    dues:         ['Dues & Fees Dashboard', 'Module 02 · Automated collection & reconciliation'],
+    finance:      ['Finance Portal', 'Module 03 · Real-time financial management'],
+    hr:           ['HR Dashboard', 'Module 04 · Secretariat staff management'],
+    analytics:    ['Analytics & Insights', 'Platform usage & growth trends'],
+    integrations: ['Industry Integrations', 'Live API connections'],
+    system:       ['System Health', 'Infrastructure & configuration'],
+  };
+  if (titles[viewId]) {
+    document.getElementById('tb-title').innerHTML =
+      titles[viewId][0] + ' <span>' + titles[viewId][1] + '</span>';
+  }
+}
+
+// ── Role Switching ───────────────────────────────────
+let currentRole = 'national';
+
+function setRole(role) {
+  currentRole = role;
+  const isNational = role === 'national';
+
+  // Toggle button states
+  document.getElementById('rt-nat').className = 'rt-btn' + (isNational ? ' active nat' : '');
+  document.getElementById('rt-dis').className = 'rt-btn' + (!isNational ? ' active dis' : '');
+
+  // Sidebar role badge
+  const badge = document.getElementById('sb-role-badge');
+  const dot   = document.getElementById('sb-role-dot');
+  const label = document.getElementById('sb-role-label');
+  badge.className = 'role-badge ' + (isNational ? 'national' : 'district');
+  dot.style.background = isNational ? 'var(--cyan)' : 'var(--yellow)';
+  label.textContent = isNational ? 'National Admin' : 'District Admin — Tema';
+
+  // User info
+  document.getElementById('user-name').textContent = isNational ? 'Solomon Addai' : 'Kofi Boateng';
+  document.getElementById('user-av').textContent   = isNational ? 'SA' : 'KB';
+  document.getElementById('user-role-label').textContent = isNational ? 'General Secretary · National' : 'District Officer · Tema';
+
+  // District badge in topbar
+  const db = document.getElementById('district-badge');
+  isNational ? db.classList.remove('visible') : db.classList.add('visible');
+
+  // Show/hide national-only elements
+  document.querySelectorAll('.national-only').forEach(el => {
+    el.style.display = isNational ? '' : 'none';
+  });
+  document.querySelectorAll('.district-only').forEach(el => {
+    el.style.display = !isNational ? '' : 'none';
+  });
+
+  // Show/hide stat rows
+  document.getElementById('nat-stats').style.display = isNational ? 'grid' : 'none';
+  document.getElementById('dis-stats').style.display = !isNational ? 'grid' : 'none';
+
+  // Sidebar district-only items
+  document.querySelectorAll('.sb-item.district-only').forEach(el => {
+    el.style.display = !isNational ? 'flex' : 'none';
+  });
+}
+
+function toggleRole() {
+  setRole(currentRole === 'national' ? 'district' : 'national');
+}
+
+// ── Tabs ─────────────────────────────────────────────
+document.querySelectorAll('.tabs').forEach(tabs => {
+  tabs.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      tabs.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+});
+</script>
+</body>
+</html>

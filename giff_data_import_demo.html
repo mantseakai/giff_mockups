@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIFF Data Import Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1526;
+    --navy-2:#11233d;
+    --teal:#0f6e56;
+    --teal-2:#1d9e75;
+    --teal-soft:#e5f5ef;
+    --blue:#1f5fa8;
+    --blue-soft:#e8f1fb;
+    --amber:#ba7517;
+    --amber-soft:#faefda;
+    --pink:#993556;
+    --pink-soft:#fbeaf0;
+    --ink:#16212a;
+    --muted:#62727d;
+    --border:rgba(18,32,43,0.1);
+    --surface:#ffffff;
+    --surface-soft:#f5f9fa;
+    --shadow:0 24px 60px rgba(10,24,39,0.12);
+    --radius-xl:30px;
+    --radius-lg:22px;
+    --radius-md:16px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  body{
+    min-height:100vh;
+    font-family:'Manrope',system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at top left, rgba(29,158,117,0.12), transparent 24%),
+      radial-gradient(circle at top right, rgba(31,95,168,0.1), transparent 20%),
+      linear-gradient(180deg, #eef5f7 0%, #f8fbfb 32%, #ffffff 100%);
+    padding:22px 16px 40px;
+  }
+
+  .shell{max-width:1260px;margin:0 auto}
+
+  .hero{
+    position:relative;
+    overflow:hidden;
+    border-radius:var(--radius-xl);
+    padding:34px;
+    background:
+      radial-gradient(circle at 84% 18%, rgba(255,255,255,0.12), transparent 20%),
+      linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 52%, #123b47 100%);
+    color:#fff;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+  }
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:14px;
+    padding:7px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.12);
+    font-size:.78rem;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+
+  .hero h1{
+    font-family:'Outfit',system-ui,sans-serif;
+    font-size:clamp(2rem, 5vw, 3.3rem);
+    line-height:1;
+    max-width:780px;
+    margin-bottom:14px;
+  }
+
+  .hero p{
+    max-width:780px;
+    color:rgba(255,255,255,0.82);
+    line-height:1.7;
+    font-size:1rem;
+  }
+
+  .hero-meta{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:22px;
+  }
+
+  .meta-chip{
+    display:inline-flex;
+    align-items:center;
+    min-height:40px;
+    padding:8px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.12);
+    font-size:.88rem;
+    color:rgba(255,255,255,0.9);
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns:minmax(300px,0.9fr) minmax(0,1.1fr);
+    gap:16px;
+  }
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    box-shadow:0 14px 40px rgba(11,25,40,0.05);
+    padding:22px;
+  }
+
+  .section-label{
+    font-size:.76rem;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--muted);
+    margin-bottom:12px;
+  }
+
+  .left-stack,.right-stack{display:grid;gap:16px}
+
+  .selector-grid{
+    display:grid;
+    gap:10px;
+  }
+
+  .file-option{
+    width:100%;
+    text-align:left;
+    border:1px solid var(--border);
+    background:linear-gradient(180deg,#fff,#f8fbfb);
+    border-radius:16px;
+    padding:14px 16px;
+    cursor:pointer;
+    transition:border-color .16s ease, transform .16s ease, box-shadow .16s ease;
+  }
+
+  .file-option:hover{
+    transform:translateY(-1px);
+    border-color:rgba(15,110,86,0.2);
+  }
+
+  .file-option.active{
+    border-color:rgba(15,110,86,0.26);
+    background:linear-gradient(180deg, rgba(229,245,239,0.9), #fff);
+    box-shadow:0 14px 30px rgba(15,110,86,0.08);
+  }
+
+  .file-option strong{
+    display:block;
+    margin-bottom:6px;
+    font-size:.95rem;
+    color:var(--ink);
+  }
+
+  .file-option span{
+    display:block;
+    color:var(--muted);
+    line-height:1.55;
+    font-size:.88rem;
+  }
+
+  .pill-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:10px;
+  }
+
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    min-height:34px;
+    padding:6px 10px;
+    border-radius:999px;
+    background:var(--surface-soft);
+    color:var(--muted);
+    font-size:.78rem;
+    font-weight:700;
+  }
+
+  .dropzone{
+    padding:16px;
+    border:1.5px dashed rgba(15,110,86,0.24);
+    border-radius:18px;
+    background:linear-gradient(180deg, rgba(229,245,239,0.6), rgba(255,255,255,0.96));
+  }
+
+  .dropzone h2,.results h2,.mapping h2,.progress-panel h2{
+    font-family:'Outfit',system-ui,sans-serif;
+    font-size:1.3rem;
+    margin-bottom:8px;
+  }
+
+  .dropzone p,.subcopy{
+    color:var(--muted);
+    line-height:1.65;
+    font-size:.94rem;
+  }
+
+  .drop-meta{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    margin-top:14px;
+  }
+
+  .meta-card{
+    padding:12px;
+    border-radius:14px;
+    background:#fff;
+    border:1px solid var(--border);
+  }
+
+  .meta-card span{
+    display:block;
+    font-size:.75rem;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    margin-bottom:4px;
+  }
+
+  .meta-card strong{
+    font-size:1rem;
+    color:var(--ink);
+  }
+
+  .controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:16px;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
+    padding:0 16px;
+    border-radius:14px;
+    border:none;
+    cursor:pointer;
+    font-weight:800;
+    transition:transform .16s ease, filter .16s ease;
+  }
+
+  .btn:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.02);
+  }
+
+  .btn-primary{
+    background:linear-gradient(135deg, var(--teal), var(--teal-2));
+    color:#fff;
+  }
+
+  .btn-secondary{
+    background:#edf4f5;
+    color:var(--ink);
+  }
+
+  .stage-row{
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:10px;
+    margin-top:18px;
+  }
+
+  .stage{
+    padding:12px;
+    border-radius:16px;
+    border:1px solid var(--border);
+    background:linear-gradient(180deg,#fff,#f8fbfb);
+  }
+
+  .stage strong{
+    display:block;
+    margin-bottom:6px;
+    font-size:.9rem;
+  }
+
+  .stage span{
+    color:var(--muted);
+    font-size:.83rem;
+    line-height:1.45;
+  }
+
+  .stage.active{
+    background:linear-gradient(180deg, rgba(229,245,239,0.9), #fff);
+    border-color:rgba(15,110,86,0.24);
+  }
+
+  .stage.done{
+    background:linear-gradient(180deg, rgba(230,241,251,0.9), #fff);
+    border-color:rgba(31,95,168,0.24);
+  }
+
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:10px;
+    margin:14px 0 16px;
+  }
+
+  .stat{
+    padding:14px;
+    border-radius:16px;
+    border:1px solid var(--border);
+    background:#fff;
+  }
+
+  .stat span{
+    display:block;
+    font-size:.75rem;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    margin-bottom:6px;
+  }
+
+  .stat strong{
+    font-size:1.12rem;
+  }
+
+  .stat.good{background:linear-gradient(180deg, rgba(229,245,239,0.9), #fff)}
+  .stat.warn{background:linear-gradient(180deg, rgba(250,239,218,0.9), #fff)}
+  .stat.bad{background:linear-gradient(180deg, rgba(251,234,240,0.9), #fff)}
+  .stat.info{background:linear-gradient(180deg, rgba(232,241,251,0.9), #fff)}
+
+  .table-wrap{
+    overflow:auto;
+    border:1px solid var(--border);
+    border-radius:16px;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+  }
+
+  th,td{
+    padding:12px 14px;
+    text-align:left;
+    border-bottom:1px solid rgba(18,32,43,0.08);
+    font-size:.9rem;
+  }
+
+  th{
+    background:var(--surface-soft);
+    font-size:.76rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--muted);
+  }
+
+  td{color:var(--ink)}
+
+  .status{
+    display:inline-flex;
+    align-items:center;
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:.76rem;
+    font-weight:800;
+  }
+
+  .status.valid{background:var(--teal-soft);color:#085041}
+  .status.warning{background:var(--amber-soft);color:#71450c}
+  .status.error{background:var(--pink-soft);color:#772446}
+
+  .mapping-grid{
+    display:grid;
+    gap:10px;
+  }
+
+  .mapping-row{
+    display:grid;
+    grid-template-columns:1fr auto 1fr auto;
+    align-items:center;
+    gap:10px;
+    padding:12px 14px;
+    border-radius:16px;
+    border:1px solid var(--border);
+    background:linear-gradient(180deg,#fff,#f8fbfb);
+  }
+
+  .mapping-row strong{font-size:.92rem}
+  .mapping-row span{color:var(--muted);font-size:.88rem}
+
+  .arrow{
+    color:#90a3af;
+    font-weight:800;
+  }
+
+  .tag{
+    display:inline-flex;
+    align-items:center;
+    padding:5px 10px;
+    border-radius:999px;
+    background:var(--blue-soft);
+    color:#16477b;
+    font-size:.76rem;
+    font-weight:800;
+  }
+
+  .progress{
+    margin-top:14px;
+    height:14px;
+    background:#edf4f5;
+    border-radius:999px;
+    overflow:hidden;
+  }
+
+  .progress-bar{
+    height:100%;
+    width:0;
+    background:linear-gradient(135deg, var(--teal), var(--teal-2));
+    border-radius:999px;
+    transition:width .3s ease;
+  }
+
+  .timeline{
+    display:grid;
+    gap:10px;
+    margin-top:16px;
+  }
+
+  .timeline-item{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    padding:12px 14px;
+    border-radius:16px;
+    border:1px solid var(--border);
+    background:linear-gradient(180deg,#fff,#f8fbfb);
+  }
+
+  .dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    margin-top:5px;
+    background:var(--teal);
+    flex:0 0 auto;
+  }
+
+  .timeline-item strong{
+    display:block;
+    margin-bottom:4px;
+    font-size:.9rem;
+  }
+
+  .timeline-item span{
+    color:var(--muted);
+    line-height:1.5;
+    font-size:.87rem;
+  }
+
+  .helper{
+    margin-top:10px;
+    color:var(--muted);
+    font-size:.88rem;
+  }
+
+  @media (max-width: 1020px){
+    .layout,
+    .drop-meta,
+    .stage-row,
+    .stats{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media (max-width: 760px){
+    body{padding:12px 10px 24px}
+    .hero,.panel{padding:18px}
+    .hero{border-radius:22px}
+    .mapping-row{
+      grid-template-columns:1fr;
+      align-items:flex-start;
+    }
+    .controls .btn{width:100%}
+  }
+</style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Interactive Import Demo</div>
+      <h1>Watch a GIFF data import module move from upload to approved migration</h1>
+      <p>This mockup simulates the import feature in action with sample GIFF migration files. Switch between datasets, run validation, review issues, confirm field mapping, and trigger a staged import progress view.</p>
+      <div class="hero-meta">
+        <div class="meta-chip">Upload + validate + map + import</div>
+        <div class="meta-chip">Built around GIFF demo CSVs</div>
+        <div class="meta-chip">Desktop and mobile responsive</div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="left-stack">
+        <div class="panel">
+          <div class="section-label">Source Files</div>
+          <div class="selector-grid" id="fileSelector"></div>
+          <div class="helper">Use the sample records already created in `demo_import_files` as the source pack for the import workflow.</div>
+        </div>
+
+        <div class="panel">
+          <div class="section-label">Import Stages</div>
+          <div class="stage-row" id="stageRow"></div>
+        </div>
+
+        <div class="panel progress-panel">
+          <div class="section-label">Migration Progress</div>
+          <h2>Batch execution</h2>
+          <p class="subcopy" id="progressLabel">Choose a sample file and run the validation sequence to prepare this batch for import.</p>
+          <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </div>
+
+      <div class="right-stack">
+        <div class="panel">
+          <div class="section-label">Upload Zone</div>
+          <div class="dropzone">
+            <h2 id="moduleTitle">Membership import batch</h2>
+            <p id="moduleDesc">Structured import of member master data with IDs, branch, class, contact information, and active status.</p>
+            <div class="drop-meta">
+              <div class="meta-card">
+                <span>Selected File</span>
+                <strong id="fileName">membership_import_sample.csv</strong>
+              </div>
+              <div class="meta-card">
+                <span>Records</span>
+                <strong id="recordCount">5 rows</strong>
+              </div>
+              <div class="meta-card">
+                <span>Target Module</span>
+                <strong id="targetModule">Membership</strong>
+              </div>
+            </div>
+            <div class="controls">
+              <button class="btn btn-primary" id="runBtn" type="button">Run Validation</button>
+              <button class="btn btn-secondary" id="resetBtn" type="button">Reset Demo</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel results">
+          <div class="section-label">Validation Results</div>
+          <h2>Data quality summary</h2>
+          <p class="subcopy" id="resultsSummary">The import engine scans required fields, duplicate keys, type formats, and mapping readiness before migration can start.</p>
+          <div class="stats">
+            <div class="stat good"><span>Valid Rows</span><strong id="validRows">4</strong></div>
+            <div class="stat warn"><span>Warnings</span><strong id="warningRows">1</strong></div>
+            <div class="stat bad"><span>Errors</span><strong id="errorRows">0</strong></div>
+            <div class="stat info"><span>Import Ready</span><strong id="readyState">Pending</strong></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Row</th>
+                  <th>Key</th>
+                  <th>Issue</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="issuesBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel mapping">
+          <div class="section-label">Field Mapping</div>
+          <h2>Source to platform mapping</h2>
+          <p class="subcopy">Mapped fields shown here are what the migration engine will use after validation succeeds.</p>
+          <div class="mapping-grid" id="mappingGrid"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+const datasets = [
+  {
+    id: "membership",
+    label: "Membership Import",
+    file: "demo_import_files/membership_import_sample.csv",
+    fileName: "membership_import_sample.csv",
+    module: "Membership",
+    description: "Structured import of member master data with IDs, branch, class, contact information, and active status.",
+    records: 5,
+    summary: "Validation checks member IDs, branch values, email format, duplicate national IDs, and active status consistency before loading into the membership register.",
+    stats: { valid: 4, warnings: 1, errors: 0, ready: "Review warning" },
+    issues: [
+      { row: "2", key: "GIFF-MEM-0002", issue: "Optional company name is blank for an individual member record.", status: "warning" },
+      { row: "5", key: "GIFF-MEM-0005", issue: "No blocking issues found. Record passes current validation profile.", status: "valid" }
+    ],
+    mapping: [
+      ["member_id", "membership.member_code", "Required"],
+      ["full_name", "membership.full_name", "Required"],
+      ["branch", "membership.branch_code", "Mapped"],
+      ["membership_class", "membership.classification", "Mapped"],
+      ["national_id", "compliance.national_id", "Sensitive"]
+    ],
+    timelineBase: [
+      "File queued in Membership staging area.",
+      "Schema matched to GIFF membership template.",
+      "One warning logged for optional company field.",
+      "Batch can proceed after reviewer confirmation."
+    ]
+  },
+  {
+    id: "dues",
+    label: "Dues & Fees Import",
+    file: "demo_import_files/dues_import_sample.csv",
+    fileName: "dues_import_sample.csv",
+    module: "Dues & Fees",
+    description: "Import of billing and payment records tied to member IDs, invoice periods, payment channels, and balances.",
+    records: 5,
+    summary: "Validation checks invoice periods, amount fields, member references, and payment status consistency before fees are posted.",
+    stats: { valid: 5, warnings: 0, errors: 0, ready: "Ready" },
+    issues: [
+      { row: "1", key: "DUE-2026-0001", issue: "Payment record reconciles fully against amount due.", status: "valid" },
+      { row: "3", key: "DUE-2026-0003", issue: "Outstanding record accepted with empty payment date because status is Outstanding.", status: "valid" }
+    ],
+    mapping: [
+      ["transaction_id", "dues.transaction_ref", "Required"],
+      ["member_id", "dues.member_code", "Required"],
+      ["invoice_period", "dues.billing_period", "Mapped"],
+      ["amount_due_usd", "finance.invoice_amount", "Currency"],
+      ["balance_usd", "finance.outstanding_amount", "Currency"]
+    ],
+    timelineBase: [
+      "Fee transactions matched to existing member register.",
+      "Amounts normalized to currency fields.",
+      "No blocking issues detected.",
+      "Batch approved for import posting."
+    ]
+  },
+  {
+    id: "accounts",
+    label: "Accounts Balances",
+    file: "demo_import_files/accounts_opening_balances_sample.csv",
+    fileName: "accounts_opening_balances_sample.csv",
+    module: "Accounts",
+    description: "Opening balances import for assets, liabilities, equity, and finance setup during controlled migration.",
+    records: 6,
+    summary: "Validation checks account codes, balance formats, account types, and whether balances are allowed to open in migration stage one.",
+    stats: { valid: 4, warnings: 1, errors: 1, ready: "Blocked" },
+    issues: [
+      { row: "5", key: "4100", issue: "Revenue account is marked 'To Be Generated' and should not be migrated as an opening balance.", status: "error" },
+      { row: "6", key: "5200", issue: "Expense account deferred to post-go-live setup per finance migration rule.", status: "warning" }
+    ],
+    mapping: [
+      ["account_code", "finance.account_code", "Required"],
+      ["account_name", "finance.account_name", "Required"],
+      ["account_type", "finance.account_group", "Mapped"],
+      ["opening_balance_ghs", "finance.opening_balance", "Currency"],
+      ["migration_status", "migration.batch_rule", "Control"]
+    ],
+    timelineBase: [
+      "Chart of accounts file uploaded for opening balances.",
+      "Control rule found two non-opening accounts.",
+      "One blocking error must be resolved before import.",
+      "Batch remains in exception queue."
+    ]
+  },
+  {
+    id: "hr",
+    label: "HR Staff Import",
+    file: "demo_import_files/hr_staff_import_sample.csv",
+    fileName: "hr_staff_import_sample.csv",
+    module: "Human Resources",
+    description: "Staff master import with department ownership, titles, supervisors, employment type, and active status.",
+    records: 5,
+    summary: "Validation checks staff IDs, department values, supervisor references, start dates, and employment status mapping.",
+    stats: { valid: 5, warnings: 0, errors: 0, ready: "Ready" },
+    issues: [
+      { row: "1", key: "GIFF-HR-001", issue: "Supervisor relationship mapped successfully.", status: "valid" },
+      { row: "4", key: "GIFF-HR-004", issue: "Probation status accepted under HR onboarding rules.", status: "valid" }
+    ],
+    mapping: [
+      ["staff_id", "hr.employee_code", "Required"],
+      ["department", "hr.department_code", "Mapped"],
+      ["job_title", "hr.job_title", "Mapped"],
+      ["supervisor", "hr.reports_to", "Reference"],
+      ["status", "hr.employment_status", "Mapped"]
+    ],
+    timelineBase: [
+      "HR file matched to employee import template.",
+      "Supervisor references resolved successfully.",
+      "No conflicts found in department map.",
+      "Batch cleared for HR staging import."
+    ]
+  }
+];
+
+const stages = [
+  { key: "upload", title: "Upload", desc: "File received and tagged" },
+  { key: "validate", title: "Validate", desc: "Schema and required field checks" },
+  { key: "review", title: "Review", desc: "Warnings and exceptions assessed" },
+  { key: "map", title: "Map", desc: "Source fields aligned to platform" },
+  { key: "import", title: "Import", desc: "Batch posted into target module" }
+];
+
+let activeDataset = datasets[0];
+let runState = "idle";
+
+const fileSelector = document.getElementById("fileSelector");
+const stageRow = document.getElementById("stageRow");
+const moduleTitle = document.getElementById("moduleTitle");
+const moduleDesc = document.getElementById("moduleDesc");
+const fileName = document.getElementById("fileName");
+const recordCount = document.getElementById("recordCount");
+const targetModule = document.getElementById("targetModule");
+const validRows = document.getElementById("validRows");
+const warningRows = document.getElementById("warningRows");
+const errorRows = document.getElementById("errorRows");
+const readyState = document.getElementById("readyState");
+const issuesBody = document.getElementById("issuesBody");
+const mappingGrid = document.getElementById("mappingGrid");
+const timeline = document.getElementById("timeline");
+const progressBar = document.getElementById("progressBar");
+const progressLabel = document.getElementById("progressLabel");
+const resultsSummary = document.getElementById("resultsSummary");
+const runBtn = document.getElementById("runBtn");
+const resetBtn = document.getElementById("resetBtn");
+
+function renderSelector() {
+  fileSelector.innerHTML = "";
+  datasets.forEach((dataset) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "file-option" + (dataset.id === activeDataset.id ? " active" : "");
+    button.innerHTML = `
+      <strong>${dataset.label}</strong>
+      <span>${dataset.fileName}</span>
+      <span>${dataset.module} • ${dataset.records} records</span>
+    `;
+    button.addEventListener("click", () => {
+      activeDataset = dataset;
+      runState = "idle";
+      renderAll();
+    });
+    fileSelector.appendChild(button);
+  });
+}
+
+function renderStages() {
+  const activeIndex = runState === "idle" ? 0 : runState === "validated" ? 3 : 5;
+  stageRow.innerHTML = "";
+  stages.forEach((stage, index) => {
+    const div = document.createElement("div");
+    const cls = index + 1 < activeIndex ? "done" : index + 1 === activeIndex ? "active" : "";
+    div.className = "stage " + cls;
+    div.innerHTML = `<strong>${stage.title}</strong><span>${stage.desc}</span>`;
+    stageRow.appendChild(div);
+  });
+}
+
+function renderDetails() {
+  moduleTitle.textContent = `${activeDataset.module} import batch`;
+  moduleDesc.textContent = activeDataset.description;
+  fileName.textContent = activeDataset.fileName;
+  recordCount.textContent = `${activeDataset.records} rows`;
+  targetModule.textContent = activeDataset.module;
+  resultsSummary.textContent = activeDataset.summary;
+  validRows.textContent = activeDataset.stats.valid;
+  warningRows.textContent = activeDataset.stats.warnings;
+  errorRows.textContent = activeDataset.stats.errors;
+  readyState.textContent = runState === "completed"
+    ? (activeDataset.stats.errors > 0 ? "Blocked" : "Imported")
+    : activeDataset.stats.ready;
+
+  issuesBody.innerHTML = "";
+  activeDataset.issues.forEach((issue) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${issue.row}</td>
+      <td>${issue.key}</td>
+      <td>${issue.issue}</td>
+      <td><span class="status ${issue.status}">${issue.status}</span></td>
+    `;
+    issuesBody.appendChild(tr);
+  });
+
+  mappingGrid.innerHTML = "";
+  activeDataset.mapping.forEach(([source, target, tag]) => {
+    const row = document.createElement("div");
+    row.className = "mapping-row";
+    row.innerHTML = `
+      <div><strong>${source}</strong><span>Source field</span></div>
+      <div class="arrow">→</div>
+      <div><strong>${target}</strong><span>Platform destination</span></div>
+      <div><span class="tag">${tag}</span></div>
+    `;
+    mappingGrid.appendChild(row);
+  });
+}
+
+function renderTimeline() {
+  timeline.innerHTML = "";
+  let items = [];
+  let progress = 0;
+
+  if (runState === "idle") {
+    items = [
+      "Demo ready. Select a file and run validation to simulate the import workflow."
+    ];
+    progress = 0;
+    progressLabel.textContent = "Choose a sample file and run the validation sequence to prepare this batch for import.";
+  } else if (runState === "validated") {
+    items = activeDataset.timelineBase;
+    progress = activeDataset.stats.errors > 0 ? 58 : 76;
+    progressLabel.textContent = activeDataset.stats.errors > 0
+      ? "Validation found blocking issues. The batch cannot move into final import until exceptions are resolved."
+      : "Validation passed. Field mapping is complete and the batch is ready for approved import.";
+  } else {
+    items = [
+      ...activeDataset.timelineBase,
+      activeDataset.stats.errors > 0
+        ? "Import halted automatically because blocking errors remain in the exception queue."
+        : `Batch imported successfully into the ${activeDataset.module} module with audit log captured.`
+    ];
+    progress = activeDataset.stats.errors > 0 ? 58 : 100;
+    progressLabel.textContent = activeDataset.stats.errors > 0
+      ? "Import stopped to preserve data integrity."
+      : "Import completed successfully. Batch committed and logged.";
+  }
+
+  progressBar.style.width = `${progress}%`;
+
+  items.forEach((item, index) => {
+    const div = document.createElement("div");
+    div.className = "timeline-item";
+    div.innerHTML = `
+      <div class="dot"></div>
+      <div>
+        <strong>Step ${index + 1}</strong>
+        <span>${item}</span>
+      </div>
+    `;
+    timeline.appendChild(div);
+  });
+}
+
+function renderAll() {
+  renderSelector();
+  renderStages();
+  renderDetails();
+  renderTimeline();
+  runBtn.textContent = runState === "idle" ? "Run Validation" : runState === "validated" ? "Start Import" : "Run Validation";
+}
+
+runBtn.addEventListener("click", () => {
+  if (runState === "idle") {
+    runState = "validated";
+  } else if (runState === "validated") {
+    runState = "completed";
+  } else {
+    runState = "validated";
+  }
+  renderAll();
+});
+
+resetBtn.addEventListener("click", () => {
+  runState = "idle";
+  renderAll();
+});
+
+renderAll();
+</script>
+</body>
+</html>
