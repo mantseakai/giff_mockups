@@ -1,0 +1,6 @@
+member_id,full_name,membership_class,branch,phone,email,join_date,status,national_id,company_name
+GIFF-MEM-0001,Kojo Mensah,Corporate,Tema,0244001001,kojo.mensah@example.org,2021-03-12,Active,GHA-1984-10011,BlueWave Logistics Ltd
+GIFF-MEM-0002,Akosua Owusu,Individual,Accra,0244001002,akosua.owusu@example.org,2022-07-04,Active,GHA-1990-20345,-
+GIFF-MEM-0003,Yaw Boateng,Corporate,Takoradi,0244001003,yaw.boateng@example.org,2020-11-18,Suspended,GHA-1987-30981,WestPort Freight Services
+GIFF-MEM-0004,Efua Asare,Student,Kumasi,0244001004,efua.asare@example.org,2024-01-09,Active,GHA-2001-44190,-
+GIFF-MEM-0005,Daniel Tetteh,Individual,Tema,0244001005,daniel.tetteh@example.org,2019-06-22,Inactive,GHA-1982-55221,-

@@ -1,0 +1,7 @@
+account_code,account_name,account_type,cost_center,opening_balance_ghs,currency,as_of_date,migration_status
+1000,Cash at Bank,Asset,Head Office,185000.00,GHS,2026-01-01,Ready
+1100,Accounts Receivable,Asset,Membership,42750.00,GHS,2026-01-01,Ready
+2000,Accounts Payable,Liability,Finance,31800.00,GHS,2026-01-01,Ready
+3000,Accumulated Fund,Equity,Head Office,220500.00,GHS,2026-01-01,Ready
+4100,Membership Dues Income,Revenue,Membership,0.00,GHS,2026-01-01,To Be Generated
+5200,Staff Costs,Expense,HR,0.00,GHS,2026-01-01,To Be Generated

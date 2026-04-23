@@ -1,0 +1,5 @@
+batch_id,module,source_file,records_received,records_approved,records_flagged,status,approved_by,approval_date,notes
+MIG-001,Membership,membership_import_sample.csv,5,4,1,Approved,Project Lead,2026-04-18,One duplicate national ID flagged for manual review
+MIG-002,Dues and Fees,dues_import_sample.csv,5,5,0,Approved,Finance Lead,2026-04-19,All records matched to valid member IDs
+MIG-003,Accounts,accounts_opening_balances_sample.csv,6,4,2,Pending,CFO,,"Opening balances for revenue and expense accounts deferred to go-live setup"
+MIG-004,HR,hr_staff_import_sample.csv,5,5,0,Approved,HR Lead,2026-04-20,Supervisor mapping verified

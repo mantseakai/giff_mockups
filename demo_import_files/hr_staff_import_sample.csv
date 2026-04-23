@@ -1,0 +1,6 @@
+staff_id,full_name,department,job_title,employment_type,start_date,supervisor,email,phone,status
+GIFF-HR-001,Adwoa Nyarko,Administration,Operations Manager,Full Time,2021-02-01,Executive Secretary,adwoa.nyarko@example.org,0244112001,Active
+GIFF-HR-002,Michael Addo,Finance,Accountant,Full Time,2022-08-15,Finance Manager,michael.addo@example.org,0244112002,Active
+GIFF-HR-003,Priscilla Aidoo,Membership,Membership Officer,Full Time,2023-01-09,Operations Manager,priscilla.aidoo@example.org,0244112003,Active
+GIFF-HR-004,Samuel Quartey,HR,HR Assistant,Contract,2024-05-20,HR Manager,samuel.quartey@example.org,0244112004,Probation
+GIFF-HR-005,Linda Ofori,IT,System Support Officer,Full Time,2020-09-14,Operations Manager,linda.ofori@example.org,0244112005,Active
